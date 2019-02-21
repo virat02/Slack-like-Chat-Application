@@ -1,50 +1,47 @@
 package edu.northeastern.ccs.jpa.services;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import edu.northeastern.ccs.jpa.Message;
-import edu.northeastern.ccs.jpa.Profile;
+import edu.northeastern.ccs.jpa.User;
 
-public class ProfileServices {
-
+public class MessageServices {
 	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "TestPersistence" );
-    public void createProfile(int id,String name, String password,String email, String imageUrl) {
+    public void createMessage(int id,String message) {
     	EntityManager entitymanager = emfactory.createEntityManager();
     	entitymanager.getTransaction().begin();
-    	Profile profile = new Profile(id,name, email, password, imageUrl);
-    	entitymanager.persist(profile);
+    	Message msg = new Message();
+    	msg.setId(id);
+    	Date timestamp = new Date();
+    	msg.setTimestamp(timestamp);
+    	msg.setMessage(message);
+    	entitymanager.persist(msg);
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
     
-    public Profile getProfile(int id) {
+    public Message getMessage(int id) {
         EntityManager entitymanager = emfactory.createEntityManager( );   
         entitymanager.getTransaction().begin();
-        Profile profile = entitymanager.find(Profile.class, id);
+        Message msg = entitymanager.find(Message.class, id);
         entitymanager.getTransaction().commit();
         entitymanager.close();
-        return profile;
+        return msg;
     }
     
-    public void updateProfileName(int id,String name) {
+    public void updateMessageSender(int id,User sender) {
         EntityManager entitymanager = emfactory.createEntityManager( );
         entitymanager.getTransaction().begin();
         // write find query using name
-        Profile profile = entitymanager.find(Profile.class, id);
-        profile.setName(name);
+        Message msg = entitymanager.find(Message.class, id);
+        msg.setSender(sender);
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
     
-    public void deleteProfile(int id) {
-    	 EntityManager entitymanager = emfactory.createEntityManager( );
-         entitymanager.getTransaction().begin();
-         Profile profile = entitymanager.find(Profile.class, id);
-         entitymanager.remove(profile);
-         entitymanager.getTransaction().commit();
-         entitymanager.close();
-    }
     
 }

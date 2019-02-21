@@ -34,10 +34,15 @@ public class Group {
 	private List<Message> msgs;
 	
 	public Group(int id, String name) {
+		super();
 		this.id = id;
 		this.name = name;
 	}
-
+		
+	public Group() {
+		super();
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -60,6 +65,10 @@ public class Group {
 
 	public void setUsers(List<User> users) {
 		this.users = users;
+	}
+	
+	public void addUser(User user) {
+		this.users.add(user);
 	}
 	
 

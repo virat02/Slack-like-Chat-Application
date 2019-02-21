@@ -4,6 +4,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -19,13 +20,8 @@ public class User {
 	@OneToMany(targetEntity=Group.class)
 	private List<Group> groups;
 	
-	public List<Group> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(List<Group> groups) {
-		this.groups = groups;
-	}
+	@OneToOne
+	private Profile profile;
 
 	public User() {
 		super();
@@ -47,5 +43,28 @@ public class User {
 		this.messages = messages;
 	}
 	
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
+	
+	public void addMessages(Message msg) {
+		this.messages.add(msg);
+	}
+	
+	public void addGroup(Group group) {
+		this.groups.add(group);
+	}
+	
+	public Profile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
 	
 }

@@ -4,47 +4,47 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import edu.northeastern.ccs.jpa.Message;
+import edu.northeastern.ccs.jpa.Group;
 import edu.northeastern.ccs.jpa.Profile;
+import edu.northeastern.ccs.jpa.User;
 
-public class ProfileServices {
-
+public class UserServices {
 	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "TestPersistence" );
-    public void createProfile(int id,String name, String password,String email, String imageUrl) {
+    public void createUser(int id, Profile profile) {
     	EntityManager entitymanager = emfactory.createEntityManager();
     	entitymanager.getTransaction().begin();
-    	Profile profile = new Profile(id,name, email, password, imageUrl);
-    	entitymanager.persist(profile);
+    	User user = new User();
+    	user.setId(id);
+    	user.setProfile(profile);
+    	entitymanager.persist(user);
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
     
-    public Profile getProfile(int id) {
-        EntityManager entitymanager = emfactory.createEntityManager( );   
-        entitymanager.getTransaction().begin();
-        Profile profile = entitymanager.find(Profile.class, id);
+    public User getUser(int id) {
+    	EntityManager entitymanager = emfactory.createEntityManager( );
+        entitymanager.getTransaction().begin();  
+        User user = entitymanager.find(User.class, id);
         entitymanager.getTransaction().commit();
         entitymanager.close();
-        return profile;
+        return user;
     }
     
-    public void updateProfileName(int id,String name) {
+    public void updateUserGroup(int id,Group group) {
         EntityManager entitymanager = emfactory.createEntityManager( );
-        entitymanager.getTransaction().begin();
-        // write find query using name
-        Profile profile = entitymanager.find(Profile.class, id);
-        profile.setName(name);
+        entitymanager.getTransaction().begin();  
+        User user = entitymanager.find(User.class, id);
+        user.addGroup(group);
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
     
-    public void deleteProfile(int id) {
+    public void deleteUser(int id) {
     	 EntityManager entitymanager = emfactory.createEntityManager( );
          entitymanager.getTransaction().begin();
-         Profile profile = entitymanager.find(Profile.class, id);
-         entitymanager.remove(profile);
+         User user = entitymanager.find(User.class, id);
+         entitymanager.remove(user);
          entitymanager.getTransaction().commit();
          entitymanager.close();
     }
-    
 }
