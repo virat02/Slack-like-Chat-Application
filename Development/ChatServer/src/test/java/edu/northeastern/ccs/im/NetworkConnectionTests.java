@@ -20,47 +20,95 @@ import java.util.Iterator;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests the class NetworkConnection
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class NetworkConnectionTests {
 
+    /***
+     * Mocks the socketChannel and its behaviors required by
+     * NetworkConnection
+     */
     @Mock
     private SocketChannel socketChannel;
+    /***
+     * Mock the selector and its behaviors required by
+     * Selector
+     */
     @Mock
     private Selector selector;
     private NetworkConnection networkConnection;
+    /***
+     * Mocks a message
+     */
     @Mock
     private Message message;
+    /***
+     * Mock the SelectionKey and its behaviors required by
+     * SelectionKey
+     */
     private SelectionKey selectionKey;
 
+    /**
+     * Sets up every test, with a mock blocking configuration
+     *
+     * @throws IOException the io exception
+     */
     @Before
     public void setUpTest() throws IOException {
         when(socketChannel.configureBlocking(anyBoolean())).thenReturn(socketChannel);
         networkConnection = new NetworkConnection(socketChannel);
     }
 
+    /**
+     * Disable logging.
+     *
+     */
     @BeforeClass
     public static void disableLogging() {
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
     }
 
+    /**
+     * Tests number of retries should be 100 when message is failing to be written to socket.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testMessageNumberOfRetriesShouldBe100WhenMessageIsFailingToBeWrittenToSocket() throws IOException {
         networkConnection.sendMessage(message);
         verify(socketChannel, times(100)).write(ByteBuffer.wrap(message.toString().getBytes()));
     }
 
+    /**
+     * Test sendMessage() should return false when message is failed to be written to socket.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testMessageSendMessageShouldReturnFalseWhenMessageIsFailedToBeWrittenToSocket() throws IOException {
         Assert.assertFalse(networkConnection.sendMessage(message));
     }
 
+    /**
+     * Test sendMessage() should return true when message is delivered to socket.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() throws IOException {
         when(message.toString()).thenReturn("");
         Assert.assertTrue(networkConnection.sendMessage(message));
     }
 
+    /**
+     * If the socket or channel refuses to close,
+     * an assertionError should be thrown
+     *
+     * @throws IOException the io exception
+     */
     @Test(expected = AssertionError.class)
     public void testCloseAssertionFalse() throws IOException {
         doThrow(IOException.class)
@@ -71,6 +119,11 @@ public class NetworkConnectionTests {
         networkConnection.close();
     }
 
+    /**
+     * Test network connection instantiation when channel blocking configuration fails.
+     *
+     * @throws IOException the io exception
+     */
     @Test(expected = AssertionError.class)
     public void testNetworkConnectionInstantiationWhenChannelBlockingConfigurationFails() throws IOException {
         doThrow(IOException.class)
@@ -80,6 +133,11 @@ public class NetworkConnectionTests {
         networkConnection = new NetworkConnection(socketChannel);
     }
 
+    /***
+     * Sets up mocking behavior for writing to a ByteBuffer
+     * @param answer The mocking behavior
+     * @throws IOException
+     */
     private void setUpIteratorTests(Answer<Void> answer) throws IOException {
         selectionKey = mock(SelectionKey.class);
         when(socketChannel.register(any(), anyInt())).thenReturn(selectionKey);
@@ -88,6 +146,11 @@ public class NetworkConnectionTests {
         doAnswer(answer).when(socketChannel).read(any(ByteBuffer.class));
     }
 
+    /**
+     * Iterator::hasNext should return true when a single message is broad cast.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testIteratorHasNextShouldReturnTrueWhenASingleMessageIsBroadCast() throws IOException {
         StringBuilder messages = new StringBuilder()
@@ -104,6 +167,11 @@ public class NetworkConnectionTests {
         Assert.assertTrue(iterator.hasNext());
     }
 
+    /**
+     * Iterator::hasNext should return true when two messages are broad cast.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testIteratorHasNextShouldReturnTrueWhenTwoMessagesAreBroadCast() throws IOException {
         StringBuilder messages = new StringBuilder()
@@ -124,6 +192,11 @@ public class NetworkConnectionTests {
         Assert.assertTrue(iterator.hasNext());
     }
 
+    /**
+     * Iterator::next should return messages with proper username, message, and broadcast type.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void testIteratorHasNextShouldReturnMessageWithProperType() throws IOException {
         StringBuilder messages = new StringBuilder()
