@@ -44,11 +44,8 @@ public class NetworkConnectionTests {
      */
     @Mock
     private Message message;
-    /***
-     * Mock the SelectionKey and its behaviors required by
-     * SelectionKey
-     */
-    private SelectionKey selectionKey;
+
+    private String messageString = "7 sibendu 17 Hello How Are You";
 
     /**
      * Sets up every test, with a mock blocking configuration
@@ -63,7 +60,6 @@ public class NetworkConnectionTests {
 
     /**
      * Disable logging.
-     *
      */
     @BeforeClass
     public static void disableLogging() {
@@ -74,7 +70,7 @@ public class NetworkConnectionTests {
     /**
      * Tests number of retries should be 100 when message is failing to be written to socket.
      *
-     * @throws IOException the io exception
+     * @throws IOException as required by SocketChannel::write method
      */
     @Test
     public void testMessageNumberOfRetriesShouldBe100WhenMessageIsFailingToBeWrittenToSocket() throws IOException {
@@ -84,21 +80,18 @@ public class NetworkConnectionTests {
 
     /**
      * Test sendMessage() should return false when message is failed to be written to socket.
-     *
-     * @throws IOException the io exception
      */
     @Test
-    public void testMessageSendMessageShouldReturnFalseWhenMessageIsFailedToBeWrittenToSocket() throws IOException {
+    public void testMessageSendMessageShouldReturnFalseWhenMessageIsFailedToBeWrittenToSocket() {
         Assert.assertFalse(networkConnection.sendMessage(message));
     }
 
     /**
      * Test sendMessage() should return true when message is delivered to socket.
      *
-     * @throws IOException the io exception
      */
     @Test
-    public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() throws IOException {
+    public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() {
         when(message.toString()).thenReturn("");
         Assert.assertTrue(networkConnection.sendMessage(message));
     }
@@ -126,20 +119,17 @@ public class NetworkConnectionTests {
      */
     @Test(expected = AssertionError.class)
     public void testNetworkConnectionInstantiationWhenChannelBlockingConfigurationFails() throws IOException {
-        doThrow(IOException.class)
-                .when(socketChannel).
-                configureBlocking(anyBoolean());
-
+        doThrow(IOException.class).when(socketChannel).configureBlocking(anyBoolean());
         networkConnection = new NetworkConnection(socketChannel);
     }
 
     /***
      * Sets up mocking behavior for writing to a ByteBuffer
      * @param answer The mocking behavior
-     * @throws IOException
+     * @throws IOException IOException is required by register() method
      */
     private void setUpIteratorTests(Answer<Void> answer) throws IOException {
-        selectionKey = mock(SelectionKey.class);
+        SelectionKey selectionKey = mock(SelectionKey.class);
         when(socketChannel.register(any(), anyInt())).thenReturn(selectionKey);
         when(selectionKey.isReadable()).thenReturn(true);
         when(selector.selectNow()).thenReturn(1);
@@ -155,7 +145,7 @@ public class NetworkConnectionTests {
     public void testIteratorHasNextShouldReturnTrueWhenASingleMessageIsBroadCast() throws IOException {
         StringBuilder messages = new StringBuilder()
                 .append(MessageType.BROADCAST.toString()).append(" ")
-                .append("7 sibendu 17 Hello How Are You");
+                .append(messageString);
         setUpIteratorTests(invocation -> {
             ByteBuffer buffer = (ByteBuffer) invocation.getArguments()[0];
             buffer.put(messages.toString().getBytes());
@@ -176,7 +166,7 @@ public class NetworkConnectionTests {
     public void testIteratorHasNextShouldReturnTrueWhenTwoMessagesAreBroadCast() throws IOException {
         StringBuilder messages = new StringBuilder()
                 .append(MessageType.BROADCAST.toString()).append(" ")
-                .append("7 sibendu 17 Hello How Are You");
+                .append(messageString);
 
         messages.append(messages);
         setUpIteratorTests(invocation -> {
@@ -201,10 +191,10 @@ public class NetworkConnectionTests {
     public void testIteratorHasNextShouldReturnMessageWithProperType() throws IOException {
         StringBuilder messages = new StringBuilder()
                 .append(MessageType.BROADCAST.toString()).append(" ")
-                .append("7 sibendu 17 Hello How Are You");
+                .append(messageString);
 
         messages.append(MessageType.BROADCAST.toString()).append(" ")
-        .append("3 dey 9 I am good");
+                .append("3 dey 9 I am good");
         setUpIteratorTests(invocation -> {
             ByteBuffer buffer = (ByteBuffer) invocation.getArguments()[0];
             buffer.put(messages.toString().getBytes());
@@ -213,10 +203,10 @@ public class NetworkConnectionTests {
         networkConnection = new NetworkConnection(socketChannel);
         networkConnection.setSelector(selector);
         Iterator<Message> iterator = networkConnection.iterator();
-        iterator.hasNext();
+        Assert.assertTrue(iterator.hasNext());
         Message message1 = iterator.next();
         Assert.assertEquals("sibendu", message1.getName());
-        Assert.assertEquals( "Hello How Are You", message1.getText());
+        Assert.assertEquals("Hello How Are You", message1.getText());
         Assert.assertTrue(message1.isBroadcastMessage());
         Message message2 = iterator.next();
         Assert.assertEquals("dey", message2.getName());
