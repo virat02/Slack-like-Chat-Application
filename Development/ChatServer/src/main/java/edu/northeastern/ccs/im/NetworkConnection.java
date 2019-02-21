@@ -95,6 +95,9 @@ public class NetworkConnection implements Iterable<Message> {
 		}
 	}
 
+	public void setSelector(Selector selector)	{
+		this.selector = selector;
+	}
 	/**
 	 * Send a Message over the network. This method performs its actions by printing
 	 * the given Message over the SocketNB instance with which the PrintNetNB was
@@ -212,6 +215,7 @@ public class NetworkConnection implements Iterable<Message> {
 	            }
 	        } catch (IOException ioe) {
 	            // For the moment, we will cover up this exception and hope it never occurs.
+				ioe.printStackTrace();
 	            assert false;
 	        }
 	        // Do we now have any messages?
