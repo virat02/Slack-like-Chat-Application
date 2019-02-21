@@ -57,4 +57,12 @@ public class ClientTimer {
   public boolean isBehind () {
     return calendar.before(new GregorianCalendar());
   }
+
+  /**
+   * Returnz the time in milliseconds that is stored in the calendar.
+   * @return    time in milliSeconds
+   */
+  public long getTimeInMilliSeconds() {
+    return calendar.getTimeInMillis();
+  }
 }
