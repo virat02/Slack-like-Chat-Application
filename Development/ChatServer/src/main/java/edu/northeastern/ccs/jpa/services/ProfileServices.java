@@ -7,7 +7,6 @@ import javax.persistence.Persistence;
 import edu.northeastern.ccs.jpa.Profile;
 
 public class ProfileServices {
-
     static EntityManagerFactory emfactory;
 
     static {
@@ -21,6 +20,15 @@ public class ProfileServices {
         entitymanager.persist(profile);
         entitymanager.getTransaction().commit();
         entitymanager.close();
+    }
+
+    public Profile getProfile(int id) {
+        EntityManager entitymanager = emfactory.createEntityManager();
+        entitymanager.getTransaction().begin();
+        Profile profile = entitymanager.find(Profile.class, id);
+        entitymanager.getTransaction().commit();
+        entitymanager.close();
+        return profile;
     }
 
     public void updateProfileName(int id, String name) {
@@ -41,4 +49,5 @@ public class ProfileServices {
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
+
 }

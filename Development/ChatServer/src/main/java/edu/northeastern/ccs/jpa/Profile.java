@@ -11,7 +11,7 @@ import javax.persistence.Table;
 public class Profile {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO) 
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	private String name;
 	private String email;

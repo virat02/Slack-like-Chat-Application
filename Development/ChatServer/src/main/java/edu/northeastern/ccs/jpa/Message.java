@@ -9,16 +9,20 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.*;
+
 
 @Entity
 @Table(name="message")
 public class Message {
 	
 	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO) 
+	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
 	
 	private String msg;
+	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date timestamp;
 	
 	@ManyToOne
@@ -27,6 +31,9 @@ public class Message {
 	@ManyToOne
 	private Group group;
 	
+	public Message() {
+		super();
+	}
 	public int getId() {
 		return id;
 	}
