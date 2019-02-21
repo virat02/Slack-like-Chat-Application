@@ -12,6 +12,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         // Add the junit classes under here provided by the
         // fully qualified name of the classes
+        NetworkConnectionTests.class
 })
 public class PrattleTests {
 

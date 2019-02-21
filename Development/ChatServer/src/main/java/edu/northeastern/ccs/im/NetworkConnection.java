@@ -215,7 +215,6 @@ public class NetworkConnection implements Iterable<Message> {
 	            }
 	        } catch (IOException ioe) {
 	            // For the moment, we will cover up this exception and hope it never occurs.
-				ioe.printStackTrace();
 	            assert false;
 	        }
 	        // Do we now have any messages?
