@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Junit test suite for prattle test classes.
+ * Junit test suite for Message and MessageType class.
  *
  * @author virat02
  */
