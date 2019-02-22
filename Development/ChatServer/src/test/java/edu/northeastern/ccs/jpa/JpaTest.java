@@ -2,6 +2,10 @@ package edu.northeastern.ccs.jpa;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -210,5 +214,19 @@ public class JpaTest {
 		assertEquals(prof.getImageUrl(),"http://profile.com/profile.jpg");
 		assertEquals(prof.getPassword(), "profile");
 	}
+	
+	@Test
+	public void test18() {
+		Profile prof = new Profile();
+		prof.setId(4);
+		prof.setEmail("p@gmail.com");
+		prof.setName("hello Profile");
+		prof.setPassword("profile");
+		prof.setImageUrl("http://profile.com/profile.jpg");
+		User usr = new User();
+		prof.setUser(usr);
+		assertEquals(prof.getUser(),usr);
+	}
+	
 	
 }
