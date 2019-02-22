@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.jpa;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -13,10 +14,10 @@ public class User {
     private int id;
 
     @OneToMany(targetEntity = Message.class)
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     @OneToMany(targetEntity = Group.class)
-    private List<Group> groups;
+    private List<Group> groups = new ArrayList<>();
 
     @OneToOne
     private Profile profile;

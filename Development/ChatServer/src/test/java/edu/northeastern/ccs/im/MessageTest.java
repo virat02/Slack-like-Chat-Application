@@ -4,6 +4,11 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+/**
+ * Junit test suite for Message and MessageType class.
+ *
+ * @author virat02
+ */
 public class MessageTest {
 
     private Message quit;
@@ -15,6 +20,8 @@ public class MessageTest {
     private Message simpleLoginMessage;
     private Message quitMessage;
     private Message broadcastMessage;
+
+    private Message invalidHandleMessage;
 
     /**
      * Creating object instances of Message for testing.
@@ -40,6 +47,9 @@ public class MessageTest {
         simpleLoginMessage = Message.makeMessage("HLO", "Client1", "Hello Client1");
         quitMessage = Message.makeMessage("BYE", "Client2", "Client2 quit.");
         broadcastMessage = Message.makeMessage("BCT", "Client3", "Client3 made a broadcast message.");
+
+        //Make an Invalid handle message using the makeMessage method
+        invalidHandleMessage = Message.makeMessage("ABC", "Client4", "Client4 has an invalid handle");
     }
 
     /**
@@ -139,5 +149,13 @@ public class MessageTest {
         assertEquals("HLO 7 Client1 2 --", simpleLoginMessage.toString());
         assertEquals("BYE 7 Client2 2 --", quitMessage.toString());
         assertEquals("BCT 7 Client3 33 Client3 made a broadcast message.", broadcastMessage.toString());
+    }
+
+    /**
+     * Test for values that are null
+     */
+    @Test
+    public void testNull() {
+        assertNull(invalidHandleMessage);
     }
 }
