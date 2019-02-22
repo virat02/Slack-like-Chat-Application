@@ -17,7 +17,8 @@ import edu.northeastern.ccs.jpa.JpaTest;
         ClientTimerTest.class,
         MessageTest.class,
         JpaTest.class,
-        ClientRunnableTest.class
+        ClientRunnableTest.class,
+        edu.northeastern.ccs.im.server.PrattleTests.class
 })
 public class PrattleTests {
 
