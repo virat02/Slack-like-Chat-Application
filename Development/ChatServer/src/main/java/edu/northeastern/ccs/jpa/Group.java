@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.jpa;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +10,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="group")
+@Table(name="groupcomposite")
 public class Group {
 	
 	@Id
@@ -18,19 +19,10 @@ public class Group {
 	private String name;
 	
 	@OneToMany(targetEntity=User.class)
-	private List<User> users;
+	private List<User> users = new ArrayList<>();
 	
 	@OneToMany(targetEntity=Message.class)
-	public List<Message> getMsgs() {
-		return msgs;
-	}
-
-	public void setMsgs(List<Message> msgs) {
-		this.msgs = msgs;
-	}
-
-	@OneToMany(targetEntity=Message.class)
-	private List<Message> msgs;
+	private List<Message> msgs = new ArrayList<>();
 	
 	public Group(int id, String name) {
 		super();
@@ -69,6 +61,16 @@ public class Group {
 	public void addUser(User user) {
 		this.users.add(user);
 	}
+	
+	@OneToMany(targetEntity=Message.class)
+	public List<Message> getMsgs() {
+		return msgs;
+	}
+
+	public void setMsgs(List<Message> msgs) {
+		this.msgs = msgs;
+	}
+
 	
 
 }
