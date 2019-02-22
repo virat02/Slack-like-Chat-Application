@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -99,6 +100,72 @@ public class ClientRunnableTest {
         //when(clientTimer.isBehind()).thenReturn(true);
         networkConnection.close();
     }
+
+    /**
+     * Test for Message termination
+     */
+    @Test
+    public void testHandleIncomingMessageWhenMessageIsTerminated() {
+        when(msg.terminate()).thenReturn(true);
+        when(msg.getName()).thenReturn("sibendu");
+        Message msg2 = mock(Message.class);
+        when(msg2.terminate()).thenReturn(true);
+
+        when(msg2.getName()).thenReturn("sibendu");
+
+        Iterator<Message> msgItr = getIterator(msg, msg2);
+
+        runClientRunnable(msgItr);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+        clientRunnable.setFuture(future);
+        clientRunnable.run();
+        networkConnection.close();
+    }
+
+    public Iterator<Message> getIterator(Message msg, Message msg1) {
+        return new Iterator<Message>() {
+            List<Message> msgList = new ArrayList<>(Arrays.asList(msg, msg1));
+
+            int position = 0;
+
+            @Override
+            public boolean hasNext() {
+                return position < msgList.size();
+            }
+
+            @Override
+            public Message next() {
+                if (hasNext()) {
+                    return msgList.get(position++);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+        };
+    }
+
+    /**
+     * Test for no Message termination and broadcast message inside handleIncomingMessages method
+     */
+    @Test
+    public void testHandleIncomingMessageWhenMessageIsNotTerminatedAndBroadcastMessage() {
+        when(msg.terminate()).thenReturn(false);
+        when(msg.getName()).thenReturn("virat");
+        Message msg1 = mock(Message.class);
+        when(msg1.terminate()).thenReturn(false);
+        when(msg1.getName()).thenReturn("virat");
+        clientRunnable.setName("virat");
+        when(msg1.isBroadcastMessage()).thenReturn(true);
+
+        Iterator<Message> msgItr = getIterator(msg, msg1);
+
+        runClientRunnable(msgItr);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+        clientRunnable.setFuture(future);
+        clientRunnable.run();
+        networkConnection.close();
+    }
+
 
     /**
      * Test for case when isInitialized is True
@@ -342,7 +409,7 @@ public class ClientRunnableTest {
     }
 
     /**
-     * Test for all broadcast type messages
+     * Test for all broadcast type messages.
      */
     @Test
     public void testAllBroadcastMessages() {
