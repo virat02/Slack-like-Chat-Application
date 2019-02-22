@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -99,6 +100,44 @@ public class ClientRunnableTest {
         //when(clientTimer.isBehind()).thenReturn(true);
         networkConnection.close();
     }
+
+    /**
+     * Test for Run method
+     */
+    @Test
+    public void testHandleIncomingMessageWhenMessageIsTerminated() {
+        when(msg.terminate()).thenReturn(true);
+        when(msg.getName()).thenReturn("sibendu");
+        Message msg2 = mock(Message.class);
+        when(msg2.terminate()).thenReturn(true);
+
+        when(msg2.getName()).thenReturn("sibendu");
+        Iterator<Message> msgItr = new Iterator<Message>() {
+            List<Message> msgList = new ArrayList<>(Arrays.asList(msg, msg2));
+            int position = 0;
+
+            @Override
+            public boolean hasNext() {
+                return position < msgList.size();
+            }
+
+            @Override
+            public Message next() {
+                if (hasNext()) {
+                    return msgList.get(position++);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+        };
+
+        runClientRunnable(msgItr);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+        clientRunnable.setFuture(future);
+        clientRunnable.run();
+        networkConnection.close();
+    }
+
 
     /**
      * Test for case when isInitialized is True
