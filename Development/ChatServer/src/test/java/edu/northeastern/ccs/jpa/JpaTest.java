@@ -6,13 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 import org.junit.Test;
-import edu.northeastern.ccs.jpa.services.ProfileServices;
-import edu.northeastern.ccs.jpa.services.MessageServices;
 
 
 /**
@@ -22,21 +16,6 @@ public class JpaTest {
 	
 	/** The Constant TEST_GROUP. */
 	public static final String TEST_GROUP = "Test Group";
-	
-    /** The ps. */
-    private static ProfileServices ps = new ProfileServices();
-    
-    /** The ms. */
-    private static MessageServices ms = new MessageServices();
-    
-	/** The emfactory. */
-	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-	
-	/** The entitymanager. */
-	EntityManager entitymanager = emfactory.createEntityManager();
-	
-	/** The id. */
-	int id = 638;
 	
 	/**
 	 * Test 1.
@@ -299,65 +278,6 @@ public class JpaTest {
 		User usr = new User();
 		prof.setUser(usr);
 		assertEquals(usr,prof.getUser());
-	}
-	
-	/**
-	 * Test 19.
-	 */
-	@Test
-	public void test19() {
-		ps.createProfile(entitymanager, id, "name", "pass", "email", "imageUrl");
-	}
-	
-	/**
-	 * Test 20.
-	 */
-	@Test
-	public void test20() {
-		ps.getProfile(entitymanager, id);
-	}
-	
-	/**
-	 * Test 21.
-	 */
-	@Test
-	public void test21() {
-		ps.updateProfileName(entitymanager, id, "hello there");
-	}
-	
-	/**
-	 * Test 22.
-	 */
-	@Test
-	public void test22() {
-		ps.deleteProfile(entitymanager, id);
-	}
-	
-	/**
-	 * Test 23.
-	 */
-	@Test
-	public void test23() {
-		int newMsId = id - 17;
-		ms.createMessage(entitymanager, newMsId, "message: hello hello");
-	}
-	
-	/**
-	 * Test 24.
-	 */
-	@Test
-	public void test24() {
-		int newMsId = id - 17;
-		ms.getMessage(entitymanager, newMsId);
-	}
-	
-	/**
-	 * Test 26.
-	 */
-	@Test
-	public void test26() {
-		int newMsId = id - 17;
-		ms.updateMessage(entitymanager, newMsId, "newMessage: hi there!");
 	}
 	
 	
