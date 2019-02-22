@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.jpa.services.ProfileServices;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -57,7 +56,7 @@ public abstract class Prattle {
 	public static void broadcastMessage(Message message) {
 		// Loop through all of our active threads
 		for (ClientRunnable tt : active) {
-			// Do not send the message to any clients that are not ready to receive it.
+			// Do not send the message if it's not ready to be send
 			if (tt.isInitialized()) {
 				tt.enqueueMessage(message);
 			}
@@ -144,7 +143,7 @@ public abstract class Prattle {
 	 * @param serverSocket The channel to use.
 	 * @param threadPool   The thread pool to add client to.
 	 */
-	private static void createClientThread(ServerSocketChannel serverSocket, ScheduledExecutorService threadPool) {
+	public static void createClientThread(ServerSocketChannel serverSocket, ScheduledExecutorService threadPool) {
 		try {
 			// Accept the connection and create a new thread to handle this client.
 			SocketChannel socket = serverSocket.accept();
