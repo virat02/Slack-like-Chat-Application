@@ -8,9 +8,8 @@ import edu.northeastern.ccs.jpa.Group;
 import edu.northeastern.ccs.jpa.User;
 
 public class GroupServices {
-	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "TestPersistence" );
-    public void createGroup(int id,String name) {
-    	EntityManager entitymanager = emfactory.createEntityManager();
+	
+    public void createGroup(EntityManager entitymanager,int id,String name) {
     	entitymanager.getTransaction().begin();
     	Group group = new Group(id, name);
     	entitymanager.persist(group);
@@ -18,8 +17,7 @@ public class GroupServices {
         entitymanager.close();
     }
     
-    public Group getGroup(int id) {
-        EntityManager entitymanager = emfactory.createEntityManager( );
+    public Group getGroup(EntityManager entitymanager,int id) {
         entitymanager.getTransaction().begin();
         // write find query using name
         Group group = entitymanager.find(Group.class, id);
@@ -28,8 +26,7 @@ public class GroupServices {
         return group;
     }
     
-    public void updateGroupName(int id,String name) {
-        EntityManager entitymanager = emfactory.createEntityManager( );
+    public void updateGroupName(EntityManager entitymanager,int id,String name) {
         entitymanager.getTransaction().begin();
         Group group = entitymanager.find(Group.class, id);
         group.setName(name);
@@ -37,8 +34,7 @@ public class GroupServices {
         entitymanager.close();
     }
     
-    public void addUserToGroup(int id, User user) {
-        EntityManager entitymanager = emfactory.createEntityManager( );
+    public void addUserToGroup(EntityManager entitymanager,int id, User user) {
         entitymanager.getTransaction().begin();
         Group group = entitymanager.find(Group.class, id);
         group.addUser(user);
@@ -46,8 +42,7 @@ public class GroupServices {
         entitymanager.close();
     }
     
-    public void deleteGroup(int id) {
-    	 EntityManager entitymanager = emfactory.createEntityManager( );
+    public void deleteGroup(EntityManager entitymanager,int id) {
          entitymanager.getTransaction().begin();
          Group group = entitymanager.find(Group.class, id);
          entitymanager.remove(group);
