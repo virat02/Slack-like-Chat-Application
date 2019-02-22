@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.jpa.services.ProfileServices;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -57,7 +56,7 @@ public abstract class Prattle {
 	public static void broadcastMessage(Message message) {
 		// Loop through all of our active threads
 		for (ClientRunnable tt : active) {
-			// Do not send the message to any clients that are not ready to receive it.
+			// Do not send the message if it's not ready to be send
 			if (tt.isInitialized()) {
 				tt.enqueueMessage(message);
 			}
@@ -99,13 +98,13 @@ public abstract class Prattle {
 	 *                     to which it is supposed to listen.
 	 */
 	public static void main(String[] args) {
-		ProfileServices profileServices = new ProfileServices();
 		// Connect to the socket on the appropriate port to which this server connects.
 		try (ServerSocketChannel serverSocket = ServerSocketChannel.open()) {
 			serverSocket.configureBlocking(false);
 			serverSocket.socket().bind(new InetSocketAddress(ServerConstants.PORT));
 			// Create the Selector with which our channel is registered.
 			Selector selector = SelectorProvider.provider().openSelector();
+			ChatLogger.info("Prattle starting");
 			// Register to receive any incoming connection messages.
 			serverSocket.register(selector, SelectionKey.OP_ACCEPT);
 			// Create our pool of threads on which we will execute.
@@ -144,7 +143,7 @@ public abstract class Prattle {
 	 * @param serverSocket The channel to use.
 	 * @param threadPool   The thread pool to add client to.
 	 */
-	private static void createClientThread(ServerSocketChannel serverSocket, ScheduledExecutorService threadPool) {
+	public static void createClientThread(ServerSocketChannel serverSocket, ScheduledExecutorService threadPool) {
 		try {
 			// Accept the connection and create a new thread to handle this client.
 			SocketChannel socket = serverSocket.accept();

@@ -151,6 +151,9 @@ public class MessageTest {
         assertEquals("BCT 7 Client3 33 Client3 made a broadcast message.", broadcastMessage.toString());
     }
 
+    /**
+     * Test for values that are null
+     */
     @Test
     public void testNull() {
         assertNull(invalidHandleMessage);
