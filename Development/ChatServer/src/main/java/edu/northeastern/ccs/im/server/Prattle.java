@@ -99,13 +99,13 @@ public abstract class Prattle {
 	 *                     to which it is supposed to listen.
 	 */
 	public static void main(String[] args) {
-		ProfileServices profileServices = new ProfileServices();
 		// Connect to the socket on the appropriate port to which this server connects.
 		try (ServerSocketChannel serverSocket = ServerSocketChannel.open()) {
 			serverSocket.configureBlocking(false);
 			serverSocket.socket().bind(new InetSocketAddress(ServerConstants.PORT));
 			// Create the Selector with which our channel is registered.
 			Selector selector = SelectorProvider.provider().openSelector();
+			ChatLogger.info("Prattle starting");
 			// Register to receive any incoming connection messages.
 			serverSocket.register(selector, SelectionKey.OP_ACCEPT);
 			// Create our pool of threads on which we will execute.
