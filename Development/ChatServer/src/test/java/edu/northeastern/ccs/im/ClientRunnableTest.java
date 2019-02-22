@@ -102,7 +102,7 @@ public class ClientRunnableTest {
     }
 
     /**
-     * Test for Run method
+     * Test for Message termination
      */
     @Test
     public void testHandleIncomingMessageWhenMessageIsTerminated() {
@@ -112,8 +112,20 @@ public class ClientRunnableTest {
         when(msg2.terminate()).thenReturn(true);
 
         when(msg2.getName()).thenReturn("sibendu");
-        Iterator<Message> msgItr = new Iterator<Message>() {
-            List<Message> msgList = new ArrayList<>(Arrays.asList(msg, msg2));
+
+        Iterator<Message> msgItr = getIterator(msg, msg2);
+
+        runClientRunnable(msgItr);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+        clientRunnable.setFuture(future);
+        clientRunnable.run();
+        networkConnection.close();
+    }
+
+    public Iterator<Message> getIterator(Message msg, Message msg1) {
+        return new Iterator<Message>() {
+            List<Message> msgList = new ArrayList<>(Arrays.asList(msg, msg1));
+
             int position = 0;
 
             @Override
@@ -130,6 +142,22 @@ public class ClientRunnableTest {
                 }
             }
         };
+    }
+
+    /**
+     * Test for no Message termination and broadcast message inside handleIncomingMessages method
+     */
+    @Test
+    public void testHandleIncomingMessageWhenMessageIsNotTerminatedAndBroadcastMessage() {
+        when(msg.terminate()).thenReturn(false);
+        when(msg.getName()).thenReturn("virat");
+        Message msg1 = mock(Message.class);
+        when(msg1.terminate()).thenReturn(false);
+        when(msg1.getName()).thenReturn("virat");
+        clientRunnable.setName("virat");
+        when(msg1.isBroadcastMessage()).thenReturn(true);
+
+        Iterator<Message> msgItr = getIterator(msg, msg1);
 
         runClientRunnable(msgItr);
         ScheduledFuture<?> future = mock(ScheduledFuture.class);
