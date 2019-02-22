@@ -4,6 +4,11 @@ import org.junit.Before;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+/**
+ * Junit test suite for prattle test classes.
+ *
+ * @author virat02
+ */
 public class MessageTest {
 
     private Message quit;
