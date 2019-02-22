@@ -6,13 +6,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import org.junit.Test;
+import edu.northeastern.ccs.jpa.services.ProfileServices;
+import edu.northeastern.ccs.jpa.services.MessageServices;
 
 
+/**
+ * The Class JpaTest.
+ */
 public class JpaTest {
+	
+	/** The Constant TEST_GROUP. */
 	public static final String TEST_GROUP = "Test Group";
+	
+    /** The ps. */
+    private static ProfileServices ps = new ProfileServices();
     
+    /** The ms. */
+    private static MessageServices ms = new MessageServices();
+    
+	/** The emfactory. */
+	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
+	
+	/** The entitymanager. */
+	EntityManager entitymanager = emfactory.createEntityManager();
+	
+	/** The id. */
+	int id = 638;
+	
+	/**
+	 * Test 1.
+	 */
 	@Test
 	public void test1() {
 		Group group1 = new Group();
@@ -20,6 +48,9 @@ public class JpaTest {
 		assertEquals(TEST_GROUP + " 1",group1.getName());
 	}
 	
+	/**
+	 * Test 2.
+	 */
 	@Test
 	public void test2() {
 		Group group2 = new Group();
@@ -27,6 +58,9 @@ public class JpaTest {
 		assertEquals(3,group2.getId());
 	}
 	
+	/**
+	 * Test 3.
+	 */
 	@Test
 	public void test3() {
 		String str = TEST_GROUP + " 2";
@@ -41,6 +75,9 @@ public class JpaTest {
 		assertEquals(group2.getUsers(),userList);
 	}
 	
+	/**
+	 * Test 4.
+	 */
 	@Test
 	public void test4() {
 		String str = TEST_GROUP + " 3";
@@ -54,6 +91,9 @@ public class JpaTest {
 		assertEquals(group3.getUsers(),userList);
 	}
 	
+	/**
+	 * Test 5.
+	 */
 	@Test
 	public void test5() {
 		String str = TEST_GROUP + " 4";
@@ -67,6 +107,9 @@ public class JpaTest {
 		assertEquals(group3.getMsgs(),msgList);
 	}
 	
+	/**
+	 * Test 6.
+	 */
 	@Test
 	public void test6() {
 		Message msg1 = new Message();
@@ -74,6 +117,9 @@ public class JpaTest {
 		assertEquals(66,msg1.getId());
 	}
 	
+	/**
+	 * Test 7.
+	 */
 	@Test
 	public void test7() {
 		String str = TEST_GROUP + " 7";
@@ -83,6 +129,9 @@ public class JpaTest {
 		assertEquals(str,msg2.getMessage());
 	}
 	
+	/**
+	 * Test 8.
+	 */
 	@Test
 	public void test8() {
 		String str = TEST_GROUP + " 8";
@@ -93,6 +142,9 @@ public class JpaTest {
 		assertEquals(true,msg2.isDeleted());
 	}
 	
+	/**
+	 * Test 9.
+	 */
 	@Test
 	public void test9() {
 		String str = TEST_GROUP + " 8";
@@ -105,6 +157,9 @@ public class JpaTest {
 		assertEquals(user,msg2.getSender());
 	}
 	
+	/**
+	 * Test 10.
+	 */
 	@Test
 	public void test10() {
 		String str = TEST_GROUP + " 8";
@@ -116,6 +171,10 @@ public class JpaTest {
 		msg2.setGroup(group);
 		assertEquals(group,msg2.getGroup());
 	}
+	
+	/**
+	 * Test 11.
+	 */
 	@Test
 	public void test11() {
 		String str = TEST_GROUP + " 8";
@@ -130,6 +189,9 @@ public class JpaTest {
 		assertEquals(timestamp,msg2.getTimestamp());
 	}
 	
+	/**
+	 * Test 12.
+	 */
 	@Test
 	public void test12() {
 		User usr = new User();
@@ -137,6 +199,9 @@ public class JpaTest {
 		assertEquals(123,usr.getId());
 	}
 	
+	/**
+	 * Test 13.
+	 */
 	@Test
 	public void test13() {
 		String str = TEST_GROUP + " 13";
@@ -160,6 +225,9 @@ public class JpaTest {
 		assertEquals(msgList,usr.getMessages());
 	}
 	
+	/**
+	 * Test 14.
+	 */
 	@Test
 	public void test14() {
 		String str = TEST_GROUP + " 14";
@@ -177,6 +245,9 @@ public class JpaTest {
 		assertEquals(groupList,usr.getGroups());
 	}
 	
+	/**
+	 * Test 15.
+	 */
 	@Test
 	public void test15() {
 		User usr = new User();
@@ -187,6 +258,9 @@ public class JpaTest {
 		assertEquals(p1,usr.getProfile());
 	}
 	
+	/**
+	 * Test 16.
+	 */
 	@Test
 	public void test16() {
 		Profile prof = new Profile(3, "hello Profile", "p@gmail.com","profile","http://profile.com/profile.jpg");
@@ -197,6 +271,9 @@ public class JpaTest {
 		assertEquals("profile",prof.getPassword());
 	}
 	
+	/**
+	 * Test 17.
+	 */
 	@Test
 	public void test17() {
 		Profile prof = new Profile();
@@ -212,6 +289,9 @@ public class JpaTest {
 		assertEquals("profilepass",prof.getPassword());
 	}
 	
+	/**
+	 * Test 18.
+	 */
 	@Test
 	public void test18() {
 		Profile prof = new Profile();
@@ -221,6 +301,69 @@ public class JpaTest {
 		assertEquals(usr,prof.getUser());
 	}
 	
+	/**
+	 * Test 19.
+	 */
+	@Test
+	public void test19() {
+		ps.createProfile(entitymanager, id, "name", "pass", "email", "imageUrl");
+	}
+	
+	/**
+	 * Test 20.
+	 */
+	@Test
+	public void test20() {
+		ps.getProfile(entitymanager, id);
+	}
+	
+	/**
+	 * Test 21.
+	 */
+	@Test
+	public void test21() {
+		ps.updateProfileName(entitymanager, id, "hello there");
+	}
+	
+	/**
+	 * Test 22.
+	 */
+	@Test
+	public void test22() {
+		ps.deleteProfile(entitymanager, id);
+	}
+	
+	/**
+	 * Test 23.
+	 */
+	@Test
+	public void test23() {
+		int newMsId = id - 17;
+		ms.createMessage(entitymanager, newMsId, "message: hello hello");
+	}
+	
+	/**
+	 * Test 24.
+	 */
+	@Test
+	public void test24() {
+		int newMsId = id - 17;
+		ms.getMessage(entitymanager, newMsId);
+	}
+	
+	/**
+	 * Test 26.
+	 */
+	@Test
+	public void test26() {
+		int newMsId = id - 17;
+		ms.updateMessage(entitymanager, newMsId, "newMessage: hi there!");
+	}
+	
+	
+	
+	
+
 	
 	
 }

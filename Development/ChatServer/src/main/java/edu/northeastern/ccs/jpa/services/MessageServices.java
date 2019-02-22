@@ -3,16 +3,22 @@ package edu.northeastern.ccs.jpa.services;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import edu.northeastern.ccs.jpa.Message;
-import edu.northeastern.ccs.jpa.User;
 
+/**
+ * The Class MessageServices.
+ */
 public class MessageServices {
-	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "TestPersistence" );
-    public void createMessage(int id,String message) {
-    	EntityManager entitymanager = emfactory.createEntityManager();
+    
+    /**
+     * Creates the message.
+     *
+     * @param entitymanager the entitymanager
+     * @param id the id
+     * @param message the message
+     */
+    public void createMessage(EntityManager entitymanager, int id,String message) {
     	entitymanager.getTransaction().begin();
     	Message msg = new Message();
     	msg.setId(id);
@@ -24,8 +30,14 @@ public class MessageServices {
         entitymanager.close();
     }
     
-    public Message getMessage(int id) {
-        EntityManager entitymanager = emfactory.createEntityManager( );   
+    /**
+     * Gets the message.
+     *
+     * @param entitymanager the entitymanager
+     * @param id the id
+     * @return the message
+     */
+    public Message getMessage(EntityManager entitymanager,int id) {   
         entitymanager.getTransaction().begin();
         Message msg = entitymanager.find(Message.class, id);
         entitymanager.getTransaction().commit();
@@ -33,15 +45,21 @@ public class MessageServices {
         return msg;
     }
     
-    public void updateMessageSender(int id,User sender) {
-        EntityManager entitymanager = emfactory.createEntityManager( );
+    /**
+     * Update message.
+     *
+     * @param entitymanager the entitymanager
+     * @param id the id
+     * @param newMessage the new message
+     */
+    public void updateMessage(EntityManager entitymanager,int id,String newMessage) {
         entitymanager.getTransaction().begin();
-        // write find query using name
         Message msg = entitymanager.find(Message.class, id);
-        msg.setSender(sender);
+        msg.setMessage(newMessage);
         entitymanager.getTransaction().commit();
         entitymanager.close();
     }
+    
     
     
 }

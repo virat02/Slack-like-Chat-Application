@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.jpa.services.ProfileServices;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -99,7 +98,7 @@ public abstract class Prattle {
 	 *                     to which it is supposed to listen.
 	 */
 	public static void main(String[] args) {
-		ProfileServices profileServices = new ProfileServices();
+
 		// Connect to the socket on the appropriate port to which this server connects.
 		try (ServerSocketChannel serverSocket = ServerSocketChannel.open()) {
 			serverSocket.configureBlocking(false);
