@@ -1,11 +1,14 @@
 package edu.northeastern.ccs.im;
 
 import edu.northeastern.ccs.im.server.ClientRunnable;
+import edu.northeastern.ccs.im.server.ClientTimer;
+import edu.northeastern.ccs.im.server.Prattle;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -28,14 +31,36 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ClientRunnableTest {
 
+    /**
+     * Mocks ClientRunnable
+     */
     @InjectMocks
-    ClientRunnable clientRunnable;
+    private ClientRunnable clientRunnable;
 
+    /**
+     * Mocks NetworkConnection
+     */
     @Mock
-    NetworkConnection networkConnection;
+    private NetworkConnection networkConnection;
+
+    /**
+     * Mocks ClientTimer
+     */
+    @Mock
+    private ClientTimer clientTimer;
+
+    /**
+     * Mocks Message
+     */
+    @Mock
+    private Message msg;
 
     private final Logger logger = Logger.getLogger(ClientRunnableTest.class.getName());
 
+    /**
+     * Common helper method for various test methods
+     * @param msgItr
+     */
     private void runClientRunnable(Iterator<Message> msgItr) {
         when(networkConnection.iterator()).thenReturn(msgItr);
         clientRunnable = new ClientRunnable(networkConnection);
@@ -46,7 +71,7 @@ public class ClientRunnableTest {
      * Test for Run method
      */
     @Test
-    public void testIteratorWithThreeMessages() {
+    public void testRunMethod() {
         Iterator<Message> msgItr = new Iterator<Message>() {
             Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!");
             Message msg2 = Message.makeBroadcastMessage("sibendudey", "Hi, I'm Sibendu!");
@@ -70,9 +95,8 @@ public class ClientRunnableTest {
             }
         };
 
-        when(networkConnection.iterator()).thenReturn(msgItr);
-        clientRunnable = new ClientRunnable(networkConnection);
-        clientRunnable.run();
+        runClientRunnable(msgItr);
+        //when(clientTimer.isBehind()).thenReturn(true);
         networkConnection.close();
     }
 
@@ -105,6 +129,7 @@ public class ClientRunnableTest {
 
         runClientRunnable(msgItr);
         assertTrue(clientRunnable.isInitialized());
+        Prattle.broadcastMessage(Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!"));
         networkConnection.close();
     }
 
@@ -205,10 +230,10 @@ public class ClientRunnableTest {
         networkConnection.close();
     }
 
-    @Test
     /**
      * Test for enqueueMessage method
      */
+    @Test
     public void testEnqueueMessage() {
         Iterator<Message> msgItr = new Iterator<Message>() {
             Message msg1 =  Message.makeSimpleLoginMessage("virat");
@@ -353,5 +378,45 @@ public class ClientRunnableTest {
         clientRunnable.setFuture(cf);
         clientRunnable.run();
         clientRunnable.terminateClient();
+    }
+
+    /**
+     * Test for terminate user when timer is behind
+     */
+    @Test
+    public void testTerminateUserWhenTimerBehind() {
+        Iterator<Message> msgItr = new Iterator<Message>() {
+            Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!");
+            Message msg2 = Message.makeSimpleLoginMessage("sibendudey");
+            Message msg3 = Message.makeQuitMessage("sangeetha");
+            List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
+
+            int position = 0;
+
+            @Override
+            public boolean hasNext() {
+                return position < msgList.size();
+            }
+
+            @Override
+            public Message next() {
+                if (hasNext()) {
+                    return msgList.get(position++);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+        };
+
+        when(networkConnection.iterator()).thenReturn(msgItr);
+        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable.setClientTimer(clientTimer);
+        when(clientTimer.isBehind()).thenReturn(true);
+        ScheduledFuture<?> cf = Executors.newSingleThreadScheduledExecutor()
+                .scheduleAtFixedRate(clientRunnable, 200,
+                        200, TimeUnit.MILLISECONDS);
+        clientRunnable.setFuture(cf);
+        clientRunnable.run();
+        networkConnection.close();
     }
 }

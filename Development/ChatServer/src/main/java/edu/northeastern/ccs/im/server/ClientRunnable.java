@@ -53,6 +53,13 @@ public class ClientRunnable implements Runnable {
 	private ClientTimer timer;
 
 	/**
+	 * Method to set the timer
+	 */
+	public void setClientTimer(ClientTimer clientTimer) {
+		this.timer = clientTimer;
+	}
+
+	/**
 	 * The future that is used to schedule the client for execution in the thread
 	 * pool.
 	 */
