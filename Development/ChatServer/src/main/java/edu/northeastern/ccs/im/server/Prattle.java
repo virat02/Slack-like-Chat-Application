@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.jpa.services.ProfileServices;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
