@@ -409,7 +409,7 @@ public class ClientRunnableTest {
     }
 
     /**
-     * Test for all broadcast type messages
+     * Test for all broadcast type messages.
      */
     @Test
     public void testAllBroadcastMessages() {
