@@ -1,6 +1,0 @@
-projectKey=MSDTeamProject:ChatServer
-serverUrl=http://localhost:9000
-serverVersion=7.6.0.21501
-dashboardUrl=http://localhost:9000/dashboard?id=MSDTeamProject%3AChatServer
-ceTaskId=AWkTjKEtixw9r_M-4MH2
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AWkTjKEtixw9r_M-4MH2
