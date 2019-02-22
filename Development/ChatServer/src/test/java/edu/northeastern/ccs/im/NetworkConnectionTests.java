@@ -17,6 +17,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static org.mockito.Mockito.*;
 
@@ -87,8 +88,17 @@ public class NetworkConnectionTests {
     }
 
     /**
+     * Test sendMessage() should return false channel::write throws IOException
+     */
+    @Test
+    public void testMessageSendMessageShouldReturnFalseWhenSocketChannelWriteThrowsIOException() throws IOException {
+        doThrow(IOException.class).when(socketChannel).write(any(ByteBuffer.class));
+        Assert.assertFalse(networkConnection.sendMessage(message));
+    }
+
+
+    /**
      * Test sendMessage() should return true when message is delivered to socket.
-     *
      */
     @Test
     public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() {
@@ -108,6 +118,18 @@ public class NetworkConnectionTests {
                 .when(socketChannel)
                 .close();
 
+        networkConnection = new NetworkConnection(socketChannel);
+        networkConnection.close();
+    }
+
+    /**
+     * If the socket or channel closes successfully
+     * no assertionError should be thrown
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void testCloseAssertionIsNotFalse() throws IOException {
         networkConnection = new NetworkConnection(socketChannel);
         networkConnection.close();
     }
@@ -134,6 +156,57 @@ public class NetworkConnectionTests {
         when(selectionKey.isReadable()).thenReturn(true);
         when(selector.selectNow()).thenReturn(1);
         doAnswer(answer).when(socketChannel).read(any(ByteBuffer.class));
+    }
+
+
+    /**
+     * Iterator::hasNext should return false when a single message is broad cast.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void testIteratorHasNextShouldReturnFalseWhenAEmptyMessageIsBroadCast() throws IOException {
+        setUpIteratorTests(invocation -> {
+            return null;
+        });
+        when(selector.selectNow()).thenReturn(0);
+        networkConnection = new NetworkConnection(socketChannel);
+        networkConnection.setSelector(selector);
+        Iterator<Message> iterator = networkConnection.iterator();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    /**
+     * selector::selectNow throwing IOException should be caught
+     *
+     * @throws IOException the io exception
+     */
+    @Test(expected = AssertionError.class)
+    public void testIteratorWhenSelectorSelectNowThrowsIOException() throws IOException {
+        setUpIteratorTests(invocation -> {
+            return null;
+        });
+
+        doThrow(IOException.class).when(selector).selectNow();
+        networkConnection = new NetworkConnection(socketChannel);
+        networkConnection.setSelector(selector);
+        Iterator<Message> iterator = networkConnection.iterator();
+        Assert.assertFalse(iterator.hasNext());
+    }
+
+    /**
+     * If there are no messages, NoSuchElementException should be thrown
+     */
+    @Test(expected = NoSuchElementException.class)
+    public void testIteratorWhenNoMessagesArePresentInTheQueue() throws IOException {
+        setUpIteratorTests(invocation -> {
+            return null;
+        });
+
+        networkConnection = new NetworkConnection(socketChannel);
+        networkConnection.setSelector(selector);
+        Iterator<Message> iterator = networkConnection.iterator();
+        iterator.next();
     }
 
     /**

@@ -13,8 +13,12 @@ import edu.northeastern.ccs.jpa.JpaTest;
 @Suite.SuiteClasses({
         // Add the junit classes under here provided by the
         // fully qualified name of the classes
-        NetworkConnectionTests.class, ClientTimerTest.class, MessageTest.class, JpaTest.class, ClientRunnableTest.class
-
+        NetworkConnectionTests.class,
+        ClientTimerTest.class,
+        MessageTest.class,
+        JpaTest.class,
+        ClientRunnableTest.class,
+        edu.northeastern.ccs.im.server.PrattleTests.class
 })
 public class PrattleTests {
 

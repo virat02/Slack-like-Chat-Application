@@ -15,7 +15,7 @@
         <profile>
             <id>sonar-dev</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
                 <sonar.projectKey>
