@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -12,12 +13,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.im.communication.NetworkRequest;
+import edu.northeastern.ccs.im.communication.NetworkRequestImpl;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
@@ -144,19 +146,27 @@ public abstract class Prattle {
 	 * @param threadPool   The thread pool to add client to.
 	 */
 	public static void createClientThread(ServerSocketChannel serverSocket, ScheduledExecutorService threadPool) {
+		ChatLogger.info("Socket connecting");
 		try {
 			// Accept the connection and create a new thread to handle this client.
 			SocketChannel socket = serverSocket.accept();
 			// Make sure we have a connection to work with.
 			if (socket != null) {
-			    NetworkConnection connection = new NetworkConnection(socket);
-				ClientRunnable tt = new ClientRunnable(connection);
-				// Add the thread to the queue of active threads
-				active.add(tt);
-				// Have the client executed by our pool of threads.
-				ScheduledFuture<?> clientFuture = threadPool.scheduleAtFixedRate(tt, ServerConstants.CLIENT_CHECK_DELAY,
-						ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
-				tt.setFuture(clientFuture);
+				RequestHandler.getInstance().handleRequest(socket);
+//				ByteBuffer byteBuffer = ByteBuffer.allocate(2048);
+//				socket.read(byteBuffer);
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				NetworkRequest request = objectMapper.readValue(byteBuffer.array(), NetworkRequestImpl.class);
+//				ChatLogger.info("Sample Name: " + sample.getName());
+//				ChatLogger.info("Payload: " + request.payload().jsonString());
+//				NetworkConnection connection = new NetworkConnection(socket);
+//				ClientRunnable tt = new ClientRunnable(connection);
+//				// Add the thread to the queue of active threads
+//				active.add(tt);
+//				// Have the client executed by our pool of threads.
+//				ScheduledFuture<?> clientFuture = threadPool.scheduleAtFixedRate(tt, ServerConstants.CLIENT_CHECK_DELAY,
+//						ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
+//				tt.setFuture(clientFuture);
 			}
 		} catch (AssertionError ae) {
 			ChatLogger.error("Caught Assertion: " + ae.toString());

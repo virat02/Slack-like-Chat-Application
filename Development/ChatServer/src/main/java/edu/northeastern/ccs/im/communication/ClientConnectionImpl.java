@@ -25,6 +25,15 @@ public class ClientConnectionImpl implements ClientConnection {
         socketChannel.write(byteBuffer);
     }
 
+    public static void main(String args[]) throws IOException {
+        try (SocketChannel socketChannel = SocketChannel.open()) {
+            socketChannel.connect(new InetSocketAddress("localhost", 4545));
+            NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun", "tarungmailcom");
+            ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
+            socketChannel.write(byteBuffer);
+        }
+    }
+
     @Override
     public void close() throws IOException {
         socketChannel.close();

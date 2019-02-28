@@ -13,7 +13,7 @@ public class PayloadImpl implements Payload {
         this.jsonString = jsonString;
     }
     @Override
-    public String jsonString() throws JsonProcessingException {
+    public String jsonString() {
         return jsonString;
     }
 }
