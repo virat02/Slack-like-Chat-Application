@@ -34,7 +34,7 @@ public class Message {
 	@ManyToOne
 	private User sender;
 	
-	/** The group. */
+	/** The userGroup. */
 	@ManyToOne
 	private Group group;
 	
@@ -118,18 +118,18 @@ public class Message {
 	}
 
 	/**
-	 * Gets the group.
+	 * Gets the userGroup.
 	 *
-	 * @return the group
+	 * @return the userGroup
 	 */
 	public Group getGroup() {
 		return group;
 	}
 
 	/**
-	 * Sets the group.
+	 * Sets the userGroup.
 	 *
-	 * @param group the new group
+	 * @param group the new userGroup
 	 */
 	public void setGroup(Group group) {
 		this.group = group;

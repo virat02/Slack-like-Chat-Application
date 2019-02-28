@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.userGroup.IUser;
+import edu.northeastern.ccs.im.userGroup.IUserGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements IUser {
 
     /** The id. */
     @Id
@@ -99,9 +102,9 @@ public class User {
     }
 
     /**
-     * Adds the group.
+     * Adds the userGroup.
      *
-     * @param group the group
+     * @param group the userGroup
      */
     public void addGroup(Group group) {
         this.groups.add(group);

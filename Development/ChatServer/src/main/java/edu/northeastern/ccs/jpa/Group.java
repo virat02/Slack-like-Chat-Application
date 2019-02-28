@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.userGroup.IUser;
+import edu.northeastern.ccs.im.userGroup.IUserGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
@@ -26,14 +29,14 @@ public class Group {
 	
 	/** The users. */
 	@OneToMany(targetEntity=User.class)
-	private List<User> users = new ArrayList<>();
+	private List<IUserGroup> users = new ArrayList<>();
 	
 	/** The msgs. */
 	@OneToMany(targetEntity=Message.class)
 	private List<Message> msgs = new ArrayList<>();
 	
 	/**
-	 * Instantiates a new group.
+	 * Instantiates a new userGroup.
 	 *
 	 * @param id the id
 	 * @param name the name
@@ -45,7 +48,7 @@ public class Group {
 	}
 		
 	/**
-	 * Instantiates a new group.
+	 * Instantiates a new userGroup.
 	 */
 	public Group() {
 		super();
@@ -92,7 +95,7 @@ public class Group {
 	 *
 	 * @return the users
 	 */
-	public List<User> getUsers() {
+	public List<IUserGroup> getUsers() {
 		return users;
 	}
 
@@ -101,7 +104,7 @@ public class Group {
 	 *
 	 * @param users the new users
 	 */
-	public void setUsers(List<User> users) {
+	public void setUsers(List<IUserGroup> users) {
 		this.users = users;
 	}
 	
@@ -110,7 +113,7 @@ public class Group {
 	 *
 	 * @param user the user
 	 */
-	public void addUser(User user) {
+	public void addUser(IUserGroup user) {
 		this.users.add(user);
 	}
 	
