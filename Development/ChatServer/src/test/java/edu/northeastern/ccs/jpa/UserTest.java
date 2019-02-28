@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.userGroup.IGroup;
 import edu.northeastern.ccs.im.userGroup.IUser;
 import org.junit.Before;
@@ -21,6 +22,9 @@ public class UserTest {
     private Profile profileOne;
     private Profile profileTwo;
     private Profile getProfileThree;
+    private UserService userServiceOne;
+    private UserService userServiceTwo;
+    private UserService userServiceThree;
     private static final String JOHN = "John";
     private static final String STARK = "Danny";
     private static final String DANNY = "Stark";
@@ -48,6 +52,9 @@ public class UserTest {
         userOne.setProfile(profileOne);
         userTwo.setProfile(profileTwo);
         userThree.setProfile(getProfileThree);
+        userServiceOne = new UserService(userOne);
+        userServiceTwo = new UserService(userTwo);
+        userServiceThree = new UserService(userThree);
     }
 
     /**
@@ -192,7 +199,7 @@ public class UserTest {
         following.add(userTwo);
         following.add(userThree);
         userOne.setFollowing(following);
-        assertEquals(userTwo.getProfile().getName(), userOne.search(DANNY).get(0).getProfile().getName());
+        assertEquals(userTwo.getProfile().getName(), userServiceOne.search(DANNY).getProfile().getName());
     }
 
     /**
@@ -203,11 +210,11 @@ public class UserTest {
         List<IUser> following = new ArrayList<>();
         following.add(userTwo);
         userOne.setFollowing(following);
-        assertEquals(userTwo.getProfile().getName(), userOne.search(DANNY).get(0).getProfile().getName());
+        assertEquals(userTwo.getProfile().getName(), userServiceOne.search(DANNY).getProfile().getName());
         assertEquals(1, userOne.getFollowing().size());
-        userOne.follow(userThree);
-        assertEquals(userThree.getProfile().getName(), userOne.search(STARK).get(0).getProfile().getName());
-        userOne.follow(userTwo);
+        userServiceOne.follow(userThree);
+        assertEquals(userThree.getProfile().getName(), userServiceOne.search(STARK).getProfile().getName());
+        userServiceOne.follow(userTwo);
         assertEquals(2, userOne.getFollowing().size());
     }
 
@@ -224,7 +231,7 @@ public class UserTest {
         newGroup.setId(2);
         groups.add(newGroup2);
         userOne.setGroups(groups);
-        userOne.sendMessage("Hello", 2);
+        userServiceOne.sendMessage("Hello", 2);
         assertEquals("Hello", userOne.getMessages().get(0).getMessage());
     }
 
@@ -238,7 +245,7 @@ public class UserTest {
         Date newDate = new Date();
         newDate.setTime(3L);
         userOne.addMessages(newMessage);
-        userOne.setExpiration(1, newDate);
+        userServiceOne.setExpiration(1, newDate);
         assertEquals(3L, userOne.getMessages().get(0).getExpiration());
     }
 
@@ -258,7 +265,7 @@ public class UserTest {
         groups.add(newGroup2);
         userOne.setGroups(groups);
         assertEquals(2, userOne.getGroups().size());
-        userOne.deleteGroup(2);
+        userServiceOne.deleteGroup(2);
         assertEquals(1, userOne.getGroups().size());
         assertEquals(0, userOne.getGroups().get(0).getId());
     }
@@ -269,7 +276,7 @@ public class UserTest {
     @Test
     public void testCreateGroup() {
         assertEquals(0, userOne.getGroups().size());
-        userOne.createIGroup(4);
+        userServiceOne.createIGroup(4);
         assertEquals(1, userOne.getGroups().size());
         assertEquals(4, userOne.getGroups().get(0).getId());
     }
