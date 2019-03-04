@@ -31,6 +31,11 @@ public class RequestHandler {
     public void handleRequest(SocketChannel socketChannel) {
         executor.execute(() -> {
             NetworkRequest networkRequest = parseNetworkRequest(socketChannel);
+            try {
+                System.out.println(networkRequest.payload().jsonString());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
             if (networkRequest != null) {
                 NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest);
                 byte[] networkResponseByteEncoded = getNetworkResponseAsBytes(networkResponse);

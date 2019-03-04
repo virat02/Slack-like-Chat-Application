@@ -9,18 +9,25 @@ import java.nio.channels.SocketChannel;
 
 public class ClientConnectionImpl implements ClientConnection {
 
-    private final NetworkRequest networkRequest;
     private SocketChannel socketChannel;
+    private String hostName;
+    private Integer port;
+    private SocketFactory socketFactory;
 
-    public ClientConnectionImpl(NetworkRequest networkRequest) {
-        this.networkRequest = networkRequest;
+    public ClientConnectionImpl(String hostName, Integer port, SocketFactory socketFactory) {
+        this.hostName = hostName;
+        this.port = port;
+        this.socketFactory = socketFactory;
     }
 
     @Override
     public void connect() throws IOException {
-        socketChannel = SocketChannel.open();
-        socketChannel.connect(new InetSocketAddress("localhost", 4545));
-        NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun", "tarungmailcom");
+        socketChannel = socketFactory.createSocket();
+        socketChannel.connect(new InetSocketAddress(hostName, port));
+    }
+
+    @Override
+    public void sendRequest(NetworkRequest networkRequest) throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
         socketChannel.write(byteBuffer);
     }

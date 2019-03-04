@@ -19,10 +19,6 @@ public interface Payload {
 
 class JSONDeserializer extends StdDeserializer<Payload> {
 
-    public JSONDeserializer() {
-        this(null);
-    }
-
     public JSONDeserializer(Class<?> vc) {
         super(vc);
     }

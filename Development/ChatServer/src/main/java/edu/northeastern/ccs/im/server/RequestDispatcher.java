@@ -23,8 +23,20 @@ public class RequestDispatcher {
     }
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private IController iController = new UserController();
+    private IController userController = new UserController();
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
+
+    /***
+     * The purpose of this method is mocking the IController.
+     * Though there can be dependency injection done for user controller
+     * in this application, but I think it is not required
+     * for this application, hence just having a setter in
+     * place to mock the controller
+     * @param controller
+     */
+    public void setUserController(IController controller) {
+        this.userController = controller;
+    }
 
     public NetworkResponse handleNetworkRequest(NetworkRequest networkRequest) {
         NetworkRequest.NetworkRequestType networkRequestType = networkRequest.networkRequestType();
@@ -38,9 +50,8 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUseRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            iController.addIUserGroup(user);
+            userController.addIUserGroup(user);
         } catch (IOException e) {
-            e.printStackTrace();
             return networkResponseFactory.createFailedResponse();
         }
         return networkResponseFactory.createSuccessfulResponse();
