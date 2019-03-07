@@ -21,7 +21,7 @@ public class ViewConstants {
     inputStream = reader;
   }
 
-  private static void setOutputStream(PrintStream printStream) {
+  public static void setOutputStream(PrintStream printStream) {
     outputStream = printStream;
   }
 }
