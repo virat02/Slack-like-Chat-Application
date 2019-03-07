@@ -4,6 +4,10 @@ public class NetworkRequestImpl implements NetworkRequest {
     private Payload payload;
     private NetworkRequestType networkRequestType;
 
+    public NetworkRequestImpl() {
+
+    }
+
     public NetworkRequestImpl(NetworkRequestType networkRequestType, Payload payload) {
         this.networkRequestType = networkRequestType;
         this.payload = payload;
