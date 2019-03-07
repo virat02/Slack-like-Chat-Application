@@ -28,11 +28,18 @@ public class ClientConnectionImpl implements ClientConnection {
 
     @Override
     public void sendRequest(NetworkRequest networkRequest) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
+        ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
         socketChannel.write(byteBuffer);
     }
 
-    public static void main(String args[]) throws IOException {
+    @Override
+    public NetworkResponse readResponse() throws IOException {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        socketChannel.read(byteBuffer);
+        return CommunicationUtils.getObjectMapper().readValue(byteBuffer.array(), NetworkResponseImpl.class);
+    }
+
+    public static void main(String[] args) throws IOException {
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(new InetSocketAddress("localhost", 4545));
             NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun", "tarungmailcom");

@@ -5,5 +5,6 @@ import java.io.IOException;
 public interface ClientConnection {
     void connect() throws IOException;
     void sendRequest(NetworkRequest networkRequest) throws IOException;
+    NetworkResponse readResponse() throws IOException;
     void close() throws IOException;
 }
