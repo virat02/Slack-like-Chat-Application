@@ -35,7 +35,7 @@ class LoginWindow extends AbstractTerminalWindow {
 
   LoginWindow(TerminalWindow caller) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.kUserNameString);
+      put(0, ConstantStrings.kEmailAddressString);
       put(1, ConstantStrings.kPasswordString);
       put(2, ConstantStrings.kLoginFailed);
     }});
@@ -82,17 +82,6 @@ class LoginWindow extends AbstractTerminalWindow {
   }
 
   private boolean isUserDetailsValid() {
-    try (SocketChannel socketChannel = SocketChannel.open()) {
-      socketChannel.connect(new InetSocketAddress("localhost", 4545));
-      NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest(userIdString,
-              passwordString);
-      ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
-      socketChannel.write(byteBuffer);
-    }
-    catch (IOException exception) {
-      printMessageInConsole(ConstantStrings.kNetworkError);
-      printMessageInConsole(exception.getMessage());
-    }
-    return true;
+    return false;
   }
 }

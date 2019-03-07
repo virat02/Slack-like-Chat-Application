@@ -8,9 +8,9 @@ public class RootWindowTest extends AbstractWindowTest {
 
   @Test
   public void testInitialDisplayView() {
-    initializeInputStreamWithInput("* Y");
+    initializeInputStreamWithInput("");
     RootWindow rootWindow = new RootWindow(null);
     rootWindow.runWindow();
-    System.out.println(getOutputStreamContent());
+    assertEquals("1 - Login\n2 - Sign Up\n* - QUIT\n", getOutputStreamContent());
   }
 }

@@ -42,7 +42,8 @@ public class ClientConnectionImpl implements ClientConnection {
     public static void main(String[] args) throws IOException {
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(new InetSocketAddress("localhost", 4545));
-            NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun", "tarungmailcom");
+            NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun"
+                    , "tarun@gmailcom", "*****");
             ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
             socketChannel.write(byteBuffer);
         }

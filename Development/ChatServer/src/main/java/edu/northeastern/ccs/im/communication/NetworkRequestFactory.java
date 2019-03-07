@@ -4,7 +4,7 @@ import edu.northeastern.ccs.jpa.Profile;
 import edu.northeastern.ccs.jpa.User;
 
 public class NetworkRequestFactory {
-    public NetworkRequest createUserRequest(String name, String password) {
+  public NetworkRequest createUserRequest(String userName, String password, String emailAddress) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
                 () -> {
                     User user = new User();
@@ -12,7 +12,8 @@ public class NetworkRequestFactory {
 
                     Profile profile = new Profile();
                     profile.setId(0);
-                    profile.setName(name);
+                    profile.setName(userName);
+                    profile.setEmail(emailAddress);
                     profile.setImageUrl("");
 //                    profile.setUser(user);
                     profile.setPassword(password);

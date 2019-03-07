@@ -3,12 +3,23 @@ package edu.northeastern.ccs.im.view;
 import java.io.IOException;
 import java.util.Map;
 
+import edu.northeastern.ccs.im.communication.ClientConnection;
+import edu.northeastern.ccs.im.communication.ClientConnectionImpl;
+import edu.northeastern.ccs.im.communication.NetworkRequest;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.communication.SocketFactory;
+
 public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   private final TerminalWindow callerWindow;
 
   private int currentProcess;
   private final Map<Integer,String> processMap;
+
+  private ClientConnection clientConnection;
+  private String hostName = "localhost";
+  private int port = 4545;
+  private SocketFactory socketFactory;
 
   abstract void inputFetchedFromUser(String inputString);
 
@@ -96,5 +107,23 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
       ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
       exitWindow();
     }
+  }
+
+  private void createNetworkConnection() throws IOException {
+    if (socketFactory == null) {
+      socketFactory = new SocketFactory();
+    }
+    if (clientConnection == null) {
+      clientConnection = new ClientConnectionImpl(hostName, port, socketFactory);
+    }
+    clientConnection.connect();
+  }
+
+  protected NetworkResponse sendNetworkConnection(NetworkRequest networkRequest) throws IOException {
+    createNetworkConnection();
+    clientConnection.sendRequest(networkRequest);
+    NetworkResponse networkResponse = clientConnection.readResponse();
+    clientConnection.close();
+    return networkResponse;
   }
 }
