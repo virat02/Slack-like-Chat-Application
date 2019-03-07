@@ -66,7 +66,7 @@ public class JpaTest {
 		List<User> userList = new ArrayList<>();
 		userList.add(user1);
 		userList.add(user2);
-		group3.setUsers(userList);
+//		group3.setUsers(userList);
 		assertEquals(group3.getUsers(),userList);
 	}
 	

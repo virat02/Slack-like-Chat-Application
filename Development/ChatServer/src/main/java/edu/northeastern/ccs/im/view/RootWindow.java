@@ -4,25 +4,37 @@ import java.util.HashMap;
 
 class RootWindow extends AbstractTerminalWindow {
 
-  private final TerminalWindow loginWindow;
-  private final TerminalWindow signUpWindow;
+  private TerminalWindow loginWindow;
+  private TerminalWindow signUpWindow;
+
+  public TerminalWindow getLoginWindow(){
+    if (loginWindow == null) {
+      loginWindow = new LoginWindow(this);
+    }
+    return loginWindow;
+  }
+
+  public TerminalWindow getSignUpWindow(){
+    if (signUpWindow == null) {
+      signUpWindow = new SignUpWindow(this);
+    }
+    return signUpWindow;
+  }
 
   RootWindow(TerminalWindow caller) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.kInitialLaunch);
     }});
-    loginWindow = new LoginWindow(this);
-    signUpWindow = new SignUpWindow(this);
   }
 
   @Override
   void inputFetchedFromUser(String inputString) {
     if (inputString.length() == 1) {
       if (inputString.equals("1")) {
-        loginWindow.runWindow();
+        getLoginWindow().runWindow();
       }
       else if (inputString.equals("2")) {
-        signUpWindow.runWindow();
+        getSignUpWindow().runWindow();
       }
       else if (inputString.equals("*")) {
         exitWindow();

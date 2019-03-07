@@ -1,11 +1,34 @@
 package edu.northeastern.ccs.im.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+
+import edu.northeastern.ccs.im.communication.NetworkRequest;
+import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 
 class LoginWindow extends AbstractTerminalWindow {
 
-  private final TerminalWindow chatTerminalWindow;
-  private final TerminalWindow forgotPasswordWindow;
+  private TerminalWindow chatTerminalWindow;
+  private TerminalWindow forgotPasswordWindow;
+
+  public TerminalWindow getChatTerminalWindow(){
+    if (chatTerminalWindow == null) {
+      chatTerminalWindow = new ChatTerminalWindow(this);
+    }
+    return chatTerminalWindow;
+  }
+
+  public TerminalWindow getForgotPasswordWindow(){
+    if ( forgotPasswordWindow == null ){
+      forgotPasswordWindow = new ForgotPasswordWindow(this);
+    }
+    return forgotPasswordWindow;
+  }
 
   private String userIdString;
   private String passwordString;
@@ -16,8 +39,6 @@ class LoginWindow extends AbstractTerminalWindow {
       put(1, ConstantStrings.kPasswordString);
       put(2, ConstantStrings.kLoginFailed);
     }});
-    chatTerminalWindow = new ChatTerminalWindow(this);
-    forgotPasswordWindow = new ForgotPasswordWindow(this);
   }
 
   @Override
@@ -30,7 +51,7 @@ class LoginWindow extends AbstractTerminalWindow {
       passwordString = inputString;
       if (isUserDetailsValid()) {
         printMessageInConsole(ConstantStrings.kLoginSuccessful);
-        chatTerminalWindow.runWindow();
+        getChatTerminalWindow().runWindow();
       }
       else  {
         printInConsoleForNextProcess();
@@ -42,7 +63,7 @@ class LoginWindow extends AbstractTerminalWindow {
           printInConsoleForProcess(0);
         }
         else if (inputString.equals("2")) {
-          forgotPasswordWindow.runWindow();
+          getForgotPasswordWindow().runWindow();
         }
         else if (inputString.equals("0")) {
           goBack();
@@ -61,6 +82,17 @@ class LoginWindow extends AbstractTerminalWindow {
   }
 
   private boolean isUserDetailsValid() {
-    return userIdString.contains("@");
+    try (SocketChannel socketChannel = SocketChannel.open()) {
+      socketChannel.connect(new InetSocketAddress("localhost", 4545));
+      NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest(userIdString,
+              passwordString);
+      ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
+      socketChannel.write(byteBuffer);
+    }
+    catch (IOException exception) {
+      printMessageInConsole(ConstantStrings.kNetworkError);
+      printMessageInConsole(exception.getMessage());
+    }
+    return true;
   }
 }

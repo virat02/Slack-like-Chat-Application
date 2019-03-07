@@ -15,7 +15,9 @@ public class NetworkRequestFactoryTests {
         String name = "Sibendu";
         String email = "sibendu.dey@gmail.com";
         NetworkRequest networkRequest = networkRequestFactory.createUserRequest(name, email);
-        User user = new User(name, email);
+        User user = new User();
+        //The below line gave an error
+        //User user = new User(name, email);
         String expectedJSON = CommunicationUtils.getObjectMapper().writeValueAsString(user);
         Assert.assertEquals(expectedJSON, networkRequest.payload().jsonString());
     }

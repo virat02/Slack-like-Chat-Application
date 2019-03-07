@@ -1,15 +1,9 @@
 package edu.northeastern.ccs.im.view;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.util.Map;
 
 public abstract class AbstractTerminalWindow implements TerminalWindow {
-
-  private final BufferedReader inputStream = new BufferedReader(new InputStreamReader(System.in));
-  private final PrintStream outputStream = new PrintStream(System.out);
 
   private final TerminalWindow callerWindow;
 
@@ -41,7 +35,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   //OUTPUT METHODS
   protected void printMessageInConsole(String message) {
-    outputStream.println(message);
+    ViewConstants.getOutputStream().println(message);
   }
 
   protected void printInConsoleForCurrentProcess() {
@@ -54,7 +48,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   protected void printInConsoleForProcess(int process) {
     currentProcess = process;
-    outputStream.println(processMap.get(currentProcess));
+    ViewConstants.getOutputStream().println(processMap.get(currentProcess));
     getInputFromUser();
   }
 
@@ -63,7 +57,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     String input = "";
     try {
       while (!input.equalsIgnoreCase("stop")) {
-        input = inputStream.readLine();
+        input = ViewConstants.getInputStream().readLine();
         inputFetchedFromUser(input);
       }
     } catch (IOException e) {
@@ -72,7 +66,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   }
 
   protected void invalidInputPassed() {
-    outputStream.println(ConstantStrings.kInvalidInputString);
+    ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
     printInConsoleForCurrentProcess();
   }
 
@@ -83,11 +77,11 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   @Override
   public void exitWindow() {
-    outputStream.println(ConstantStrings.kConfirmExitMessage);
+    ViewConstants.getOutputStream().println(ConstantStrings.kConfirmExitMessage);
     String input = "";
     try {
       while (!input.equalsIgnoreCase("stop")) {
-        input = inputStream.readLine();
+        input = ViewConstants.getInputStream().readLine();
         if (input.toUpperCase().equals("Y")) {
           exitApp();
         }
@@ -95,12 +89,12 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
           runWindow();
         }
         else {
-          outputStream.println(ConstantStrings.kInvalidInputString);
+          ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
           exitWindow();
         }
       }
     } catch (IOException e) {
-      outputStream.println(ConstantStrings.kInvalidInputString);
+      ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
       exitWindow();
     }
   }

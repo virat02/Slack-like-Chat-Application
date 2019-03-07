@@ -5,6 +5,9 @@ public class ConstantStrings {
   public static final String kInvalidInputString = "Invalid Input";
   public static final String kConfirmExitMessage = "Confirm(Y/N)";
 
+  //Network Related
+  public static final String kNetworkError = "Network Error";
+
   //App Launch Strings
   public static final String kInitialLaunch = "1 - Login\n2 - Sign Up\n* - QUIT";
 
