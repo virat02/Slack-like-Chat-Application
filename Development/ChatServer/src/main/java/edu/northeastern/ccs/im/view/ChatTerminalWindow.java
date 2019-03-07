@@ -6,8 +6,7 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
 
   public ChatTerminalWindow(TerminalWindow caller) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.kRecoveryEmail);
-      put(1, ConstantStrings.kRecoveryInitiated);
+
     }});
   }
 
@@ -18,6 +17,6 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
 
   @Override
   public void runWindow() {
-
+    
   }
 }

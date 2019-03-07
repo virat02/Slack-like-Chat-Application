@@ -56,8 +56,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   protected void getInputFromUser() {
     String input = "";
     try {
-      while (!input.equalsIgnoreCase("stop")) {
-        input = ViewConstants.getInputStream().readLine();
+      while((input = ViewConstants.getInputStream().readLine()) != null){
         inputFetchedFromUser(input);
       }
     } catch (IOException e) {
