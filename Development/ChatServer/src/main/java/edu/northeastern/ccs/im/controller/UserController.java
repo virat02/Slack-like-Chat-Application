@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.service.IService;
 import edu.northeastern.ccs.im.service.UserService;
+import edu.northeastern.ccs.im.userGroup.IUser;
 import edu.northeastern.ccs.im.userGroup.IUserGroup;
 import edu.northeastern.ccs.im.view.View;
 import edu.northeastern.ccs.jpa.User;
@@ -14,13 +15,13 @@ public class UserController implements IController {
 
 
     public void addIUserGroup(IUserGroup iUserGroup) {
-        List<IUserGroup> userList;
+        IUser user;
         try {
-            userList = userService.addUser(iUserGroup);
+            user = userService.addUser(iUserGroup);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Can't add User");
         }
-        view.showUsers(userList);
+        //view.showUsers(user);
     }
 
     @Override

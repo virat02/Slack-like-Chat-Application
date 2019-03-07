@@ -1,9 +1,12 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.userGroup.IGroup;
 import edu.northeastern.ccs.im.userGroup.IUser;
 import edu.northeastern.ccs.im.userGroup.IUserGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -26,7 +29,19 @@ public class User implements IUser {
 
     /** The groups. */
     @OneToMany(targetEntity = Group.class)
-    private List<Group> groups = new ArrayList<>();
+    private List<IGroup> groups = new ArrayList<>();
+
+    /**
+     * The list of people following this user.
+     */
+    @ManyToOne
+    private List<IUser> followers = new ArrayList<>();
+
+    /**
+     * The list of people this user follows.
+     */
+    @OneToMany
+    private List<IUser> following = new ArrayList<>();
 
     /** The profile. */
     private Profile profile;
@@ -79,7 +94,7 @@ public class User implements IUser {
      *
      * @return the groups
      */
-    public List<Group> getGroups() {
+    public List<IGroup> getGroups() {
         return groups;
     }
 
@@ -88,7 +103,7 @@ public class User implements IUser {
      *
      * @param groups the new groups
      */
-    public void setGroups(List<Group> groups) {
+    public void setGroups(List<IGroup> groups) {
         this.groups = groups;
     }
 
@@ -106,7 +121,7 @@ public class User implements IUser {
      *
      * @param group the userGroup
      */
-    public void addGroup(Group group) {
+    public void addGroup(IGroup group) {
         this.groups.add(group);
     }
 
@@ -128,4 +143,39 @@ public class User implements IUser {
         this.profile = profile;
     }
 
+    /**
+     * Gets the followers.
+     *
+     * @return the followers
+     */
+    public List<IUser> getFollowers() {
+        return this.followers;
+    }
+
+    /**
+     * Sets the followers.
+     *
+     * @param followers the new profile
+     */
+    public void setFollowers(List<IUser> followers) {
+        this.followers = followers;
+    }
+
+    /**
+     * Gets the following.
+     *
+     * @return the following
+     */
+    public List<IUser> getFollowing() {
+        return this.following;
+    }
+
+    /**
+     * Sets the following.
+     *
+     * @param following the new profile
+     */
+    public void setFollowing(List<IUser> following) {
+        this.following = following;
+    }
 }
