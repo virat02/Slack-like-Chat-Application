@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.communication;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class PayloadImpl implements Payload {
     private String jsonString;

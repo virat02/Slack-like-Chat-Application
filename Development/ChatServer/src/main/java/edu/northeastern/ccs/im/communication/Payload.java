@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 
 @FunctionalInterface
-@JsonDeserialize(using = JSONDeserializer.class)
+@JsonDeserialize(using = NetworkResponseDeserializer.class)
 public interface Payload {
     @JsonProperty("jsonString")
     String jsonString() throws JsonProcessingException;

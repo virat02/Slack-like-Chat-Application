@@ -36,4 +36,9 @@ public class ConstantStrings {
           + "0 - Back\n* - Exit";
 
   private ConstantStrings() {}
+
+  public static final String chatMainCommand = "1 - Search user\n2 - Create Group \n 3 - Sign out\n";
+  public static final String searchUser = "Search user";
+  public static final String createGroup = "Create group";
+  public static final String signOut = "Sign out";
 }

@@ -41,7 +41,7 @@ public class RequestHandler {
                 byte[] networkResponseByteEncoded = getNetworkResponseAsBytes(networkResponse);
                 try {
                     socketChannel.write(ByteBuffer.wrap(networkResponseByteEncoded));
-                    socketChannel.close();
+//                    socketChannel.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,7 +51,8 @@ public class RequestHandler {
 
     private byte[] getNetworkResponseAsBytes(NetworkResponse networkResponse) {
         try {
-            return CommunicationUtils.getObjectMapper().writeValueAsBytes(networkResponse);
+            String jsonString = CommunicationUtils.getObjectMapper().writeValueAsString(networkResponse);
+            return jsonString.getBytes();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return new byte[]{};

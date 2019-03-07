@@ -41,16 +41,16 @@ public class RequestDispatcher {
     public NetworkResponse handleNetworkRequest(NetworkRequest networkRequest) {
         NetworkRequest.NetworkRequestType networkRequestType = networkRequest.networkRequestType();
         if (networkRequestType == NetworkRequest.NetworkRequestType.CREATE_USER) {
-            return handleCreateUseRequest(networkRequest);
+            return handleCreateUserRequest(networkRequest);
         }
 
         return networkResponseFactory.createFailedResponse();
     }
 
-    private NetworkResponse handleCreateUseRequest(NetworkRequest networkRequest) {
+    private NetworkResponse handleCreateUserRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            userController.addIUserGroup(user);
+//            userController.addIUserGroup(user);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }

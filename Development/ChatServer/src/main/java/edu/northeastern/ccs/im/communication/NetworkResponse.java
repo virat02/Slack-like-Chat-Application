@@ -1,9 +1,41 @@
 package edu.northeastern.ccs.im.communication;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
+import java.io.IOException;
+
+@JsonDeserialize(as = NetworkResponseImpl.class)
 public interface NetworkResponse {
+    @JsonProperty("status")
     STATUS status();
+    @JsonProperty("payload")
+    Payload payload();
 
     enum STATUS {
         SUCCESSFUL, FAILED;
     }
 }
+
+class NetworkResponseDeserializer extends StdDeserializer<Payload> {
+
+    public NetworkResponseDeserializer() {
+        this(null);
+    }
+
+    public NetworkResponseDeserializer(Class<?> vc) {
+        super(vc);
+    }
+
+    @Override
+    public Payload deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+        String jsonString = node.get("jsonString").asText();
+        return new PayloadImpl(jsonString);
+    }
+}
+

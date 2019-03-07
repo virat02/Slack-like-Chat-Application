@@ -1,9 +1,11 @@
 package edu.northeastern.ccs.im.view;
 
+import edu.northeastern.ccs.im.communication.ClientConnection;
+import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
+
 import java.io.IOException;
 import java.util.Map;
 
-import edu.northeastern.ccs.im.communication.ClientConnection;
 import edu.northeastern.ccs.im.communication.ClientConnectionImpl;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
@@ -12,7 +14,6 @@ import edu.northeastern.ccs.im.communication.SocketFactory;
 public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   private final TerminalWindow callerWindow;
-
   private int currentProcess;
   private final Map<Integer,String> processMap;
 
@@ -20,6 +21,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   private String hostName = "localhost";
   private int port = 4545;
   private SocketFactory socketFactory;
+  protected NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
 
   abstract void inputFetchedFromUser(String inputString);
 
