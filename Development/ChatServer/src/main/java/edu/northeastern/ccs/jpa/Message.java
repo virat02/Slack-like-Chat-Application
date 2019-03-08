@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.userGroup.IGroup;
+import edu.northeastern.ccs.im.userGroup.IUser;
+
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -22,6 +25,11 @@ public class Message {
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private int id;
+
+	/**
+	 * Expiration of the date
+	 */
+	private long expiration;
 	
 	/** The msg. */
 	private String msg;
@@ -32,11 +40,11 @@ public class Message {
 	
 	/** The sender. */
 	@ManyToOne
-	private User sender;
+	private IUser sender;
 	
 	/** The userGroup. */
 	@ManyToOne
-	private Group group;
+	private IGroup group;
 	
 	/**
 	 * Instantiates a new message.
@@ -104,7 +112,7 @@ public class Message {
 	 *
 	 * @return the sender
 	 */
-	public User getSender() {
+	public IUser getSender() {
 		return sender;
 	}
 
@@ -113,7 +121,7 @@ public class Message {
 	 *
 	 * @param sender the new sender
 	 */
-	public void setSender(User sender) {
+	public void setSender(IUser sender) {
 		this.sender = sender;
 	}
 
@@ -122,7 +130,7 @@ public class Message {
 	 *
 	 * @return the userGroup
 	 */
-	public Group getGroup() {
+	public IGroup getGroup() {
 		return group;
 	}
 
@@ -131,7 +139,7 @@ public class Message {
 	 *
 	 * @param group the new userGroup
 	 */
-	public void setGroup(Group group) {
+	public void setGroup(IGroup group) {
 		this.group = group;
 	}
 
@@ -155,5 +163,21 @@ public class Message {
 
 	/** The deleted. */
 	private boolean deleted = false;
+
+	/**
+	 * Gets the expiration time of a message
+	 * @return long representation of the date.
+	 */
+	public long getExpiration() {
+		return this.expiration;
+	}
+
+	/**
+	 * Sets the expiration.
+	 * @param date representation the expiration.
+	 */
+	public void setExpiration(Date date) {
+		this.expiration = date.getTime();
+	}
 	
 }

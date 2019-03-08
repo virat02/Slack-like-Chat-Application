@@ -9,33 +9,33 @@ import edu.northeastern.ccs.jpa.User;
 
 import java.util.List;
 
-public class UserController implements IController {
+public final class UserController implements IController {
     private UserService userService;
     private View view;
 
-
-    public void addIUserGroup(IUserGroup iUserGroup) {
-        IUser user;
+    public void addEntity(Object iUser) {
         try {
-            user = userService.addUser(iUserGroup);
+            userService.addUser(iUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Can't add User");
         }
-        //view.showUsers(user);
+        /* TODO: Make a show method
+         */
     }
 
-    @Override
-    public IUserGroup getIUserGroup(IUserGroup iUserGroup) {
-        return null;
+    public void updateEntity(Object user) {
+        userService.update(user);
     }
 
-    @Override
-    public void updateIUserGroup(IUserGroup iUserGroup) {
-
+    public void deleteEntity(Object entity) {
+        userService.delete(entity);
     }
 
-    @Override
-    public void deleteIUserGroup(IUserGroup iUserGroup) {
+    public void searchUser(String username) {
+        userService.search(username);
+    }
 
+    public void followUser(String username, IUser currentUser) {
+        userService.follow(username, currentUser);
     }
 }

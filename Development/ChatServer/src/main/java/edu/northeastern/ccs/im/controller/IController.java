@@ -6,15 +6,14 @@ import edu.northeastern.ccs.im.userGroup.IUserGroup;
 import java.util.List;
 
 
-public interface IController {
+public interface IController<T>{
 
+    void addEntity(T entity);
 
-    void addIUserGroup(IUserGroup iUserGroup);
+    void searchUser(String username);
 
-    IUserGroup getIUserGroup(IUserGroup iUserGroup);
+    void updateEntity(T entity);
 
-    void updateIUserGroup(IUserGroup iUserGroup);
-
-    void deleteIUserGroup(IUserGroup iUserGroup);
+    void deleteEntity(T entity);
 
 }

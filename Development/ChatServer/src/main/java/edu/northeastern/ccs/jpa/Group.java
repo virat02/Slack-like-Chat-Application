@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.jpa;
 
+import edu.northeastern.ccs.im.userGroup.IGroup;
 import edu.northeastern.ccs.im.userGroup.IUser;
 import edu.northeastern.ccs.im.userGroup.IUserGroup;
 
@@ -17,7 +18,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="groupcomposite")
-public class Group {
+public class Group implements IGroup {
 	
 	/** The id. */
 	@Id

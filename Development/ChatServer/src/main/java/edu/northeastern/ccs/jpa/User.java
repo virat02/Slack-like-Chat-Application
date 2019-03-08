@@ -32,12 +32,6 @@ public class User implements IUser {
     private List<IGroup> groups = new ArrayList<>();
 
     /**
-     * The list of people following this user.
-     */
-    @ManyToOne
-    private List<IUser> followers = new ArrayList<>();
-
-    /**
      * The list of people this user follows.
      */
     @OneToMany
@@ -144,24 +138,6 @@ public class User implements IUser {
     }
 
     /**
-     * Gets the followers.
-     *
-     * @return the followers
-     */
-    public List<IUser> getFollowers() {
-        return this.followers;
-    }
-
-    /**
-     * Sets the followers.
-     *
-     * @param followers the new profile
-     */
-    public void setFollowers(List<IUser> followers) {
-        this.followers = followers;
-    }
-
-    /**
      * Gets the following.
      *
      * @return the following
@@ -177,5 +153,13 @@ public class User implements IUser {
      */
     public void setFollowing(List<IUser> following) {
         this.following = following;
+    }
+
+    /**
+     * Adds a user to the list of people we are following.
+     * @param user the person we are following.
+     */
+    public void addFollowee(IUser user) {
+        this.following.add(user);
     }
 }
