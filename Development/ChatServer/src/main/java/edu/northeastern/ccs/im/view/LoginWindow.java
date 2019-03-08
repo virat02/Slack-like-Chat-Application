@@ -92,7 +92,7 @@ class LoginWindow extends AbstractTerminalWindow {
     try {
       JsonNode jsonNode = CommunicationUtils
               .getObjectMapper().readTree(networkResponse.payload().jsonString());
-      int userId = jsonNode.get("userId").asInt();
+      int userId = jsonNode.get("id").asInt();
       UserConstants.setUserId(userId);
       return userId;
     } catch (IOException e) {

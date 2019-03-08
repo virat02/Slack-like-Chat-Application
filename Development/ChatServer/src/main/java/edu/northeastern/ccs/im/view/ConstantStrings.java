@@ -37,7 +37,7 @@ public class ConstantStrings {
           + "Check your email address for more details.\n" + kFailureMenu;
   public static final String kRecoveryFailed = "Recovery failed. " + kFailureMenu;
 
-  public static final String chatMainCommand = "1 - Search user\n2 - Create Group \n 3 - Sign out\n";
+  public static final String chatMainCommand = "1 - Search user\n2 - Create Group \n3 - Sign out\n";
   public static final String searchUser = "Search user";
   public static final String createGroup = "Create group";
   public static final String signOut = "Sign out";
