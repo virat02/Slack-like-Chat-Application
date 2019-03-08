@@ -2,8 +2,11 @@ package edu.northeastern.ccs.im.view;
 
 public class ConstantStrings {
 
+  private ConstantStrings() {}
+
   public static final String kInvalidInputString = "Invalid Input";
   public static final String kConfirmExitMessage = "Confirm(Y/N)";
+  public static final String kFailureMenu = "1 - Retry\n0 - Go Back\n* - Exit";
 
   //Network Related
   public static final String kNetworkError = "Network Error";
@@ -25,17 +28,14 @@ public class ConstantStrings {
   public static final String kReEnterPasswordString = "Confirm Password: ";
   public static final String kPasswordsDoNotMatch = "Passwords do not match. Renter password";
   public static final String kSignUpSuccessful = "Sign Up Successful";
-  public static final String kSignUpFailed = "Sign Up Failed\\n\"\n"
-          + "1 - Retry\n"
-          + "0 - Go Back\n* - Exit";
+  public static final String kSignUpFailed = "Sign Up Failed\n" + kFailureMenu;
+
 
   //Forgot Password
   public static final String kRecoveryEmail = "Enter Recovery Email Address: ";
   public static final String kRecoveryInitiated = "Recovery initiated. "
-          + "Check your email address for more details.\n"
-          + "0 - Back\n* - Exit";
-
-  private ConstantStrings() {}
+          + "Check your email address for more details.\n" + kFailureMenu;
+  public static final String kRecoveryFailed = "Recovery failed. " + kFailureMenu;
 
   public static final String chatMainCommand = "1 - Search user\n2 - Create Group \n 3 - Sign out\n";
   public static final String searchUser = "Search user";

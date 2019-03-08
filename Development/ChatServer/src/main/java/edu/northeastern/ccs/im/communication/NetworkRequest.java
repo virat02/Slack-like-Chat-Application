@@ -10,6 +10,12 @@ public interface NetworkRequest {
     Payload payload();
 
     enum NetworkRequestType {
-        CREATE_USER;
+        CREATE_USER,
+        LOGIN_USER,
+        FORGOT_PASSWORD,
+        SEARCH_USER,
+        SEARCH_GROUP,
+        CREATE_GROUP,
+        SELECT_CHAT;
     }
 }

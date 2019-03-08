@@ -64,16 +64,16 @@ public class UserService {
         Message newMessage = new Message();
         newMessage.setMessage(messageText);
         newMessage.setDeleted(false);
-        newMessage.setSender(this.user);
+//        newMessage.setSender(this.user);
         Date timeStamp = new Date();
         timeStamp.setTime(timeStamp.getTime());
         newMessage.setTimestamp(timeStamp);
         newMessage.setId((int)timeStamp.getTime());
-        for(IGroup group: this.groups) {
-            if(group.getId() == iGroupId) {
-                newMessage.setGroup(group);
-            }
-        }
+//        for(IGroup group: this.groups) {
+//            if(group.getId() == iGroupId) {
+//                newMessage.setGroup(group);
+//            }
+//        }
         this.messages.add(newMessage);
 
     }
@@ -86,7 +86,7 @@ public class UserService {
     public void setExpiration(int messageId, Date date) {
         for(Message message: this.messages) {
             if(message.getId() == messageId) {
-                message.setExpiration(date);
+//                message.setExpiration(date);
             }
         }
     }
@@ -97,9 +97,9 @@ public class UserService {
      */
     public void deleteGroup(int groupId) {
         for (IGroup group : this.groups) {
-            if (group.getId() == groupId) {
-                this.groups.remove(group);
-            }
+//            if (group.getId() == groupId) {
+//                this.groups.remove(group);
+//            }
         }
     }
 
@@ -110,6 +110,6 @@ public class UserService {
     public void createIGroup(int iGroupId) {
         Group newGroup = new Group();
         newGroup.setId(iGroupId);
-        this.groups.add(newGroup);
+//        this.groups.add(newGroup);
     }
 }
