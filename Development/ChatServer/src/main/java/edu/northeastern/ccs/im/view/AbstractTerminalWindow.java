@@ -69,7 +69,13 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   protected void getInputFromUser() {
     String input = "";
     try {
-      while((input = ViewConstants.getInputStream().readLine()) != null){
+      while((input = ViewConstants.getInputStream().readLine()) != null) {
+        if (input.equals("exit")) {
+          System.exit(0);
+        }
+        else if (input.equals("/..")) {
+          goBack();
+        }
         inputFetchedFromUser(input);
       }
     } catch (IOException e) {
@@ -83,7 +89,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   }
 
   //EXIT APP METHODS
-  private void exitApp() {
+  public void exitApp() {
     System.exit(0);
   }
 
@@ -92,7 +98,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     ViewConstants.getOutputStream().println(ConstantStrings.kConfirmExitMessage);
     String input = "";
     try {
-      while (!input.equalsIgnoreCase("stop")) {
+      while((input = ViewConstants.getInputStream().readLine()) != null) {
         input = ViewConstants.getInputStream().readLine();
         if (input.toUpperCase().equals("Y")) {
           exitApp();
