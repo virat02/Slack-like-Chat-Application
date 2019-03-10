@@ -1,25 +1,20 @@
 package edu.northeastern.ccs.im.view;
 
-import edu.northeastern.ccs.im.communication.ClientConnection;
-import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
+import edu.northeastern.ccs.im.communication.*;
 
 import java.io.IOException;
 import java.util.Map;
 
-import edu.northeastern.ccs.im.communication.ClientConnectionImpl;
-import edu.northeastern.ccs.im.communication.NetworkRequest;
-import edu.northeastern.ccs.im.communication.NetworkResponse;
-import edu.northeastern.ccs.im.communication.SocketFactory;
-
 public abstract class AbstractTerminalWindow implements TerminalWindow {
 
+  protected ClientConnectionFactory clientConnectionFactory;
   private final TerminalWindow callerWindow;
   private int currentProcess;
   private final Map<Integer,String> processMap;
 
   private ClientConnection clientConnection;
-  private String hostName = "localhost";
-  private int port = 4545;
+  private static final String hostName = "localhost";
+  private static final int port = 4545;
   private SocketFactory socketFactory;
   protected NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
 
@@ -29,6 +24,11 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     this.callerWindow = callerWindow;
     this.currentProcess = 0;
     this.processMap = processMap;
+  }
+
+  protected AbstractTerminalWindow(TerminalWindow callerWindow, Map<Integer,String> processMap, ClientConnectionFactory clientConnectionFactory) {
+    this(callerWindow, processMap);
+    this.clientConnectionFactory = clientConnectionFactory;
   }
 
   public int getCurrentProcess() {
@@ -59,6 +59,16 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     printInConsoleForProcess(currentProcess + 1);
   }
 
+  protected void printInConsoleForNextProcess(String input) {
+    if (input.equals("QUIT")) {
+      exitApp();
+      return;
+    }
+
+
+    printInConsoleForProcess(currentProcess + 1);
+  }
+
   protected void printInConsoleForProcess(int process) {
     currentProcess = process;
     ViewConstants.getOutputStream().println(processMap.get(currentProcess));
@@ -71,12 +81,14 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     try {
       while((input = ViewConstants.getInputStream().readLine()) != null) {
         if (input.equals("exit")) {
-          System.exit(0);
+//          System.exit(0);
+          printMessageInConsole(ConstantStrings.THANK_YOU);
         }
         else if (input.equals("/..")) {
           goBack();
         }
-        inputFetchedFromUser(input);
+        else
+          inputFetchedFromUser(input);
       }
     } catch (IOException e) {
       getInputFromUser();
@@ -89,8 +101,8 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   }
 
   //EXIT APP METHODS
-  public void exitApp() {
-    System.exit(0);
+  private void exitApp() {
+    printMessageInConsole(ConstantStrings.THANK_YOU);
   }
 
   @Override
@@ -118,11 +130,8 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   }
 
   private void createNetworkConnection() throws IOException {
-    if (socketFactory == null) {
-      socketFactory = new SocketFactory();
-    }
     if (clientConnection == null) {
-      clientConnection = new ClientConnectionImpl(hostName, port, socketFactory);
+      clientConnection = clientConnectionFactory.createClientConnection(hostName, port);
     }
     clientConnection.connect();
   }

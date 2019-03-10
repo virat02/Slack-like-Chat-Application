@@ -31,17 +31,11 @@ public class RequestHandler {
     public void handleRequest(SocketChannel socketChannel) {
         executor.execute(() -> {
             NetworkRequest networkRequest = parseNetworkRequest(socketChannel);
-            try {
-                System.out.println(networkRequest.payload().jsonString());
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
             if (networkRequest != null) {
-                NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest);
+                NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, socketChannel);
                 byte[] networkResponseByteEncoded = getNetworkResponseAsBytes(networkResponse);
                 try {
                     socketChannel.write(ByteBuffer.wrap(networkResponseByteEncoded));
-//                    socketChannel.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

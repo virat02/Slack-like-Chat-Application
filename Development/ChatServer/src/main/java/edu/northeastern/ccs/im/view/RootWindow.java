@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.view;
 
+import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
+
 import java.util.HashMap;
 
 class RootWindow extends AbstractTerminalWindow {
@@ -9,7 +11,7 @@ class RootWindow extends AbstractTerminalWindow {
 
   public TerminalWindow getLoginWindow(){
     if (loginWindow == null) {
-      loginWindow = new LoginWindow(this);
+      loginWindow = new LoginWindow(this, clientConnectionFactory);
     }
     return loginWindow;
   }
@@ -21,10 +23,10 @@ class RootWindow extends AbstractTerminalWindow {
     return signUpWindow;
   }
 
-  RootWindow(TerminalWindow caller) {
+  RootWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.kInitialLaunch);
-    }});
+    }}, clientConnectionFactory);
   }
 
   @Override

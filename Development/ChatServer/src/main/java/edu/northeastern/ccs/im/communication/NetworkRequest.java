@@ -16,6 +16,8 @@ public interface NetworkRequest {
         SEARCH_USER,
         SEARCH_GROUP,
         CREATE_GROUP,
-        SELECT_CHAT;
+        SELECT_CHAT,
+        JOIN_GROUP,
+        SEND_MESSAGE,
     }
 }

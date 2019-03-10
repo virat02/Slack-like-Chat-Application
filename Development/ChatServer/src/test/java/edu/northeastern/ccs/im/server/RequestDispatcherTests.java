@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.nio.channels.SocketChannel;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -23,6 +24,7 @@ public class RequestDispatcherTests {
     private NetworkRequest networkRequest;
     private Payload payload;
     private IController userController;
+    private SocketChannel mockSocketChannel;
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
 
     @Before
@@ -30,6 +32,7 @@ public class RequestDispatcherTests {
         networkRequest = mock(NetworkRequest.class);
         payload = mock(Payload.class);
         userController = mock(UserController.class);
+        mockSocketChannel = mock(SocketChannel.class);
         when(networkRequest.payload()).thenReturn(payload);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.CREATE_USER);
         when(payload.jsonString()).thenReturn("{\"id\":0,\"name\":\"tarun\",\"email\":\"tarungmailcom\",\"messages\":[],\"groups\":[],\"profile\":null}");
@@ -39,7 +42,7 @@ public class RequestDispatcherTests {
     public void whenHandleNetworkRequestIfOperationSucceedResponseSuccessful() {
         RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         requestDispatcher.setUserController(userController);
-        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createSuccessfulResponse().status());
     }
 
@@ -48,7 +51,7 @@ public class RequestDispatcherTests {
         RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         requestDispatcher.setUserController(userController);
         doThrow(IOException.class).when(userController).addIUserGroup(any());
-        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
     }
 }
