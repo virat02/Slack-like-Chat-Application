@@ -1,4 +1,4 @@
-package edu.northeastern.ccs.jpa;
+package edu.northeastern.ccs.im.userGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements IUser {
 
     /** The id. */
     @Id
@@ -23,7 +23,13 @@ public class User {
 
     /** The groups. */
     @OneToMany(targetEntity = Group.class)
-    private List<Group> groups = new ArrayList<>();
+    private List<IGroup> groups = new ArrayList<>();
+
+    /**
+     * The list of people this user follows.
+     */
+    @OneToMany
+    private List<IUser> following = new ArrayList<>();
 
     /** The profile. */
     private Profile profile;
@@ -76,7 +82,7 @@ public class User {
      *
      * @return the groups
      */
-    public List<Group> getGroups() {
+    public List<IGroup> getGroups() {
         return groups;
     }
 
@@ -85,7 +91,7 @@ public class User {
      *
      * @param groups the new groups
      */
-    public void setGroups(List<Group> groups) {
+    public void setGroups(List<IGroup> groups) {
         this.groups = groups;
     }
 
@@ -99,11 +105,11 @@ public class User {
     }
 
     /**
-     * Adds the group.
+     * Adds the userGroup.
      *
-     * @param group the group
+     * @param group the userGroup
      */
-    public void addGroup(Group group) {
+    public void addGroup(IGroup group) {
         this.groups.add(group);
     }
 
@@ -125,4 +131,34 @@ public class User {
         this.profile = profile;
     }
 
+    /**
+     * Gets the following.
+     *
+     * @return the following
+     */
+    public List<IUser> getFollowing() {
+        return this.following;
+    }
+
+    /**
+     * Sets the following.
+     *
+     * @param following the new profile
+     */
+    public void setFollowing(List<IUser> following) {
+        this.following = following;
+    }
+
+    /**
+     * Adds a user to the list of people we are following.
+     * @param user the person we are following.
+     */
+    public void addFollowee(IUser user) {
+        if (user != null) {
+            this.following.add(user);
+        }
+        else {
+            throw new NullPointerException("Cannot add a non-existing user");
+        }
+    }
 }
