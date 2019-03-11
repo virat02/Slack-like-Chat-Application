@@ -2,10 +2,7 @@ package edu.northeastern.ccs.im.service.JPAService;
 
 import edu.northeastern.ccs.im.userGroup.Profile;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 
 public class ProfileJPAService {
 
@@ -50,6 +47,13 @@ public class ProfileJPAService {
         thisProfile.setUsername(p.getUsername());
 
         endTransaction(entityManager);
+    }
+
+    public Profile getProfile(int id) {
+        String queryString = "SELECT p" + "FROM profile p WHERE p.id =" + id;
+        EntityManager entityManager = beginTransaction();
+        Query query = entityManager.createQuery(queryString);
+        return (Profile) query.getSingleResult();
     }
 
 }

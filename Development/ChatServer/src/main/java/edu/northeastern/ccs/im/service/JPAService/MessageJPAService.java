@@ -2,10 +2,7 @@ package edu.northeastern.ccs.im.service.JPAService;
 
 import edu.northeastern.ccs.im.userGroup.Message;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 
 public class MessageJPAService {
 
@@ -50,5 +47,12 @@ public class MessageJPAService {
         thisMessage.setExpiration(message.getExpiration());
 
         endTransaction(entityManager);
+    }
+
+    public Message getMessage(int id) {
+        String queryString = "SELECT m" + "FROM message m WHERE m.id =" + id;
+        EntityManager entityManager = beginTransaction();
+        Query query = entityManager.createQuery(queryString);
+        return (Message) query.getSingleResult();
     }
 }

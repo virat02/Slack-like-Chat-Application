@@ -2,12 +2,7 @@ package edu.northeastern.ccs.im.service.JPAService;
 
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.IGroup;
@@ -37,6 +32,12 @@ public class GroupJPAService{
 	public void updateGroup(IGroup currentGroup) {
 		EntityManager entitymanager = beginTransaction();
 		Group group = entitymanager.find(Group.class, currentGroup.getId());
+
+		if (group == null) {
+			throw new EntityNotFoundException("Can't find Group for ID "
+					+ currentGroup.getId());
+		}
+
 		group.setName(currentGroup.getName());
 		group.setCreatedOn(currentGroup.getCreatedOn());
 		//add other attributes too;will this work??

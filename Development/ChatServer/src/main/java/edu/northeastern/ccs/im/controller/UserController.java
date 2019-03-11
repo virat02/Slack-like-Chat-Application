@@ -8,9 +8,9 @@ public final class UserController implements IController {
     private UserService userService;
     private View view;
 
-    public void addEntity(Object iUser) {
+    public IUser addEntity(Object iUser) {
         try {
-            userService.addUser(iUser);
+            return userService.addUser(iUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Can't add User");
         }
@@ -18,12 +18,12 @@ public final class UserController implements IController {
          */
     }
 
-    public void updateEntity(Object user) {
-        userService.update(user);
+    public IUser updateEntity(Object user) {
+        return userService.update(user);
     }
 
-    public void deleteEntity(Object entity) {
-        userService.delete(entity);
+    public IUser deleteEntity(Object entity) {
+        return userService.delete(entity);
     }
 
     public IUser searchEntity(String username) {

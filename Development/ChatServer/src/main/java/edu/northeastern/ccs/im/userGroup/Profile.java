@@ -127,6 +127,7 @@ public class Profile {
      * @param password the new password
      */
     public void setPassword(String password) {
+
         this.password = password;
     }
     /**

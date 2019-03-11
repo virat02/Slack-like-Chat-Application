@@ -9,9 +9,9 @@ public class GroupController implements IController<IGroup>{
 	private GroupService groupService;
 
 	@Override
-	public void addEntity(IGroup group) {
+	public IGroup addEntity(IGroup group) {
 		try {
-			 groupService.create(group);
+			 return groupService.create(group);
 		}
 		catch(IllegalArgumentException e) {
 			throw new IllegalArgumentException("Cannot create a new group");
@@ -25,14 +25,14 @@ public class GroupController implements IController<IGroup>{
 	}
 
 	@Override
-	public void updateEntity(IGroup group) {
-		groupService.update(group);
+	public IGroup updateEntity(IGroup group) {
+		return groupService.update(group);
 		
 	}
 
 	@Override
-	public void deleteEntity(IGroup group) {
-		groupService.delete(group);
+	public IGroup deleteEntity(IGroup group) {
+		return groupService.delete(group);
 		
 	}
 	

@@ -123,7 +123,6 @@ public class ProfileTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateProfile() {
-        Profile p2Actual;
         ProfileService service = new ProfileService(p2);
         service.updateProfile(VIRAT, "virat.p1@gmail.com", P1_PASSWORD, "profileVirat01", "http://p1-virat.com", false);
 

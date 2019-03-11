@@ -3,15 +3,16 @@ package edu.northeastern.ccs.im.service;
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
-public final class UserService {
+public final class UserService implements IService {
     private UserJPAService userJPAService;
     private UserService() {
         userJPAService = new UserJPAService();
     }
 
 
-    public void addUser(Object user) {
+    public IUser addUser(Object user) {
         userJPAService.createUser((IUser)user);
+        return userJPAService.getUser(((IUser) user).getId());
     }
 
     /**
@@ -32,11 +33,13 @@ public final class UserService {
         currentUser.addFollowee(search(username));
     }
 
-    public void update(Object user) {
+    public IUser update(Object user) {
         userJPAService.updateUser((IUser) user);
+        return userJPAService.getUser(((IUser) user).getId());
     }
 
-    public void delete(Object user) {
+    public IUser delete(Object user) {
         userJPAService.deleteUser((IUser) user);
+        return userJPAService.getUser(((IUser) user).getId());
     }
 }

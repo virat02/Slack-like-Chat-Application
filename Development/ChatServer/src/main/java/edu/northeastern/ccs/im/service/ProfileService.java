@@ -81,20 +81,35 @@ public class ProfileService {
     /**
      * Creates a profile if the respective inputs are valid
      */
-    public Profile createProfile(String username, String email, String password, String imageUrl, boolean access) {
-        if (isValidUsername(username)
-                    && isValidEmail(email)
-                    && isValidPassword(password)
-                    && isValidImageURL(imageUrl)) {
+//    public Profile createProfile(String username, String email, String password, String imageUrl, boolean access) {
+//        if (isValidUsername(username)
+//                    && isValidEmail(email)
+//                    && isValidPassword(password)
+//                    && isValidImageURL(imageUrl)) {
+//
+//                Profile pf = new Profile(p.getId(), username, email, password, imageUrl, access);
+//                //profileJPAService.createProfile(pf);
+//                return pf;
+//            }
+//            else {
+//                throw new IllegalArgumentException();
+//            }
+//        }
 
-                Profile pf = new Profile(p.getId(), username, email, password, imageUrl, access);
-                //profileJPAService.createProfile(pf);
-                return pf;
-            }
-            else {
-                throw new IllegalArgumentException();
-            }
-        }
+    public Profile createProfile(Profile pf) {
+        profileJPAService.createProfile(pf);
+        return profileJPAService.getProfile(pf.getId());
+
+    }
+
+    /**
+     * Get the profile
+     * @param id
+     * @return
+     */
+    public Profile get(int id) {
+        return profileJPAService.getProfile(id);
+    }
 
     /**
      * Updates an existing profile username if the respective input is valid
@@ -154,32 +169,42 @@ public class ProfileService {
     /**
      * Updates an existing profile if the respective inputs are valid
      */
-    public void updateProfile(String username, String email, String oldPassword, String newPassword, String imageUrl, boolean access) {
-        if (updateUsername(username)
-                && updateEmail(email)
-                && updatePassword(oldPassword, newPassword)
-                && updateImageURL(imageUrl)) {
+//    public void updateProfile(String username, String email, String oldPassword, String newPassword, String imageUrl, boolean access) {
+//        if (updateUsername(username)
+//                && updateEmail(email)
+//                && updatePassword(oldPassword, newPassword)
+//                && updateImageURL(imageUrl)) {
+//
+//            p.setProfileAccess(access);
+//
+//            //profileJPAService.updateProfile(p);
+//        }
+//        else {
+//            throw new IllegalArgumentException("Invalid input, cannot update profile!");
+//        }
+//    }
 
-            p.setProfileAccess(access);
-
-            //profileJPAService.updateProfile(p);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid input, cannot update profile!");
-        }
+    public Profile updateProfile(Profile pf) {
+        profileJPAService.updateProfile(pf);
+        return profileJPAService.getProfile(pf.getId());
     }
 
     /**
      * Deletes a profile
      */
-    public void deleteProfile() {
-        //set id to null??
-        p.setUsername(null);
-        p.setEmail(null);
-        p.setPassword(null);
-        p.setImageUrl(null);
-        p.setProfileAccess(false);
+//    public void deleteProfile() {
+//        //set id to null??
+//        p.setUsername(null);
+//        p.setEmail(null);
+//        p.setPassword(null);
+//        p.setImageUrl(null);
+//        p.setProfileAccess(false);
+//
+//        //profileJPAService.deleteProfile(p);
+//    }
 
-        //profileJPAService.deleteProfile(p);
+    public Profile deleteProfile(Profile pf) {
+        profileJPAService.deleteProfile(pf);
+        return profileJPAService.getProfile(pf.getId());
     }
 }
