@@ -10,7 +10,7 @@ public interface IController<T>{
 
     void addEntity(T entity);
 
-    void searchUser(String username);
+    IUser searchUser(String username);
 
     void updateEntity(T entity);
 

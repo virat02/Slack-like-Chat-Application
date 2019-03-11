@@ -7,13 +7,13 @@ import edu.northeastern.ccs.jpa.User;
 import java.util.List;
 
 public class View {
-    private UserController userController;
-
-    public void addUser(User user) {
-        userController.addIUserGroup(user);
-    }
-
-    public void showUsers(List<IUserGroup> iUserGroupList) {
-
-    }
+//    private UserController userController;
+//
+//    public void addUser(User user) {
+//        userController.addIUserGroup(user);
+//    }
+//
+//    public void showUsers(List<IUserGroup> iUserGroupList) {
+//
+//    }
 }

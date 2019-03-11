@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.userGroup;
 
-import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * The Class Message.
@@ -29,28 +28,39 @@ public class Message {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    /** The sender. */
-    @ManyToOne
-    private IUserGroup receiver;
-
-    /** The userGroup. */
-    @ManyToOne
-    private IUserGroup group;
+    /** The message expiration time in seconds. */
+    private int expiration;
 
     /** The sender. */
     private IUserGroup sender;
 
+    /** The receiver. */
+    @ManyToOne
+    private IGroup receiver;
+
     /**
      * Instantiates a new message.
      */
-    public Message(int id, String message, Date timestamp, IUserGroup sender, IUserGroup receiver, boolean deleted) {
+    public Message(int id, String message, Date timestamp, int expiration, IUserGroup sender, IGroup receiver, boolean deleted) {
         super();
         this.id = id;
         this.msg = message;
         this.timestamp = timestamp;
+        this.expiration = expiration;
         this.sender = sender;
         this.receiver = receiver;
         this.deleted = deleted;
+    }
+
+    /**
+     * Instantiates a new message.
+     */
+    public Message(int id, String message, Date timestamp, int expiration) {
+        super();
+        this.id = id;
+        this.msg = message;
+        this.timestamp = timestamp;
+        this.expiration = expiration;
     }
 
     /**
@@ -93,7 +103,9 @@ public class Message {
      * @param message the new message
      */
     public void setMessage(String message) {
-        msg = message;
+        if (message.length() != 0) {
+            this.msg = message;
+        }
     }
 
     /**
@@ -103,6 +115,26 @@ public class Message {
      */
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    /**
+     * Sets the expiration.
+     *
+     * @param expiration the new expiration
+     */
+    public void setExpiration(int expiration) {
+        if (expiration != 0) {
+            this.expiration = expiration;
+        }
+    }
+
+    /**
+     * Gets the expiration.
+     *
+     * @return the expiration
+     */
+    public int getExpiration() {
+        return expiration;
     }
 
     /**
@@ -124,12 +156,14 @@ public class Message {
     }
 
     /**
-     * Sets the receiver.
+     * Sets the sender.
      *
-     * @param receiver the new sender
+     * @param sender the new sender
      */
-    public void setReceiver(IUserGroup receiver) {
-        this.sender = receiver;
+    public void setSender(IUserGroup sender) {
+        if (sender != null) {
+            this.sender = sender;
+        }
     }
 
     /**
@@ -137,35 +171,19 @@ public class Message {
      *
      * @return the receiver
      */
-    public IUserGroup getReceiver() {
+    public IGroup getReceiver() {
         return receiver;
     }
 
     /**
-     * Sets the sender.
+     * Sets the receiver.
      *
-     * @param sender the new sender
+     * @param receiver the new receiver
      */
-    public void setSender(IUserGroup sender) {
-        this.sender = sender;
-    }
-
-    /**
-     * Gets the userGroup.
-     *
-     * @return the userGroup
-     */
-    public IUserGroup getGroup() {
-        return group;
-    }
-
-    /**
-     * Sets the userGroup.
-     *
-     * @param group the new userGroup
-     */
-    public void setGroup(IUserGroup group) {
-        this.group = group;
+    public void setReceiver(IGroup receiver) {
+        if (receiver != null) {
+            this.receiver = receiver;
+        }
     }
 
     /**
@@ -190,37 +208,11 @@ public class Message {
     private boolean deleted = false;
 
     /**
-     * Create a message object
-     * @param message
-     * @param timestamp
+     * toString method for a Message
      */
-    public Message createMessage(String message, Date timestamp) {
-        setMessage(message);
-        setTimestamp(timestamp);
-
-        return new Message(id, msg, timestamp, sender, receiver, deleted);
-    }
-
-    /**
-     * Updates the message
-     * @param message
-     * @param timestamp
-     */
-    public void updateMessage(String message, Date timestamp) {
-        if(message != null) {
-            setMessage(message);
-        }
-
-        if(timestamp != null) {
-            setTimestamp(timestamp);
-        }
-    }
-
-    /**
-     * Deletes a message
-     */
-    public void deleteMessage() {
-        this.deleted = true;
+    @Override
+    public String toString() {
+        return "Id: "+getId()+"\nMessage: "+getMessage() + "\nMessage Timestamp: "+getTimestamp()+"\nExpiry time: "+getExpiration()+"\nSender: "+getSender()+"\nReceiver: "+getReceiver()+"\nMessage deleted? : "+isDeleted();
     }
 
 }
