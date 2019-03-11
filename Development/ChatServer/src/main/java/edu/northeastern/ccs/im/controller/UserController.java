@@ -26,7 +26,7 @@ public final class UserController implements IController {
         userService.delete(entity);
     }
 
-    public IUser searchUser(String username) {
+    public IUser searchEntity(String username) {
         return userService.search(username);
     }
 

@@ -1,13 +1,20 @@
 package edu.northeastern.ccs.im.userGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.userGroup.IGroup;
+import edu.northeastern.ccs.im.userGroup.IUser;
+import edu.northeastern.ccs.im.userGroup.User;
 
 /**
  * The Class Group.
@@ -27,10 +34,27 @@ public class Group implements IGroup {
     /** The users. */
     @OneToMany(targetEntity=User.class)
     private List<IUserGroup> users = new ArrayList<>();
+    
+	@OneToMany(targetEntity=User.class)
+	private List<IUser> moderators= new ArrayList<>();
 
     /** The msgs. */
     @OneToMany(targetEntity=Message.class)
     private List<Message> msgs = new ArrayList<>();
+    
+	/** The groups. */
+	@OneToMany(targetEntity=Group.class)
+	private List<IGroup> groups = new ArrayList<>();
+    
+	@OneToMany(targetEntity=User.class)
+	private List<IUser> followers = new ArrayList<>();
+	
+	@ManyToOne(targetEntity=User.class)
+	private List<IUser> followees = new ArrayList<>();
+	
+	private String groupCode;
+	
+	private Date createdOn;
 
     /**
      * Instantiates a new userGroup.
@@ -132,6 +156,74 @@ public class Group implements IGroup {
     public void setMsgs(List<Message> msgs) {
         this.msgs = msgs;
     }
+    
+    public List<IGroup> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<IGroup> groups) {
+		this.groups = groups;
+	}
+
+	public void addGroup(IGroup group) {
+		this.groups.add(group);
+	}
+
+	public List<IUser> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(List<IUser> followers) {
+		this.followers = followers;
+	}
+
+	public void addFollower(IUser follower) {
+		this.followers.add(follower);
+	}
+
+	public List<IUser> getModerators() {
+		return moderators;
+	}
+
+	public void setModerators(List<IUser> moderators) {
+		this.moderators = moderators;
+	}
+
+	public void addModerator(User moderator) {
+		if(moderator instanceof IUser) {
+			this.addModerator(moderator);
+		}
+	}
+	
+	public String getGroupCode() {
+		return groupCode;
+	}
+
+	public void setGroupCode(String groupCode) {
+		this.groupCode = groupCode;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+	
+	public List<IUser> getFollowees() {
+		return followees;
+	}
+
+	public void setFollowees(List<IUser> followees) {
+		this.followees = followees;
+	}
+	
+	public void addFollowee(IUser followee) {
+		this.followees.add(followee);
+	}
+
+	
 
 
 

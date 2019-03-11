@@ -37,7 +37,8 @@ public class MessageController implements IController{
 
     }
 
-    public IUser searchUser(String username) {
+    public IUser searchEntity(String username) {
         return userService.search(username);
     }
+
 }
