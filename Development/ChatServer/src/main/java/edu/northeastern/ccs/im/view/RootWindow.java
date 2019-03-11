@@ -18,32 +18,27 @@ class RootWindow extends AbstractTerminalWindow {
 
   public TerminalWindow getSignUpWindow(){
     if (signUpWindow == null) {
-      signUpWindow = new SignUpWindow(this);
+      signUpWindow = new SignUpWindow(this, clientConnectionFactory);
     }
     return signUpWindow;
   }
 
   RootWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.kInitialLaunch);
+      put(0, ConstantStrings.INITIAL_LAUNCH);
     }}, clientConnectionFactory);
   }
 
   @Override
   void inputFetchedFromUser(String inputString) {
-    if (inputString.length() == 1) {
-      if (inputString.equals("1")) {
-        getLoginWindow().runWindow();
-      }
-      else if (inputString.equals("2")) {
-        getSignUpWindow().runWindow();
-      }
-      else if (inputString.equals("*")) {
-        exitWindow();
-      }
-      else {
-        invalidInputPassed();
-      }
+    if (inputString.equals("1")) {
+      getLoginWindow().runWindow();
+    }
+    else if (inputString.equals("2")) {
+      getSignUpWindow().runWindow();
+    }
+    else if (inputString.equals("*")) {
+      exitWindow();
     }
     else {
       invalidInputPassed();

@@ -96,7 +96,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   }
 
   protected void invalidInputPassed() {
-    ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
+    ViewConstants.getOutputStream().println(ConstantStrings.INVALID_INPUT_STRING);
     printInConsoleForCurrentProcess();
   }
 
@@ -107,11 +107,10 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   @Override
   public void exitWindow() {
-    ViewConstants.getOutputStream().println(ConstantStrings.kConfirmExitMessage);
+    ViewConstants.getOutputStream().println(ConstantStrings.CONFIRM_EXIT_MESSAGE);
     String input = "";
     try {
       while((input = ViewConstants.getInputStream().readLine()) != null) {
-        input = ViewConstants.getInputStream().readLine();
         if (input.toUpperCase().equals("Y")) {
           exitApp();
         }
@@ -119,12 +118,12 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
           runWindow();
         }
         else {
-          ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
+          ViewConstants.getOutputStream().println(ConstantStrings.INVALID_INPUT_STRING);
           exitWindow();
         }
       }
     } catch (IOException e) {
-      ViewConstants.getOutputStream().println(ConstantStrings.kInvalidInputString);
+      ViewConstants.getOutputStream().println(ConstantStrings.INVALID_INPUT_STRING);
       exitWindow();
     }
   }

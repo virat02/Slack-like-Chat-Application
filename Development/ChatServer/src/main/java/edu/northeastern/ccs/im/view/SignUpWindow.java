@@ -14,13 +14,15 @@ public class SignUpWindow extends AbstractTerminalWindow {
   private String emailAddress;
   private TerminalWindow chatTerminalWindow;
 
-  SignUpWindow(TerminalWindow caller) {
+  SignUpWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.kEmailAddressString);
-      put(1, ConstantStrings.kUserNameString);
-      put(2, ConstantStrings.kPasswordString);
-      put(3, ConstantStrings.kReEnterPasswordString);
+      put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
+      put(1, ConstantStrings.USER_NAME_STRING);
+      put(2, ConstantStrings.PASSWORD_STRING);
+      put(3, ConstantStrings.RE_ENTER_PASSWORD_STRING);
+      put(4, ConstantStrings.SIGN_UP_FAILED);
     }});
+    this.clientConnectionFactory = clientConnectionFactory;
   }
 
   public TerminalWindow getChatTerminalWindow(int userId) {
@@ -43,23 +45,25 @@ public class SignUpWindow extends AbstractTerminalWindow {
       printInConsoleForNextProcess();
     } else if (getCurrentProcess() == 3) {
       if (!inputString.equals(passwordString)) {
-        printMessageInConsole(ConstantStrings.kPasswordsDoNotMatch);
+        printMessageInConsole(ConstantStrings.PASSWORDS_DO_NOT_MATCH);
         printInConsoleForProcess(2);
       } else {
         int id = createUserAndFetchId();
-        getChatTerminalWindow(id).runWindow();
+        if (id == -1) {
+          printInConsoleForProcess(4);
+        }
+        else {
+          printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
+          getChatTerminalWindow(id).runWindow();
+        }
       }
     } else {
-      if (inputString.length() == 1) {
-        if (inputString.equals("1")) {
-          printInConsoleForProcess(0);
-        } else if (inputString.equals("0")) {
-          goBack();
-        } else if (inputString.equals("*")) {
-          exitWindow();
-        } else {
-          invalidInputPassed();
-        }
+      if (inputString.equals("1")) {
+        printInConsoleForProcess(0);
+      } else if (inputString.equals("0")) {
+        goBack();
+      } else if (inputString.equals("*")) {
+        exitWindow();
       } else {
         invalidInputPassed();
       }
@@ -74,14 +78,16 @@ public class SignUpWindow extends AbstractTerminalWindow {
       return getUserId(networkResponse);
     } catch (IOException exception) {
       exception.printStackTrace();
-      printMessageInConsole(ConstantStrings.kNetworkError);
+      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       printMessageInConsole(exception.getMessage());
     }
-
     return 0;
   }
 
   private int getUserId(NetworkResponse networkResponse) {
+    if (!emailAddress.contains("@")) {
+      return -1;
+    }
     try {
       JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkResponse.payload().jsonString());
       int userId = jsonNode.get("id").asInt();
@@ -89,8 +95,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
       return userId;
     } catch (IOException e) {
       e.printStackTrace();
+      return -1;
     }
-
-    return -1;
   }
 }

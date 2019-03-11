@@ -8,41 +8,61 @@ public class ConstantStrings {
     private ConstantStrings() {
     }
 
-    public static final String kInvalidInputString = "Invalid Input";
-    public static final String kConfirmExitMessage = "Confirm(Y/N)";
-    public static final String kFailureMenu = "1 - Retry\n0 - Go Back\n* - Exit";
+    public static final String INVALID_INPUT_STRING = "Invalid Input";
+    public static final String CONFIRM_EXIT_MESSAGE = "Confirm(Y/N)";
+    public static final String DEFAULT_MENU = "0 - Go Back\n* - Exit";
+    public static final String FAILURE_MENU = "1 - Retry\n" + DEFAULT_MENU;
 
     //Network Related
-    public static final String kNetworkError = "Network Error";
+    public static final String NETWORK_ERROR = "Network Error";
 
     //App Launch Strings
-    public static final String kInitialLaunch = "1 - Login\n2 - Sign Up\n* - QUIT";
+    public static final String INITIAL_LAUNCH = "1 - Login\n2 - Sign Up\n* - QUIT";
 
     //Login View Strings
-    public static final String kEmailAddressString = "Enter Email Address: ";
-    public static final String kPasswordString = "Enter Password: ";
-    public static final String kLoginSuccessful = "Login Successful";
-    public static final String kLoginFailed = "Invalid Username/password\n"
-            + "1 - Retry\n"
-            + "2 - Forgot Password\n"
-            + "0 - Go Back\n* - Exit";
+    public static final String EMAIL_ADDRESS_STRING = "Enter Email Address: ";
+    public static final String PASSWORD_STRING = "Enter Password: ";
+    public static final String LOGIN_SUCCESSFUL = "Login Successful";
+    public static final String LOGIN_FAILED = "Invalid Username/password\n"
+            + "1 - Retry\n" + "2 - Forgot Password\n" + DEFAULT_MENU;
 
     //Sign Up Strings
-    public static final String kUserNameString = "Enter Username: ";
-    public static final String kReEnterPasswordString = "Confirm Password: ";
-    public static final String kPasswordsDoNotMatch = "Passwords do not match. Renter password";
-    public static final String kSignUpSuccessful = "Sign Up Successful";
-    public static final String kSignUpFailed = "Sign Up Failed\n" + kFailureMenu;
+    public static final String USER_NAME_STRING = "Enter Username: ";
+    public static final String RE_ENTER_PASSWORD_STRING = "Confirm Password: ";
+    public static final String PASSWORDS_DO_NOT_MATCH = "Passwords do not match. Renter password";
+    public static final String SIGN_UP_SUCCESSFUL = "Sign Up Successful";
+    public static final String SIGN_UP_FAILED = "Sign Up Failed\n" + FAILURE_MENU;
 
 
     //Forgot Password
-    public static final String kRecoveryEmail = "Enter Recovery Email Address: ";
-    public static final String kRecoveryInitiated = "Recovery initiated. "
-            + "Check your email address for more details.\n" + kFailureMenu;
-    public static final String kRecoveryFailed = "Recovery failed. " + kFailureMenu;
+    public static final String RECOVERY_EMAIL = "Enter Recovery Email Address: ";
+    public static final String RECOVERY_INITIATED = "Recovery initiated. "
+            + "Check your email address for more details.\n" + FAILURE_MENU;
+    public static final String RECOVERY_FAILED = "Recovery failed.\n" + FAILURE_MENU;
 
-    public static final String chatMainCommand = "1 - Search user\n2 - Create Group \n3 - Sign out\n";
-    public static final String searchUser = "Search user";
-    public static final String createGroup = "Create group";
-    public static final String signOut = "Sign out";
+    public static final String CHAT_MAIN_COMMAND = "1 - Search User/Group\n"
+            + "2 - Create Group\n"
+            + "3 - Delete Group\n"
+            + "4 - Update Profile\n"
+            + "5 - Sign out\n"
+            + "* - Exit";
+    public static final String SEARCH_USER = "Search user";
+    public static final String SIGN_OUT = "Sign out";
+
+    //Update Profile
+    public static final String UPDATE_PROFILE = "1 - Update User Name\n2 - Update Status\n" + DEFAULT_MENU;
+    public static final String UPDATE_PROFILE_USERNAME = "Enter new user name: ";
+    public static final String UPDATE_PROFILE_STATUS = "Enter new status: ";
+    public static final String UPDATE_PROFILE_SUCCESS = "Profile updated successfully";
+    public static final String UPDATE_PROFILE_FAILED = "Profile update failed";
+
+    //Create Group
+    public static final String CREATE_GROUP = "Enter Group Name: ";
+    public static final String CREATE_GROUP_SUCCESS = "Group created successfully" + DEFAULT_MENU;
+    public static final String CREATE_GROUP_FAILED = "Group creation failed" + FAILURE_MENU;
+
+    //Delete Group
+    public static final String DELETE_GROUP = "Enter Group Name To Delete: ";
+    public static final String DELETE_GROUP_SUCCESS = "Group deleted successfully" + DEFAULT_MENU;
+    public static final String DELETE_GROUP_FAILED = "Group deletion failed" + FAILURE_MENU;
 }

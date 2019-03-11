@@ -17,9 +17,9 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
 
   ForgotPasswordWindow(TerminalWindow caller) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.kRecoveryEmail);
-      put(1, ConstantStrings.kRecoveryInitiated);
-      put(2, ConstantStrings.kRecoveryFailed);
+      put(0, ConstantStrings.RECOVERY_EMAIL);
+      put(1, ConstantStrings.RECOVERY_INITIATED);
+      put(2, ConstantStrings.RECOVERY_FAILED);
     }});
     kRecoveryEmailProcess = 0;
     kRecoveryInitiatedProcess = 1;
@@ -33,7 +33,7 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
         printInConsoleForNextProcess();
       }
       else {
-        printInConsoleForNextProcess();
+        printInConsoleForProcess(2);
       }
     }
     else {
@@ -43,7 +43,7 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
       else if (inputString.equals("*")) {
         exitWindow();
       }
-      else if ((getCurrentProcess() == kRecoveryFailedProcess) && (inputString.equals("1"))) {
+      else if (inputString.equals("1")) {
         printInConsoleForProcess(0);
       }
       else {
@@ -53,28 +53,11 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
   }
 
   private boolean initiateRecovery(String recoveryAddress) {
-    try {
-      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createForgotPasswordRequest(recoveryAddress));
-
-      return getRecoverySentState(networkResponse);
-    } catch (IOException exception) {
-      exception.printStackTrace();
-      printMessageInConsole(ConstantStrings.kNetworkError);
-      printMessageInConsole(exception.getMessage());
+    if (!recoveryAddress.contains("@")) {
+      return false;
     }
-    return false;
-  }
-
-  private boolean getRecoverySentState(NetworkResponse networkResponse) {
-    try {
-      JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkResponse.payload().jsonString());
-      boolean isRecoveryMailSent = jsonNode.get("success").asBoolean();
-      return isRecoveryMailSent;
-    } catch (IOException e) {
-      e.printStackTrace();
+    else {
+      return true;
     }
-
-    return false;
   }
 }
