@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Each instance of this class represents a single transmission by our IM
  * clients.
@@ -23,9 +26,11 @@ public class Message {
 	/**
 	 * The first argument used in the message. This will be the sender's identifier.
 	 */
+	@JsonProperty("name")
 	private String msgSender;
 
 	/** The second argument used in the message. */
+	@JsonProperty("text")
 	private String msgText;
 
 	/**
@@ -46,6 +51,9 @@ public class Message {
 		msgText = text;
 	}
 
+	public Message()	{
+
+	}
 	/**
 	 * Create a new message that contains a command sent the server that requires a
 	 * single argument. This message contains the given handle and the single
@@ -80,6 +88,9 @@ public class Message {
 		return new Message(MessageType.BROADCAST, myName, text);
 	}
 
+	public MessageType getMsgType()	{
+		return MessageType.BROADCAST;
+	}
 	/**
 	 * Create a new message stating the name with which the user would like to
 	 * login.
@@ -147,6 +158,7 @@ public class Message {
 	 * 
 	 * @return True if the message is a broadcast message; false otherwise.
 	 */
+	@JsonIgnore
 	public boolean isBroadcastMessage() {
 		return (msgType == MessageType.BROADCAST);
 	}
@@ -156,6 +168,7 @@ public class Message {
 	 * 
 	 * @return True if the message is an initialization message; false otherwise
 	 */
+	@JsonIgnore
 	public boolean isInitialization() {
 		return (msgType == MessageType.HELLO);
 	}
@@ -165,6 +178,7 @@ public class Message {
 	 * 
 	 * @return True if the message is sent when signing off; false otherwise
 	 */
+	@JsonIgnore
 	public boolean terminate() {
 		return (msgType == MessageType.QUIT);
 	}

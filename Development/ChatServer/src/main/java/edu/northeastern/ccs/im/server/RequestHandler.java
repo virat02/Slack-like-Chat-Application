@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class RequestHandler {
     private ThreadPoolExecutor executor;
 
     private RequestHandler() {
-        executor = (ThreadPoolExecutor) Executors.newScheduledThreadPool(10);
+        executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
     }
 
     private static RequestHandler requestHandler;
@@ -30,6 +31,7 @@ public class RequestHandler {
 
     public void handleRequest(SocketChannel socketChannel) {
         executor.execute(() -> {
+            ChatLogger.info("Request made");
             NetworkRequest networkRequest = parseNetworkRequest(socketChannel);
             if (networkRequest != null) {
                 NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, socketChannel);

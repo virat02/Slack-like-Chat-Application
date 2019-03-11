@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
@@ -47,6 +46,7 @@ public class RequestDispatcher {
     }
 
     public NetworkResponse handleNetworkRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
+        ChatLogger.info("Request dispatcher called");
         NetworkRequest.NetworkRequestType networkRequestType = networkRequest.networkRequestType();
         if (networkRequestType == NetworkRequestType.CREATE_USER) {
             return handleCreateUserRequest(networkRequest);
@@ -55,13 +55,10 @@ public class RequestDispatcher {
         } else if (networkRequestType == NetworkRequestType.SEARCH_USER) {
             return searchQueryResults(networkRequest);
         } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
-            groupService.addConnection(socketChannel);
-        } else if (networkRequestType == NetworkRequestType.SEND_MESSAGE) {
             try {
-                Message message = parseMessage(networkRequest);
-                groupService.receiveMessage(message);
+                groupService.addConnection(socketChannel);
             } catch (IOException e) {
-                ChatLogger.error(e.getMessage());
+                return networkResponseFactory.createFailedResponse();
             }
         }
 

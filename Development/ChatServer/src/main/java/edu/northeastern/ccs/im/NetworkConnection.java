@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.server.JsonBufferReader;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -9,9 +13,11 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * This class is similar to the java.io.PrintWriter class, but this class's
@@ -108,9 +114,21 @@ public class NetworkConnection implements Iterable<Message> {
 	 * @return True if we successfully send this message; false otherwise.
 	 */
 	public boolean sendMessage(Message msg) {
+
+		/** My code **/
+
+		byte[] encoded = new byte[]{};
+		try {
+			encoded = CommunicationUtils.getObjectMapper().writeValueAsBytes(msg);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+
 		boolean result = true;
-		String str = msg.toString();
-		ByteBuffer wrapper = ByteBuffer.wrap(str.getBytes());
+//		String str = msg.toString();
+		ByteBuffer wrapper = ByteBuffer.wrap(encoded);
+//		ByteBuffer wrapper = ByteBuffer.wrap(str.getBytes());
 		int bytesWritten = 0;
 		int attemptsRemaining = MAXIMUM_TRIES_SENDING;
 		while (result && wrapper.hasRemaining() && (attemptsRemaining > 0)) {
@@ -182,33 +200,40 @@ public class NetworkConnection implements Iterable<Message> {
 	                CharsetDecoder decoder = charset.newDecoder();
 	                // Convert the buffer to a format that we can actually use.
 	                CharBuffer charBuffer = decoder.decode(buff);
+	                ByteBuffer bf = charset.encode(charBuffer);
+
+					JsonBufferReader jsonBufferReader = new JsonBufferReader();
+					List<Message> incomingMessageList = jsonBufferReader.messageList(bf);
+
 	                // get rid of any extra whitespace at the beginning
 	                // Start scanning the buffer for any and all messages.
-	                int start = 0;
+	                long start = jsonBufferReader.bytesRead();
 	                // Scan through the entire buffer; check that we have the minimum message size
-	                while ((start + MIN_MESSAGE_LENGTH) <= charBuffer.limit()) {
-	                    // If this is not the first message, skip extra space.
-	                    if (start != 0) {
-	                        charBuffer.position(start);
-	                    }
-	                    // First read in the handle
-	                    String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
-	                    // Skip past the handle
-	                    charBuffer.position(start + HANDLE_LENGTH + 1);
-	                    // Read the first argument containing the sender's name
-	                    String sender = readArgument(charBuffer);
-	                    // Skip past the leading space
-	                    charBuffer.position(charBuffer.position() + 2);
-	                    // Read in the second argument containing the message
-	                    String message = readArgument(charBuffer);
-	                    // Add this message into our queue
-	                    Message newMsg = Message.makeMessage(handle, sender, message);
-	                    messages.add(newMsg);
-	                    // And move the position to the start of the next character
-	                    start = charBuffer.position() + 1;
-	                }
+//	                while ((start + MIN_MESSAGE_LENGTH) <= charBuffer.limit()) {
+//	                    // If this is not the first message, skip extra space.
+//	                    if (start != 0) {
+//	                        charBuffer.position(start);
+//	                    }
+//	                    // First read in the handle
+//	                    String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
+//	                    // Skip past the handle
+//	                    charBuffer.position(start + HANDLE_LENGTH + 1);
+//	                    // Read the first argument containing the sender's name
+//	                    String sender = readArgument(charBuffer);
+//	                    // Skip past the leading space
+//	                    charBuffer.position(charBuffer.position() + 2);
+//	                    // Read in the second argument containing the message
+//	                    String message = readArgument(charBuffer);
+//	                    // Add this message into our queue
+//	                    Message newMsg = Message.makeMessage(handle, sender, message);
+//	                    messages.add(newMsg);
+//	                    // And move the position to the start of the next character
+//	                    start = charBuffer.position() + 1;
+//	                }
+					messages.addAll(incomingMessageList);
 	                // Move any read messages out of the buffer so that we can add to the end.
-	                buff.position(start);
+					// Assuming buffer will read all the data which is incorrect, need to fix this one
+	                buff.position((int)start);
 	                // Move all of the remaining data to the start of the buffer.
 	                buff.compact();
 	                result = true;

@@ -1,11 +1,12 @@
 package edu.northeastern.ccs.im.communication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.northeastern.ccs.im.Message;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
+import java.nio.charset.Charset;
 
 public class ClientConnectionImpl implements ClientConnection {
 
@@ -39,13 +40,35 @@ public class ClientConnectionImpl implements ClientConnection {
         return CommunicationUtils.getObjectMapper().readValue(byteBuffer.array(), NetworkResponseImpl.class);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(new InetSocketAddress("localhost", 4545));
-            NetworkRequest networkRequest = new NetworkRequestFactory().createUserRequest("tarun"
-                    , "tarun@gmailcom", "*****");
-            ByteBuffer byteBuffer = ByteBuffer.wrap(new ObjectMapper().writeValueAsBytes(networkRequest));
+
+            NetworkRequest networkRequest = new NetworkRequestFactory().createJoinGroup();
+            ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
             socketChannel.write(byteBuffer);
+
+            Thread t = new Thread(() -> {
+                boolean isRunning = true;
+                while (socketChannel.isConnected() && isRunning) {
+                    ByteBuffer byteBuffer1 = ByteBuffer.allocate(1024);
+                    try {
+                        socketChannel.read(byteBuffer1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        isRunning = false;
+                    }
+                }
+            });
+
+            t.start();
+            byte[] message = CommunicationUtils.getObjectMapper().writeValueAsBytes(Message.makeBroadcastMessage("sibendu", "Helllooooo"));
+            ByteBuffer byteBuffer1 = ByteBuffer.wrap(message);
+            socketChannel.write(byteBuffer1);
+            byteBuffer1 = ByteBuffer.wrap(message);
+            socketChannel.write(byteBuffer1);
+            socketChannel.write(ByteBuffer.wrap("\"{\"".getBytes()));
+            t.join();
         }
     }
 
