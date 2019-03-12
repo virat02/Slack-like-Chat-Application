@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.communication;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import edu.northeastern.ccs.im.ChatLogger;
 
 import java.io.IOException;
@@ -91,5 +92,19 @@ public class CommunicationUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Parses the object and creates a Json string.
+     * @param object being parsed into a Json string
+     * @return Json String representation of the object.
+     */
+    public static String toJson(Object object) {
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            return ow.writeValueAsString(object);
+        } catch (IOException io) {
+            return null;
+        }
     }
 }

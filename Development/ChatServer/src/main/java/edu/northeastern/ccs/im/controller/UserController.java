@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im.controller;
 
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
+import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.userGroup.User;
 import edu.northeastern.ccs.im.view.View;
@@ -8,18 +12,18 @@ public final class UserController implements IController {
     private UserService userService;
     private View view;
 
-    public User addEntity(Object User) {
+    public NetworkResponse addEntity(Object object) {
         try {
-            return userService.addUser(User);
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(userService.addUser(object))));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Can't add User");
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
         }
-        /* TODO: Make a show method
-         */
     }
 
-    public User updateEntity(Object user) {
-        return userService.update(user);
+    public User updateEntity(Object object) {
+        return userService.update(object);
     }
 
     public User deleteEntity(Object entity) {
