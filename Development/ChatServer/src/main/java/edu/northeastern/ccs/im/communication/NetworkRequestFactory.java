@@ -4,7 +4,18 @@ import edu.northeastern.ccs.jpa.Message;
 import edu.northeastern.ccs.jpa.Profile;
 import edu.northeastern.ccs.jpa.User;
 
+/***
+ * A NetworkRequestFactory which returns instance of Network Request depending upon
+ * the Enum NetworkRequestType
+ */
 public class NetworkRequestFactory {
+    /***
+     * Creates a NetworkRequest for creating a user.
+     * @param userName The username set by the user
+     * @param password The password set by the user
+     * @param emailAddress The emailaddress set by the user
+     * @return NetworkRequest
+     */
     public NetworkRequest createUserRequest(String userName, String password, String emailAddress) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
                 () -> {
@@ -16,7 +27,6 @@ public class NetworkRequestFactory {
                     profile.setName(userName);
                     profile.setEmail(emailAddress);
                     profile.setImageUrl("");
-//                    profile.setUser(user);
                     profile.setPassword(password);
 
                     user.setProfile(profile);
@@ -24,6 +34,12 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a login request for the user.
+     * @param userName
+     * @param password
+     * @return NetworkRequest
+     */
     public NetworkRequest createLoginRequest(String userName, String password) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.LOGIN_USER,
                 () -> {
@@ -32,6 +48,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a forgot password request for the user.
+     * @param emailID
+     * @return
+     */
     public NetworkRequest createForgotPasswordRequest(String emailID) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.FORGOT_PASSWORD,
                 () -> {
@@ -40,6 +61,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a search user request for the user.
+     * @param searchString
+     * @return NetworkRequest
+     */
     public NetworkRequest createSearchUserRequest(String searchString) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_USER,
                 () -> {
@@ -48,6 +74,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a network request for searching the group
+     * @param searchString
+     * @return NetworkRequest
+     */
     public NetworkRequest createSearchGroupRequest(String searchString) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_GROUP,
                 () -> {
@@ -56,6 +87,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a request for creation of a new group.
+     * @param groupName
+     * @return NetworkRequest
+     */
     public NetworkRequest createGroupRequest(String groupName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_GROUP,
                 () -> {
@@ -64,6 +100,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a request for selecting a chat
+     * @param chatId
+     * @return NetworkRequest
+     */
     public NetworkRequest createSelectChatRequest(String chatId) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SELECT_CHAT,
                 () -> {
@@ -72,6 +113,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a message request for sending a message.
+     * @param messageBody
+     * @return
+     */
     public NetworkRequest createMessageRequest(String messageBody) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEND_MESSAGE,
                 () -> {
@@ -81,6 +127,10 @@ public class NetworkRequestFactory {
                 });
     }
 
+    /***
+     * Creates a request for joining a group.
+     * @return NetworkRequest
+     */
     public NetworkRequest createJoinGroup() {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
                 () -> "");

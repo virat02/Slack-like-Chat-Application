@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
-import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.service.MessageBroadCastService;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -248,7 +248,7 @@ public class ClientRunnable implements Runnable {
 					// Check for our "special messages"
 					if (msg.isBroadcastMessage()) {
 						// Check for our "special messages"
-						GroupService.broadcastMessage(msg);
+						MessageBroadCastService.broadcastMessage(msg);
 					}
 				} else {
 					Message sendMsg;

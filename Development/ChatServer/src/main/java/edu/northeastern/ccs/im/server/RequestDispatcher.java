@@ -5,7 +5,7 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.UserController;
-import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.jpa.Message;
 import edu.northeastern.ccs.jpa.User;
 
@@ -31,7 +31,7 @@ public class RequestDispatcher {
     private ObjectMapper objectMapper = new ObjectMapper();
     private IController userController = new UserController();
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
-    private GroupService groupService = new GroupService();
+    private MessageBroadCastService messageBroadCastService = new MessageBroadCastService();
 
     /***
      * The purpose of this method is mocking the IController.
@@ -56,7 +56,7 @@ public class RequestDispatcher {
             return searchQueryResults(networkRequest);
         } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
             try {
-                groupService.addConnection(socketChannel);
+                messageBroadCastService.addConnection(socketChannel);
             } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
             }

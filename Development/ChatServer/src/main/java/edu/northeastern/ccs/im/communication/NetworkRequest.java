@@ -2,13 +2,27 @@ package edu.northeastern.ccs.im.communication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/***
+ * An interface for a network request
+ */
 public interface NetworkRequest {
+    /***
+     *
+     * @return the type of the network Request represented by the enum NetworkRequestType
+     */
     @JsonProperty("networkRequestType")
     NetworkRequestType networkRequestType();
 
+    /***
+     *
+     * @return the payload carried by this network request.
+     */
     @JsonProperty("payload")
     Payload payload();
 
+    /***
+     * An enum for the type of NetworkRequest
+     */
     enum NetworkRequestType {
         CREATE_USER,
         LOGIN_USER,

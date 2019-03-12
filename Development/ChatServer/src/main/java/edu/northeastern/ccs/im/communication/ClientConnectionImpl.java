@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.charset.Charset;
 
 public class ClientConnectionImpl implements ClientConnection {
 
@@ -54,6 +53,7 @@ public class ClientConnectionImpl implements ClientConnection {
                     ByteBuffer byteBuffer1 = ByteBuffer.allocate(1024);
                     try {
                         socketChannel.read(byteBuffer1);
+                        System.out.println("Data");
                     } catch (IOException e) {
                         e.printStackTrace();
                         isRunning = false;

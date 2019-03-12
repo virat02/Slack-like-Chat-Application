@@ -9,18 +9,36 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 
+/***
+ * A contract serving network responses sent by the server to client.
+ */
 @JsonDeserialize(as = NetworkResponseImpl.class)
 public interface NetworkResponse {
+    /***
+     * Represents the status of this response
+     * @return STATUS
+     */
     @JsonProperty("status")
     STATUS status();
+
+    /***
+     * Represents the payload of this response.
+     * @return Payload
+     */
     @JsonProperty("payload")
     Payload payload();
 
+    /***
+     * Represents the status of this network response.
+     */
     enum STATUS {
         SUCCESSFUL, FAILED;
     }
 }
 
+/***
+ * Used by jackson library for deserializartion purposes.
+ */
 class NetworkResponseDeserializer extends StdDeserializer<Payload> {
 
     public NetworkResponseDeserializer() {

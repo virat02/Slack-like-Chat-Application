@@ -1,9 +1,7 @@
 package edu.northeastern.ccs.im;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
-import edu.northeastern.ccs.im.server.JsonBufferReader;
-
+import edu.northeastern.ccs.im.readers.JsonBufferReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 /**
  * This class is similar to the java.io.PrintWriter class, but this class's
@@ -38,22 +35,8 @@ public class NetworkConnection implements Iterable<Message> {
 	/** The size of the incoming buffer. */
 	private static final int BUFFER_SIZE = 64 * 1024;
 
-	/** The base for number conversions. */
-	private static final int DECIMAL_RADIX = 10;
-
-	/** The length of the message handle. */ // MEJ: why is this not in Message?
-	private static final int HANDLE_LENGTH = 3;
-
-	/** The minimum length of a message. */ // MEJ: why is this not in Message?
-	private static final int MIN_MESSAGE_LENGTH = 7;
-
 	/** The default character set. */
 	private static final String CHARSET_NAME = "us-ascii";
-
-	/**
-	 * Number of times to try sending a message before we give up in frustration.
-	 */
-	private static final int MAXIMUM_TRIES_SENDING = 100;
 
 	/** Channel over which we will send and receive messages. */
 	private final SocketChannel channel;
@@ -77,8 +60,7 @@ public class NetworkConnection implements Iterable<Message> {
 	 * 
 	 * @param sockChan Non-blocking SocketChannel instance to which we will send all
 	 *                 communication.
-	 * @throws IOException Exception thrown if we have trouble completing this
-     *                     connection
+	 *
 	 */
 	public NetworkConnection(SocketChannel sockChan) {
 		// Create the queue that will hold the messages received from over the network
@@ -114,39 +96,7 @@ public class NetworkConnection implements Iterable<Message> {
 	 * @return True if we successfully send this message; false otherwise.
 	 */
 	public boolean sendMessage(Message msg) {
-
-		/** My code **/
-
-		byte[] encoded = new byte[]{};
-		try {
-			encoded = CommunicationUtils.getObjectMapper().writeValueAsBytes(msg);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-
-		boolean result = true;
-//		String str = msg.toString();
-		ByteBuffer wrapper = ByteBuffer.wrap(encoded);
-//		ByteBuffer wrapper = ByteBuffer.wrap(str.getBytes());
-		int bytesWritten = 0;
-		int attemptsRemaining = MAXIMUM_TRIES_SENDING;
-		while (result && wrapper.hasRemaining() && (attemptsRemaining > 0)) {
-			try {
-				attemptsRemaining--;
-				bytesWritten += channel.write(wrapper);
-			} catch (IOException e) {
-				// Show that this was unsuccessful
-				result = false;
-			}
-		}
-		// Check to see if we were successful in our attempt to write the message
-		if (result && wrapper.hasRemaining()) {
-			ChatLogger.warning("WARNING: Sent only " + bytesWritten + " out of " + wrapper.limit()
-					+ " bytes -- dropping this user.");
-			result = false;
-		}
-		return result;
+		return CommunicationUtils.writeToChannel(channel, msg);
 	}
 
 	/**
@@ -170,8 +120,8 @@ public class NetworkConnection implements Iterable<Message> {
 	  /**
 	   * Private class that helps iterate over a Network Connection.
 	   * 
-	   * @author Riya Nadkarni
-	   * @version 12-27-2018
+	   * @author Riya Nadkarni / Sibendu Dey
+	   * @version 03-11-2019
 	   */
 	  private class MessageIterator implements Iterator<Message> {
 
@@ -204,32 +154,7 @@ public class NetworkConnection implements Iterable<Message> {
 
 					JsonBufferReader jsonBufferReader = new JsonBufferReader();
 					List<Message> incomingMessageList = jsonBufferReader.messageList(bf);
-
-	                // get rid of any extra whitespace at the beginning
-	                // Start scanning the buffer for any and all messages.
 	                long start = jsonBufferReader.bytesRead();
-	                // Scan through the entire buffer; check that we have the minimum message size
-//	                while ((start + MIN_MESSAGE_LENGTH) <= charBuffer.limit()) {
-//	                    // If this is not the first message, skip extra space.
-//	                    if (start != 0) {
-//	                        charBuffer.position(start);
-//	                    }
-//	                    // First read in the handle
-//	                    String handle = charBuffer.subSequence(0, HANDLE_LENGTH).toString();
-//	                    // Skip past the handle
-//	                    charBuffer.position(start + HANDLE_LENGTH + 1);
-//	                    // Read the first argument containing the sender's name
-//	                    String sender = readArgument(charBuffer);
-//	                    // Skip past the leading space
-//	                    charBuffer.position(charBuffer.position() + 2);
-//	                    // Read in the second argument containing the message
-//	                    String message = readArgument(charBuffer);
-//	                    // Add this message into our queue
-//	                    Message newMsg = Message.makeMessage(handle, sender, message);
-//	                    messages.add(newMsg);
-//	                    // And move the position to the start of the next character
-//	                    start = charBuffer.position() + 1;
-//	                }
 					messages.addAll(incomingMessageList);
 	                // Move any read messages out of the buffer so that we can add to the end.
 					// Assuming buffer will read all the data which is incorrect, need to fix this one
@@ -254,44 +179,6 @@ public class NetworkConnection implements Iterable<Message> {
 	      Message msg = messages.remove();
 	      ChatLogger.info(msg.toString());
 	      return msg;
-	    }
-	    
-	    /**
-	     * Read in a new argument from the IM server.
-	     * 
-	     * @param charBuffer Buffer holding text from over the network.
-	     * @return String holding the next argument sent over the network.
-	     */
-	    private String readArgument(CharBuffer charBuffer) {
-	        String result = null;
-	        // Compute the current position in the buffer
-	        int pos = charBuffer.position();
-	        // Compute the length of this argument
-	        int length = 0;
-	        // Track the number of locations visited.
-	        int seen = 0;
-	        // Assert that this character is a digit representing the length of the first
-	        // argument
-	        assert Character.isDigit(charBuffer.get(pos));
-	        // Now read in the length of the first argument
-	        while (Character.isDigit(charBuffer.get(pos))) {
-	            // My quick-and-dirty numeric converter
-	            length = length * DECIMAL_RADIX;
-	            length += Character.digit(charBuffer.get(pos), DECIMAL_RADIX);
-	            // Move to the next character
-	            pos += 1;
-	            seen += 1;
-	        }
-	        seen += 1;
-	        if (length == 0) {
-	            // Update our position
-	            charBuffer.position(pos);
-	        } else {
-	            // Length is greater than 0 so result should be something other than null
-	            result = charBuffer.subSequence(seen, length + seen).toString();
-	            charBuffer.position(pos + length);
-	        }
-	        return result;
 	    }
 	  }
 }
