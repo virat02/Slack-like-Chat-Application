@@ -2,14 +2,14 @@ package edu.northeastern.ccs.im.controller;
 
 import java.util.List;
 
-import edu.northeastern.ccs.im.userGroup.IGroup;
+import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.service.GroupService;
 
-public class GroupController implements IController<IGroup>{
+public class GroupController implements IController<Group>{
 	private GroupService groupService;
 
 	@Override
-	public IGroup addEntity(IGroup group) {
+	public Group addEntity(Group group) {
 		try {
 			 return groupService.create(group);
 		}
@@ -19,30 +19,30 @@ public class GroupController implements IController<IGroup>{
 		
 	}
 
-	public IGroup getEntity(String groupName) {
+	public Group getEntity(String groupName) {
 		
 		return groupService.get(groupName);
 	}
 
 	@Override
-	public IGroup updateEntity(IGroup group) {
+	public Group updateEntity(Group group) {
 		return groupService.update(group);
 		
 	}
 
 	@Override
-	public IGroup deleteEntity(IGroup group) {
+	public Group deleteEntity(Group group) {
 		return groupService.delete(group);
 		
 	}
 	
 	@Override
-	public IGroup searchEntity(String groupCode) {
+	public Group searchEntity(String groupCode) {
 		return groupService.searchUsingCode(groupCode);
 	}
 
 	
-	public List<IGroup> searchAllGroup(String groupName) {
+	public List<Group> searchAllGroup(String groupName) {
 		return groupService.searchUsingName(groupName);
 	}
 	
