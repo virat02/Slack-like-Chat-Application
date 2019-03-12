@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.userGroup.IGroup;
+import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.userGroup.Group;
 
 import java.util.List;
 
@@ -10,30 +11,30 @@ public class GroupService implements IService{
 	
 	private GroupJPAService groupJPA = new GroupJPAService();
 	
-	public IGroup create(IGroup group) {
+	public Group create(Group group) {
 		groupJPA.createGroup(group);
 		return groupJPA.getGroup(group.getName());
 	}
 	
-	public IGroup get(String name) {
+	public Group get(String name) {
 		return groupJPA.getGroup(name);
 	}
 	
-	public IGroup update(IGroup group) {
+	public Group update(Group group) {
 		groupJPA.updateGroup(group);
 		return groupJPA.getGroup(group.getName());
 	}
 	
-	public IGroup delete(IGroup group) {
+	public Group delete(Group group) {
 		groupJPA.deleteGroup(group);
 		return groupJPA.getGroup(group.getName());
 	}
 	
-	public IGroup searchUsingCode(String groupCode){
+	public Group searchUsingCode(String groupCode){
 		return groupJPA.searchUsingCode(groupCode);
 	}
 	
-	public List<IGroup> searchUsingName(String groupName){
+	public List<Group> searchUsingName(String groupName){
 		return groupJPA.searchUsingName(groupName);
 	}
 

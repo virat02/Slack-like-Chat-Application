@@ -19,14 +19,8 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    /** The name. */
-    private String username;
-
     /** The email. */
     private String email;
-
-    /** The password. */
-    private String password;
 
     /** The image url. */
     private String imageUrl;
@@ -34,25 +28,17 @@ public class Profile {
     /** The profile access. */
     private Boolean profileAccess;
 
-    /** The user. */
-    @OneToOne
-    private IUser user;
-
     /**
      * Instantiates a new profile.
      *
      * @param id the id
-     * @param username the name
      * @param email the email
-     * @param password the password
      * @param imageUrl the image url
      */
-    public Profile(int id, String username, String email, String password, String imageUrl, Boolean access) {
+    public Profile(int id, String email, String imageUrl, Boolean access) {
         super();
         this.id = id;
-        this.username = username;
         this.email = email;
-        this.password = password;
         this.imageUrl = imageUrl;
         this.profileAccess = access;
     }
@@ -79,24 +65,9 @@ public class Profile {
     public void setId(int id) {
         this.id = id;
     }
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
-    public String getUsername() {
 
-        return username;
-    }
 
-    /**
-     * Sets the name.
-     *
-     * @param username the new name
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+
     /**
      * Gets the email.
      *
@@ -113,23 +84,7 @@ public class Profile {
     public void setEmail(String email) {
         this.email = email;
     }
-    /**
-     * Gets the password.
-     *
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-    /**
-     * Sets the new password.
-     *
-     * @param password the new password
-     */
-    public void setPassword(String password) {
 
-        this.password = password;
-    }
     /**
      * Gets the image url.
      *
@@ -145,24 +100,6 @@ public class Profile {
      */
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    /**
-     * Gets the user.
-     *
-     * @return the user
-     */
-    public IUser getUser() {
-        return user;
-    }
-
-    /**
-     * Sets the user.
-     *
-     * @param user the new user
-     */
-    public void setUser(IUser user) {
-        this.user = user;
     }
 
     /**
@@ -183,7 +120,7 @@ public class Profile {
 
     @Override
     public String toString() {
-        return "Id: "+getId()+"\nUsername: "+getUsername() + "\nEmail: "+getEmail()+"\nImage URL: "+getImageUrl()+"\nProfile visible? : "+getProfileAccess();
+        return "Id: "+getId()+ "\nEmail: "+getEmail()+"\nImage URL: "+ getImageUrl()+"\nProfile visible? : "+getProfileAccess();
     }
 
 }

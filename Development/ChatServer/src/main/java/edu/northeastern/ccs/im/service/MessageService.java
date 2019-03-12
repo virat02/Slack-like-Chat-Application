@@ -1,18 +1,13 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.service.JPAService.MessageJPAService;
-import edu.northeastern.ccs.im.userGroup.IGroup;
-import edu.northeastern.ccs.im.userGroup.IUserGroup;
 import edu.northeastern.ccs.im.userGroup.Message;
 
-import java.util.Date;
 
 public class MessageService implements IService{
 
-    private Message m;
     private MessageJPAService messageJPAService;
-    public MessageService(Message msg) {
-        this.m = msg;
+    public MessageService() {
     }
 
 //    /**
@@ -50,7 +45,7 @@ public class MessageService implements IService{
 //     * @param deleted
 //     * @return
 //     */
-//    public Message sendMessage(Message msg, IUserGroup sender, IGroup receiver, Boolean deleted) {
+//    public Message sendMessage(Message msg, UserGroup sender, Group receiver, Boolean deleted) {
 //
 //        this.m = msg;
 //        Message message2 = new Message(msg.getId(), msg.getMessage(), msg.getTimestamp(), msg.getExpiration(), sender, receiver, deleted);

@@ -39,12 +39,9 @@ public class ProfileJPAService {
                     + p.getId());
         }
 
-        thisProfile.setUser(p.getUser());
         thisProfile.setProfileAccess(p.getProfileAccess());
         thisProfile.setImageUrl(p.getImageUrl());
-        thisProfile.setPassword(p.getPassword());
         thisProfile.setEmail(p.getEmail());
-        thisProfile.setUsername(p.getUsername());
 
         endTransaction(entityManager);
     }

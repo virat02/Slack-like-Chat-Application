@@ -32,7 +32,7 @@ public class Message {
     private int expiration;
 
     /** The sender. */
-    private IUserGroup sender;
+    private User sender;
 
     /** The receiver. */
     @ManyToOne
@@ -41,7 +41,7 @@ public class Message {
     /**
      * Instantiates a new message.
      */
-    public Message(int id, String message, Date timestamp, int expiration, IUserGroup sender, IGroup receiver, boolean deleted) {
+    public Message(int id, String message, Date timestamp, int expiration, User sender, IGroup receiver, boolean deleted) {
         super();
         this.id = id;
         this.msg = message;
@@ -151,7 +151,7 @@ public class Message {
      *
      * @return the sender
      */
-    public IUserGroup getSender() {
+    public User getSender() {
         return sender;
     }
 
@@ -160,7 +160,7 @@ public class Message {
      *
      * @param sender the new sender
      */
-    public void setSender(IUserGroup sender) {
+    public void setSender(User sender) {
         if (sender != null) {
             this.sender = sender;
         }

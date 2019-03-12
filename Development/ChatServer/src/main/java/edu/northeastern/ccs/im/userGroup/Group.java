@@ -36,7 +36,7 @@ public class Group implements IGroup {
     private List<IUserGroup> users = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
-	private List<IUser> moderators= new ArrayList<>();
+	private List<User> moderators= new ArrayList<>();
 
     /** The msgs. */
     @OneToMany(targetEntity=Message.class)
@@ -44,13 +44,13 @@ public class Group implements IGroup {
     
 	/** The groups. */
 	@OneToMany(targetEntity=Group.class)
-	private List<IGroup> groups = new ArrayList<>();
+	private List<Group> groups = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
-	private List<IUser> followers = new ArrayList<>();
+	private List<User> followers = new ArrayList<>();
 	
 	@ManyToOne(targetEntity=User.class)
-	private List<IUser> followees = new ArrayList<>();
+	private List<User> followees = new ArrayList<>();
 	
 	private String groupCode;
 	
@@ -157,40 +157,40 @@ public class Group implements IGroup {
         this.msgs = msgs;
     }
     
-    public List<IGroup> getGroups() {
+    public List<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(List<IGroup> groups) {
+	public void setGroups(List<Group> groups) {
 		this.groups = groups;
 	}
 
-	public void addGroup(IGroup group) {
+	public void addGroup(Group group) {
 		this.groups.add(group);
 	}
 
-	public List<IUser> getFollowers() {
+	public List<User> getFollowers() {
 		return followers;
 	}
 
-	public void setFollowers(List<IUser> followers) {
+	public void setFollowers(List<User> followers) {
 		this.followers = followers;
 	}
 
-	public void addFollower(IUser follower) {
+	public void addFollower(User follower) {
 		this.followers.add(follower);
 	}
 
-	public List<IUser> getModerators() {
+	public List<User> getModerators() {
 		return moderators;
 	}
 
-	public void setModerators(List<IUser> moderators) {
+	public void setModerators(List<User> moderators) {
 		this.moderators = moderators;
 	}
 
 	public void addModerator(User moderator) {
-		if(moderator instanceof IUser) {
+		if(moderator instanceof User) {
 			this.addModerator(moderator);
 		}
 	}
@@ -211,15 +211,15 @@ public class Group implements IGroup {
 		this.createdOn = createdOn;
 	}
 	
-	public List<IUser> getFollowees() {
+	public List<User> getFollowees() {
 		return followees;
 	}
 
-	public void setFollowees(List<IUser> followees) {
+	public void setFollowees(List<User> followees) {
 		this.followees = followees;
 	}
 	
-	public void addFollowee(IUser followee) {
+	public void addFollowee(User followee) {
 		this.followees.add(followee);
 	}
 

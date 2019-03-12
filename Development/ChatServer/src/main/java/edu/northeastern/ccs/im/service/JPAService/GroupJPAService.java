@@ -16,20 +16,20 @@ public class GroupJPAService{
 	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
 
 
-	public void createGroup(IGroup group) {
+	public void createGroup(Group group) {
 		EntityManager entitymanager = beginTransaction();
 		entitymanager.persist(group);
 		endTransaction(entitymanager);
 	}
 
-	public IGroup getGroup(String name) {	
+	public Group getGroup(String name) {
 		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + name;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
-        return (IGroup) query.getSingleResult();
+        return (Group) query.getSingleResult();
 	}
 
-	public void updateGroup(IGroup currentGroup) {
+	public void updateGroup(Group currentGroup) {
 		EntityManager entitymanager = beginTransaction();
 		Group group = entitymanager.find(Group.class, currentGroup.getId());
 
@@ -53,27 +53,27 @@ public class GroupJPAService{
 
 
 	public List<Message> retrieveMessage(String name){
-		IGroup group=getGroup(name);
+		Group group=getGroup(name);
 		return group.getMsgs();
 	}
 	
     @SuppressWarnings("unchecked")
-	public List<IGroup> searchUsingName(String groupName) {
+	public List<Group> searchUsingName(String groupName) {
         String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + groupName;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
-        return (List<IGroup>) query.getResultList();
+        return (List<Group>) query.getResultList();
     }
     
-    public IGroup searchUsingCode(String groupCode) {
+    public Group searchUsingCode(String groupCode) {
         String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.groupcode =" + groupCode;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
-        return (IGroup) query.getSingleResult();
+        return (Group) query.getSingleResult();
     }
 
 
-	public void deleteGroup(IGroup currentGroup) {
+	public void deleteGroup(Group currentGroup) {
 		EntityManager entitymanager = beginTransaction();
 		Group group = entitymanager.find(Group.class, currentGroup.getId());
 		entitymanager.remove(group);
