@@ -1,20 +1,13 @@
 package edu.northeastern.ccs.im.controller;
 
-import edu.northeastern.ccs.im.userGroup.IUser;
-import edu.northeastern.ccs.im.userGroup.IUserGroup;
+public interface IController<T>{
 
-import java.util.List;
+    T addEntity(T entity);
 
+    T searchEntity(String username);
 
-public interface IController {
+    T updateEntity(T entity);
 
-
-    void addIUserGroup(IUserGroup iUserGroup);
-
-    IUserGroup getIUserGroup(IUserGroup iUserGroup);
-
-    void updateIUserGroup(IUserGroup iUserGroup);
-
-    void deleteIUserGroup(IUserGroup iUserGroup);
+    T deleteEntity(T entity);
 
 }

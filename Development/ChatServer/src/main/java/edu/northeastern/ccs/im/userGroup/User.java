@@ -1,12 +1,6 @@
-package edu.northeastern.ccs.jpa;
-
-import edu.northeastern.ccs.im.userGroup.IGroup;
-import edu.northeastern.ccs.im.userGroup.IUser;
-import edu.northeastern.ccs.im.userGroup.IUserGroup;
+package edu.northeastern.ccs.im.userGroup;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -29,19 +23,19 @@ public class User implements IUser {
 
     /** The groups. */
     @OneToMany(targetEntity = Group.class)
-    private List<IGroup> groups = new ArrayList<>();
-
-    /**
-     * The list of people following this user.
-     */
-    @ManyToOne
-    private List<IUser> followers = new ArrayList<>();
+    private List<Group> groups = new ArrayList<>();
 
     /**
      * The list of people this user follows.
      */
     @OneToMany
-    private List<IUser> following = new ArrayList<>();
+    private List<User> following = new ArrayList<>();
+
+    /** The name. */
+    private String username;
+
+    /** The password. */
+    private String password;
 
     /** The profile. */
     private Profile profile;
@@ -94,7 +88,7 @@ public class User implements IUser {
      *
      * @return the groups
      */
-    public List<IGroup> getGroups() {
+    public List<Group> getGroups() {
         return groups;
     }
 
@@ -103,7 +97,7 @@ public class User implements IUser {
      *
      * @param groups the new groups
      */
-    public void setGroups(List<IGroup> groups) {
+    public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 
@@ -121,7 +115,7 @@ public class User implements IUser {
      *
      * @param group the userGroup
      */
-    public void addGroup(IGroup group) {
+    public void addGroup(Group group) {
         this.groups.add(group);
     }
 
@@ -144,29 +138,11 @@ public class User implements IUser {
     }
 
     /**
-     * Gets the followers.
-     *
-     * @return the followers
-     */
-    public List<IUser> getFollowers() {
-        return this.followers;
-    }
-
-    /**
-     * Sets the followers.
-     *
-     * @param followers the new profile
-     */
-    public void setFollowers(List<IUser> followers) {
-        this.followers = followers;
-    }
-
-    /**
      * Gets the following.
      *
      * @return the following
      */
-    public List<IUser> getFollowing() {
+    public List<User> getFollowing() {
         return this.following;
     }
 
@@ -175,7 +151,60 @@ public class User implements IUser {
      *
      * @param following the new profile
      */
-    public void setFollowing(List<IUser> following) {
+    public void setFollowing(List<User> following) {
         this.following = following;
     }
+
+    /**
+     * Adds a user to the list of people we are following.
+     * @param user the person we are following.
+     */
+    public void addFollowee(User user) {
+        if (user != null) {
+            this.following.add(user);
+        }
+        else {
+            throw new NullPointerException("Cannot add a non-existing user");
+        }
+    }
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getUsername() {
+
+        return username;
+    }
+
+    /**
+     * Sets the new username.
+     *
+     * @param username the new username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Gets the password.
+     *
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+    /**
+     * Sets the new password.
+     *
+     * @param password the new password
+     */
+    public void setPassword(String password) {
+
+        this.password = password;
+    }
+
+
+
 }
