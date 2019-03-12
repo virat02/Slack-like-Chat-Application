@@ -217,10 +217,10 @@ public class JpaTest {
 		List<Group> groupList = new ArrayList<>();
 		groupList.add(group2);
 		groupList.add(group1);
-		usr.setGroups(groupList);
+//		usr.setGroups(groupList);
 		Group group3 = new Group();
 		groupList.add(group3);
-		usr.addGroup(group3);
+//		usr.addGroup(group3);
 		assertEquals(groupList,usr.getGroups());
 	}
 	

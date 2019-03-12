@@ -30,8 +30,11 @@ public interface NetworkRequest {
         SEARCH_USER,
         SEARCH_GROUP,
         CREATE_GROUP,
+        DELETE_GROUP,
         SELECT_CHAT,
         JOIN_GROUP,
         SEND_MESSAGE,
+        UPDATE_USERNAME,
+        UPDATE_USERSTATUS,
     }
 }

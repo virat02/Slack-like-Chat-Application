@@ -135,4 +135,28 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
                 () -> "");
     }
+
+    public NetworkRequest createDeleteGroupRequest(String groupId) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+                () -> {
+                    User user = new User();
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
+
+    public NetworkRequest createUpdateUserName(String userName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_USERNAME,
+                () -> {
+                    User user = new User();
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
+
+    public NetworkRequest createUpdateUserStatus(String userStatus) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_USERSTATUS,
+                () -> {
+                    User user = new User();
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
 }

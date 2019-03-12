@@ -16,7 +16,8 @@ public class SearchWindow extends AbstractTerminalWindow {
     protected SearchWindow(TerminalWindow callerWindow) {
         super(callerWindow,
                 Arrays.asList(new AbstractMap.SimpleEntry<>(0, "Enter search query"),
-                        new AbstractMap.SimpleEntry<>(1, "1 - Search Again\n2 - Select User\n0 - Go Back\n* - Exit"),
+                        new AbstractMap.SimpleEntry<>(1, "1 - Search Again\n2 - Select Chat\n0 - " +
+                                "Go Back\n* - Exit"),
                         new AbstractMap.SimpleEntry<>(2, "Enter User Name"))
                         .stream().collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
 

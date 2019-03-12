@@ -11,7 +11,7 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
 
     public ChatTerminalWindow(TerminalWindow caller, int userId) {
         super(caller, new HashMap<Integer, String>() {{
-            put(0, ConstantStrings.chatMainCommand);
+            put(0, ConstantStrings.CHAT_MAIN_COMMAND);
         }});
         this.userId = userId;
     }
@@ -20,13 +20,25 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
     void inputFetchedFromUser(String inputString) {
         if (inputString.length() == 1) {
             if (inputString.equals("1")) {
-                SearchWindow searchWindow = (SearchWindow) mapper.computeIfAbsent(1, e -> new SearchWindow(this));
+                SearchWindow searchWindow = (SearchWindow) mapper.computeIfAbsent(1,
+                        e -> new SearchWindow(this));
                 searchWindow.runWindow();
             } else if (inputString.equals("2")) {
-
+                CreateGroupWindow createGroupWindowWindow = (CreateGroupWindow) mapper
+                        .computeIfAbsent(1, e -> new CreateGroupWindow(this,
+                                clientConnectionFactory));
+                createGroupWindowWindow.runWindow();
             } else if (inputString.equals("3")) {
-
-            } else if (inputString.equals("0")) {
+                DeleteGroupWindow deleteGroupWindowWindow = (DeleteGroupWindow) mapper
+                        .computeIfAbsent(1, e -> new DeleteGroupWindow(this,
+                                clientConnectionFactory));
+                deleteGroupWindowWindow.runWindow();
+            } else if (inputString.equals("4")) {
+                UpdateProfileWindow updateProfileWindow = (UpdateProfileWindow) mapper
+                        .computeIfAbsent(1, e -> new UpdateProfileWindow(this,
+                                clientConnectionFactory));
+                updateProfileWindow.runWindow();
+            } else if (inputString.equals("5")) {
                 goBack();
             } else if (inputString.equals("*")) {
                 exitWindow();

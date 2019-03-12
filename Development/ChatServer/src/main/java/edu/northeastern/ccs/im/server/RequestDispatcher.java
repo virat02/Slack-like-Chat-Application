@@ -5,6 +5,7 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.UserController;
+
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.jpa.Message;
 import edu.northeastern.ccs.jpa.User;
@@ -58,8 +59,23 @@ public class RequestDispatcher {
             try {
                 messageBroadCastService.addConnection(socketChannel);
             } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (networkRequestType == NetworkRequestType.SEND_MESSAGE) {
+            try {
+                Message message = parseMessage(networkRequest);
+//                groupService.receiveMessage(message);
+            } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
             }
+        } else if (networkRequestType == NetworkRequestType.UPDATE_USERNAME) {
+            return handleUpdateUserName(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.UPDATE_USERSTATUS) {
+            return handleUpdateUserStatus(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.CREATE_GROUP) {
+            return handleCreateGroup(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.DELETE_GROUP) {
+            return handleDeleteGroup(networkRequest);
         }
 
 
@@ -84,6 +100,42 @@ public class RequestDispatcher {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
 //            userController.addIUserGroup(user);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+        return networkResponseFactory.createSuccessfulResponse();
+    }
+
+    private NetworkResponse handleUpdateUserName(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+        return networkResponseFactory.createSuccessfulResponse();
+    }
+
+    private NetworkResponse handleUpdateUserStatus(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+        return networkResponseFactory.createSuccessfulResponse();
+    }
+
+    private NetworkResponse handleCreateGroup(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+        return networkResponseFactory.createSuccessfulResponse();
+    }
+
+    private NetworkResponse handleDeleteGroup(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
