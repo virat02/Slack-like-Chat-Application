@@ -20,8 +20,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       put(0, ConstantStrings.UPDATE_PROFILE);
       put(1, ConstantStrings.UPDATE_PROFILE_USERNAME);
       put(2, ConstantStrings.UPDATE_PROFILE_STATUS);
-    }});
-    this.clientConnectionFactory = clientConnectionFactory;
+    }}, clientConnectionFactory);
   }
 
   @Override

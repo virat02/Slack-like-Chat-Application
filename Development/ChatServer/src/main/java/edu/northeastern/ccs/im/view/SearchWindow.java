@@ -1,6 +1,8 @@
 package edu.northeastern.ccs.im.view;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
@@ -13,14 +15,14 @@ public class SearchWindow extends AbstractTerminalWindow {
     Map<Integer, String> processMap = new HashMap<>();
     private String searchQuery;
 
-    protected SearchWindow(TerminalWindow callerWindow) {
+    protected SearchWindow(TerminalWindow callerWindow, ClientConnectionFactory clientConnectionFactory) {
         super(callerWindow,
                 Arrays.asList(new AbstractMap.SimpleEntry<>(0, "Enter search query"),
                         new AbstractMap.SimpleEntry<>(1, "1 - Search Again\n2 - Select Chat\n0 - " +
                                 "Go Back\n* - Exit"),
                         new AbstractMap.SimpleEntry<>(2, "Enter User Name"))
-                        .stream().collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
-
+                        .stream().collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey,
+                        AbstractMap.SimpleEntry::getValue)), clientConnectionFactory);
     }
 
     @Override

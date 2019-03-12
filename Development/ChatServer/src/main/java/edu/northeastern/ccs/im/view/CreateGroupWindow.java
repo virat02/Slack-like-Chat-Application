@@ -17,8 +17,7 @@ public class CreateGroupWindow extends AbstractTerminalWindow {
       put(0, ConstantStrings.CREATE_GROUP);
       put(1, ConstantStrings.CREATE_GROUP_SUCCESS);
       put(2, ConstantStrings.CREATE_GROUP_FAILED);
-    }});
-    this.clientConnectionFactory = clientConnectionFactory;
+    }}, clientConnectionFactory);
   }
 
   @Override

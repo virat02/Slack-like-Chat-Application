@@ -20,7 +20,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
 
   abstract void inputFetchedFromUser(String inputString);
 
-  protected AbstractTerminalWindow(TerminalWindow callerWindow, Map<Integer,String> processMap) {
+  private AbstractTerminalWindow(TerminalWindow callerWindow, Map<Integer,String> processMap) {
     this.callerWindow = callerWindow;
     this.currentProcess = 0;
     this.processMap = processMap;

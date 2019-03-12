@@ -21,13 +21,12 @@ public class SignUpWindow extends AbstractTerminalWindow {
       put(2, ConstantStrings.PASSWORD_STRING);
       put(3, ConstantStrings.RE_ENTER_PASSWORD_STRING);
       put(4, ConstantStrings.SIGN_UP_FAILED);
-    }});
-    this.clientConnectionFactory = clientConnectionFactory;
+    }}, clientConnectionFactory);
   }
 
   public TerminalWindow getChatTerminalWindow(int userId) {
     if (chatTerminalWindow == null) {
-      chatTerminalWindow = new ChatTerminalWindow(this, userId);
+      chatTerminalWindow = new ChatTerminalWindow(this, userId, clientConnectionFactory);
     }
     return chatTerminalWindow;
   }

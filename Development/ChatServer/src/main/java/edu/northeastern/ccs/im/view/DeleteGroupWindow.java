@@ -17,8 +17,7 @@ public class DeleteGroupWindow extends AbstractTerminalWindow {
       put(0, ConstantStrings.DELETE_GROUP);
       put(1, ConstantStrings.DELETE_GROUP_SUCCESS);
       put(2, ConstantStrings.DELETE_GROUP_FAILED);
-    }});
-    this.clientConnectionFactory = clientConnectionFactory;
+    }}, clientConnectionFactory);
   }
 
   @Override

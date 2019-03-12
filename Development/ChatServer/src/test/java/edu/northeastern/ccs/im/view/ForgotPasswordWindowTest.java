@@ -13,7 +13,7 @@ public class ForgotPasswordWindowTest extends AbstractWindowTest {
 
   @Before
   public void initializeVariables() {
-    forgotPasswordWindow = new ForgotPasswordWindow(new LoginWindow(null, null));
+    forgotPasswordWindow = new ForgotPasswordWindow(new LoginWindow(null, null), null);
   }
 
   @Test

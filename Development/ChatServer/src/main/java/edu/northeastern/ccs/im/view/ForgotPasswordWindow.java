@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.HashMap;
 
+import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
@@ -15,12 +16,12 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
   private final int kRecoveryInitiatedProcess;
   private final int kRecoveryFailedProcess;
 
-  ForgotPasswordWindow(TerminalWindow caller) {
+  ForgotPasswordWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.RECOVERY_EMAIL);
       put(1, ConstantStrings.RECOVERY_INITIATED);
       put(2, ConstantStrings.RECOVERY_FAILED);
-    }});
+    }}, clientConnectionFactory);
     kRecoveryEmailProcess = 0;
     kRecoveryInitiatedProcess = 1;
     kRecoveryFailedProcess = 2;

@@ -17,14 +17,14 @@ public class LoginWindow extends AbstractTerminalWindow {
 
   public TerminalWindow getChatTerminalWindow(int userId) {
     if (chatTerminalWindow == null) {
-      chatTerminalWindow = new ChatTerminalWindow(this, userId);
+      chatTerminalWindow = new ChatTerminalWindow(this, userId, clientConnectionFactory);
     }
     return chatTerminalWindow;
   }
 
   public TerminalWindow getForgotPasswordWindow() {
     if (forgotPasswordWindow == null) {
-      forgotPasswordWindow = new ForgotPasswordWindow(this);
+      forgotPasswordWindow = new ForgotPasswordWindow(this, clientConnectionFactory);
     }
     return forgotPasswordWindow;
   }
@@ -37,8 +37,7 @@ public class LoginWindow extends AbstractTerminalWindow {
       put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
       put(1, ConstantStrings.PASSWORD_STRING);
       put(2, ConstantStrings.LOGIN_FAILED);
-    }});
-    this.clientConnectionFactory = clientConnectionFactory;
+    }}, clientConnectionFactory);
   }
 
   @Override
