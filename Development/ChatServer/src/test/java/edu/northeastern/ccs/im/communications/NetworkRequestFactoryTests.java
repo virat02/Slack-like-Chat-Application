@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
-import edu.northeastern.ccs.jpa.User;
+import edu.northeastern.ccs.im.userGroup.User;
+//import edu.northeastern.ccs.jpa.User;
 import org.junit.Assert;
 import org.junit.Test;
 

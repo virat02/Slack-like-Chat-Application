@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.service;
 
+import java.util.Date;
+
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
@@ -61,7 +63,7 @@ public final class UserService implements IService {
 //                newMessage.setGroup(group);
 //            }
 //        }
-        this.messages.add(newMessage);
+//        this.messages.add(newMessage);
 }
 
     private boolean isValidUsername(String uname) {

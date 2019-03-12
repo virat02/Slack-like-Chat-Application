@@ -1,8 +1,12 @@
 package edu.northeastern.ccs.im.communication;
 
-import edu.northeastern.ccs.jpa.Message;
-import edu.northeastern.ccs.jpa.Profile;
-import edu.northeastern.ccs.jpa.User;
+//import edu.northeastern.ccs.jpa.Message;
+//import edu.northeastern.ccs.jpa.Profile;
+//import edu.northeastern.ccs.jpa.User;
+
+import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.userGroup.Profile;
+import edu.northeastern.ccs.im.userGroup.User;
 
 /***
  * A NetworkRequestFactory which returns instance of Network Request depending upon
@@ -21,13 +25,13 @@ public class NetworkRequestFactory {
                 () -> {
                     User user = new User();
                     user.setId(0);
+                    user.setUsername(userName);
+                    user.setPassword(password);
 
                     Profile profile = new Profile();
                     profile.setId(0);
-                    profile.setName(userName);
                     profile.setEmail(emailAddress);
                     profile.setImageUrl("");
-                    profile.setPassword(password);
 
                     user.setProfile(profile);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);

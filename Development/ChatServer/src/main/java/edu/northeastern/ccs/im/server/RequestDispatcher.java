@@ -7,8 +7,8 @@ import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
-import edu.northeastern.ccs.jpa.Message;
-import edu.northeastern.ccs.jpa.User;
+import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
