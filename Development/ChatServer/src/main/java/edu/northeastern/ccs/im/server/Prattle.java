@@ -153,20 +153,6 @@ public abstract class Prattle {
 			// Make sure we have a connection to work with.
 			if (socket != null) {
 				RequestHandler.getInstance().handleRequest(socket);
-//				ByteBuffer byteBuffer = ByteBuffer.allocate(2048);
-//				socket.read(byteBuffer);
-//				ObjectMapper objectMapper = new ObjectMapper();
-//				NetworkRequest request = objectMapper.readValue(byteBuffer.array(), NetworkRequestImpl.class);
-//				ChatLogger.info("Sample Name: " + sample.getName());
-//				ChatLogger.info("Payload: " + request.payload().jsonString());
-//				NetworkConnection connection = new NetworkConnection(socket);
-//				ClientRunnable tt = new ClientRunnable(connection);
-//				// Add the thread to the queue of active threads
-//				active.add(tt);
-//				// Have the client executed by our pool of threads.
-//				ScheduledFuture<?> clientFuture = threadPool.scheduleAtFixedRate(tt, ServerConstants.CLIENT_CHECK_DELAY,
-//						ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
-//				tt.setFuture(clientFuture);
 			}
 		} catch (AssertionError ae) {
 			ChatLogger.error("Caught Assertion: " + ae.toString());

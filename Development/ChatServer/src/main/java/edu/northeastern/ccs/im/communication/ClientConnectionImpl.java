@@ -1,11 +1,17 @@
 package edu.northeastern.ccs.im.communication;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.readers.JsonBufferReader;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.*;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.List;
 
 public class ClientConnectionImpl implements ClientConnection {
 
@@ -46,14 +52,27 @@ public class ClientConnectionImpl implements ClientConnection {
             NetworkRequest networkRequest = new NetworkRequestFactory().createJoinGroup();
             ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
             socketChannel.write(byteBuffer);
-
+            byteBuffer.clear();
+            socketChannel.read(byteBuffer);
             Thread t = new Thread(() -> {
                 boolean isRunning = true;
+                ByteBuffer messageBuffer = ByteBuffer.allocate(2048);
                 while (socketChannel.isConnected() && isRunning) {
-                    ByteBuffer byteBuffer1 = ByteBuffer.allocate(1024);
                     try {
-                        socketChannel.read(byteBuffer1);
-                        System.out.println("Data");
+                        socketChannel.read(messageBuffer);
+                        messageBuffer.flip();
+                        Charset charset = Charset.forName("us-ascii");
+                        CharsetDecoder decoder = charset.newDecoder();
+                        // Convert the buffer to a format that we can actually use.
+                        CharBuffer charBuffer = decoder.decode(messageBuffer);
+                        ByteBuffer bf = charset.encode(charBuffer);
+                        JsonBufferReader jsonBufferReader = new JsonBufferReader();
+                        List<Message> messagesList = jsonBufferReader.messageList(bf);
+                        for (Message message : messagesList)
+                            ChatLogger.info(message.toString());
+                        long bytesRead = jsonBufferReader.bytesRead();
+                        messageBuffer.position((int) bytesRead);
+                        messageBuffer.compact();
                     } catch (IOException e) {
                         e.printStackTrace();
                         isRunning = false;

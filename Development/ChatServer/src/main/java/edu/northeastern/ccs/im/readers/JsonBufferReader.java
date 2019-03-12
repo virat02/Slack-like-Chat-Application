@@ -8,6 +8,7 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JsonBufferReader {
@@ -50,6 +51,6 @@ public class JsonBufferReader {
 
         for (Message m : messages)
             bytesRead += CommunicationUtils.getObjectMapper().writeValueAsBytes(m).length;
-        return messages;
+        return Collections.unmodifiableList(messages);
     }
 }
