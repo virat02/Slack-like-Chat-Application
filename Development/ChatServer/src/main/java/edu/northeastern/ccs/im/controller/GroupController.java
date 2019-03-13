@@ -10,7 +10,7 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 
 public class GroupController implements IController<Group>{
-	private GroupService groupService;
+	private GroupService groupService = new GroupService();
 
 	@Override
 	public NetworkResponse addEntity(Group group) {

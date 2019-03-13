@@ -9,7 +9,7 @@ import edu.northeastern.ccs.im.userGroup.Message;
 
 public class MessageController implements IController<Message>{
 
-    private MessageService messageService;
+    private MessageService messageService = new MessageService();
 
     public NetworkResponse addEntity(Message message) {
     	try {

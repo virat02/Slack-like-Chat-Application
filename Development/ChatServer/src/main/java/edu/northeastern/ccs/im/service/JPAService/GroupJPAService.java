@@ -33,7 +33,7 @@ public class GroupJPAService{
 	}
 
 	public Group getGroup(String name) {
-		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + name;
+		String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.name = " + name;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (Group) query.getSingleResult();
@@ -69,14 +69,14 @@ public class GroupJPAService{
 	
     @SuppressWarnings("unchecked")
 	public List<Group> searchUsingName(String groupName) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + groupName;
+        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.name = " + groupName;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (List<Group>) query.getResultList();
     }
     
     public Group searchUsingCode(String groupCode) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.groupcode =" + groupCode;
+        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.groupcode = " + groupCode;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (Group) query.getSingleResult();

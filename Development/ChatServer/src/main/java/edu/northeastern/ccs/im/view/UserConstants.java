@@ -28,4 +28,8 @@ public class UserConstants {
   public static String getUserName() {
     return getInstance().userObj.getUsername();
   }
+
+  public static User getUserObj() {
+    return getInstance().userObj;
+  }
 }
