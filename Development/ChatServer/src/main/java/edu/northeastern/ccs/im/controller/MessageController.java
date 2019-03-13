@@ -12,7 +12,7 @@ public class MessageController implements IController<Message>{
     private MessageService messageService;
 
     public NetworkResponse addEntity(Message message) {
-        try {
+    	try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(messageService.createMessage(message))));
         } catch (IllegalArgumentException e) {
@@ -23,7 +23,7 @@ public class MessageController implements IController<Message>{
     }
 
     public NetworkResponse getEntity(int id) {
-        try {
+    	try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(messageService.get(id))));
         } catch (IllegalArgumentException e) {
@@ -33,7 +33,7 @@ public class MessageController implements IController<Message>{
     }
 
     public NetworkResponse updateEntity(Message message) {
-        try {
+    	try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(messageService.updateMessage(message))));
         } catch (IllegalArgumentException e) {
@@ -43,7 +43,7 @@ public class MessageController implements IController<Message>{
     }
 
     public NetworkResponse deleteEntity(Message message) {
-        try {
+    	try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(messageService.deleteMessage(message))));
         } catch (IllegalArgumentException e) {

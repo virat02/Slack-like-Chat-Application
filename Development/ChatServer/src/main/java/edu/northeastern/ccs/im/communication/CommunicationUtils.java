@@ -2,7 +2,7 @@ package edu.northeastern.ccs.im.communication;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import edu.northeastern.ccs.im.ChatLogger;
@@ -35,14 +35,14 @@ public class CommunicationUtils {
     }
 
     public static <T> String toJsonArray(List<T> T) {
-        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        try {
-            return objWriter.writeValueAsString(T);
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+    	ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    	try {
+    		return objWriter.writeValueAsString(T);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
     }
 
     /***

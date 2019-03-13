@@ -21,7 +21,7 @@ public class PrivateGroup extends Group {
     
     /** The users. */
     @OneToMany(targetEntity=User.class)
-    private List<IUserGroup> users = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
 	private List<User> moderators= new ArrayList<>();
@@ -34,11 +34,11 @@ public class PrivateGroup extends Group {
 		this.id = id;
 	}
 
-	public List<IUserGroup> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<IUserGroup> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 

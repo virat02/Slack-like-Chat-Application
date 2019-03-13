@@ -16,68 +16,68 @@ public class GroupController implements IController<Group>{
 	public NetworkResponse addEntity(Group group) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJson(groupService.create(group))));
+					new PayloadImpl(CommunicationUtils.toJson(groupService.create(group))));
 		} catch (IllegalArgumentException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
+					new PayloadImpl(null));
 		}
 
 	}
 
 	public NetworkResponse getEntity(String groupName) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupName))));
-		} catch (IllegalArgumentException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
-		}
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupName))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
 	}
 
 	@Override
 	public NetworkResponse updateEntity(Group group) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJson(groupService.update(group))));
-		} catch (IllegalArgumentException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
-		}
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.update(group))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
 
 	}
 
 	@Override
 	public NetworkResponse deleteEntity(Group group) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJson(groupService.delete(group))));
-		} catch (IllegalArgumentException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
-		}
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.delete(group))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
 
 	}
 
 	@Override
 	public NetworkResponse searchEntity(String groupCode) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
-		} catch (IllegalArgumentException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
-		}
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
 	}
 
 
 	public NetworkResponse searchAllGroup(String groupName) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-							new PayloadImpl(CommunicationUtils.toJsonArray(groupService.searchUsingName(groupName))));
-		} catch (IllegalArgumentException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-							new PayloadImpl(null));
-		}
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(groupService.searchUsingName(groupName))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
 	}
 
 
