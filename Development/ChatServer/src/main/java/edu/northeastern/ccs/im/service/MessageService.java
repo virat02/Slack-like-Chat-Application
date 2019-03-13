@@ -1,7 +1,9 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.service.JPAService.MessageJPAService;
+import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.userGroup.User;
 
 import java.util.List;
 
@@ -9,7 +11,12 @@ import java.util.List;
 public class MessageService implements IService{
 
     private MessageJPAService messageJPAService;
+    private UserService userService;
+    private GroupService groupService;
     public MessageService() {
+        messageJPAService = new MessageJPAService();
+        userService = new UserService();
+        groupService = new GroupService();
     }
 
     /**
@@ -18,10 +25,19 @@ public class MessageService implements IService{
      * @return
      */
     public Message createMessage(Message message) {
-
         messageJPAService.createMessage(message);
         return messageJPAService.getMessage(message.getId());
 
+    }
+    
+    public Message createMessage(String messageBody, String userName, String groupCode) {
+        Message message = new Message();
+        User user = userService.search(userName);
+        Group group = groupService.searchUsingCode(groupCode);
+        message.setMessage(messageBody);
+        message.setSender(user);
+        message.setReceiver(group);
+        return createMessage(message);
     }
 
     /**
