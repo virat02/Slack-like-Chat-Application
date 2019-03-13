@@ -20,8 +20,8 @@ public class MessageService implements IService{
     }
 
     /**
-     * Create and send a message
-     * @param message
+     * Helper method to send a message
+     * @param message the message object generated from the client input
      * @return
      */
     public Message createMessage(Message message) {
@@ -29,7 +29,14 @@ public class MessageService implements IService{
         return messageJPAService.getMessage(message.getId());
 
     }
-    
+
+    /**
+     * Generates a message object from the client input and sends the message
+     * @param messageBody
+     * @param userName
+     * @param groupCode
+     * @return
+     */
     public Message createMessage(String messageBody, String userName, String groupCode) {
         Message message = new Message();
         User user = userService.search(userName);

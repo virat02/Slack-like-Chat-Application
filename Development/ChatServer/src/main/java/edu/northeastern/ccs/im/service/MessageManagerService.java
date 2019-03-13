@@ -41,9 +41,12 @@ public class MessageManagerService {
      * Creates a broadcast service iff at-least one client is present
      */
     public MessageBroadCastService createService(){
-        //isClientPresent()
-        if (true) {
-            return new MessageBroadCastService();
+
+        MessageBroadCastService messageBroadCastService = new MessageBroadCastService();
+
+        //Create a service if one or more clients is present
+        if (messageBroadCastService.isClientActive()) {
+            return messageBroadCastService;
         }
         else {
             LOGGER.info("Cannot create a service since client is not present!");

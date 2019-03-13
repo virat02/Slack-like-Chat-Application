@@ -7,7 +7,7 @@ import edu.northeastern.ccs.im.userGroup.*;
 
 public final class UserService implements IService {
     private UserJPAService userJPAService;
-    private UserService() {
+    public UserService() {
         userJPAService = new UserJPAService();
     }
 
