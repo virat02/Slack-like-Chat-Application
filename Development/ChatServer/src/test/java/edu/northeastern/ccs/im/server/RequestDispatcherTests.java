@@ -50,6 +50,7 @@ public class RequestDispatcherTests {
     public void whenHandleNetworkRequestIfOperationNotSuccessfulReturnFailedResponse() {
         RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         requestDispatcher.setUserController(userController);
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.CREATE_USER);
         doThrow(IOException.class).when(userController).addEntity(any());
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
