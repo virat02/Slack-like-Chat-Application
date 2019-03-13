@@ -1,13 +1,15 @@
 package edu.northeastern.ccs.im.controller;
 
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+
 public interface IController<T>{
 
-    T addEntity(T entity);
+    NetworkResponse addEntity(T entity);
 
-    T searchEntity(String username);
+    NetworkResponse searchEntity(String username);
 
-    T updateEntity(T entity);
+    NetworkResponse updateEntity(T entity);
 
-    T deleteEntity(T entity);
+    NetworkResponse deleteEntity(T entity);
 
 }

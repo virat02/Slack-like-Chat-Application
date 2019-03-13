@@ -3,14 +3,14 @@
              xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="PrattlePersistance" transaction-type="RESOURCE_LOCAL">
-        <class>edu.northeastern.ccs.jpa.User</class>
-        <class>edu.northeastern.ccs.jpa.Message</class>
-        <class>edu.northeastern.ccs.jpa.Profile</class>
-        <class>edu.northeastern.ccs.jpa.Group</class>
+        <class>edu.northeastern.ccs.im.userGroup.User</class>
+        <class>edu.northeastern.ccs.im.userGroup.Message</class>
+        <class>edu.northeastern.ccs.im.userGroup.Profile</class>
+        <class>edu.northeastern.ccs.im.userGroup.Group</class>
         <properties>
             <property name = "eclipselink.logging.level" value = "FINE"/>
             <property name = "eclipselink.ddl-generation" value = "create-tables"/>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/prattle_server"/>
             <property name="javax.persistence.jdbc.user" value="root"/>
             <property name="javax.persistence.jdbc.password" value="root"/>

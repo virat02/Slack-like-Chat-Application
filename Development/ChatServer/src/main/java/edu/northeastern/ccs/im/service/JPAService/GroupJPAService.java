@@ -9,17 +9,27 @@ import edu.northeastern.ccs.im.userGroup.IGroup;
 import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.User;
 
-@Entity
-@Table(name="groupcomposite")
 public class GroupJPAService{
 	/** The emfactory. */
+	
 	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-
+	private EntityManager beginTransaction() {
+		EntityManager entitymanager = emfactory.createEntityManager();
+		entitymanager.getTransaction().begin();
+		return entitymanager;
+	}
+	
+	private void endTransaction(EntityManager entitymanager) {
+		entitymanager.getTransaction().commit();
+		entitymanager.close();
+	}
 
 	public void createGroup(Group group) {
-		EntityManager entitymanager = beginTransaction();
+		EntityManager entitymanager = emfactory.createEntityManager();
+		entitymanager.getTransaction().begin();
 		entitymanager.persist(group);
-		endTransaction(entitymanager);
+		entitymanager.getTransaction().commit();
+		entitymanager.close();
 	}
 
 	public Group getGroup(String name) {
@@ -80,14 +90,4 @@ public class GroupJPAService{
 		endTransaction(entitymanager);
 	}
 	
-	private EntityManager beginTransaction() {
-		EntityManager entitymanager = emfactory.createEntityManager();
-		entitymanager.getTransaction().begin();
-		return entitymanager;
-	}
-	
-	private void endTransaction(EntityManager entitymanager) {
-		entitymanager.getTransaction().commit();
-		entitymanager.close();
-	}
 }

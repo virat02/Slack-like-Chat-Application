@@ -3,6 +3,8 @@ package edu.northeastern.ccs.im.userGroup;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.IGroup;
@@ -20,7 +24,7 @@ import edu.northeastern.ccs.im.userGroup.User;
  * The Class Group.
  */
 @Entity
-@Table(name="groupcomposite")
+@Table(name="basegroup")
 public class Group implements IGroup {
 
     /** The id. */
@@ -33,7 +37,7 @@ public class Group implements IGroup {
 
     /** The users. */
     @OneToMany(targetEntity=User.class)
-    private List<IUserGroup> users = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
 	private List<User> moderators= new ArrayList<>();
@@ -49,11 +53,13 @@ public class Group implements IGroup {
 	@OneToMany(targetEntity=User.class)
 	private List<User> followers = new ArrayList<>();
 	
-	@ManyToOne(targetEntity=User.class)
+	//@ManyToOne(targetEntity=User.class)
 	private List<User> followees = new ArrayList<>();
 	
+	@Column(unique=true)
 	private String groupCode;
 	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdOn;
 
     /**
@@ -116,7 +122,7 @@ public class Group implements IGroup {
      *
      * @return the users
      */
-    public List<IUserGroup> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
 
@@ -125,7 +131,7 @@ public class Group implements IGroup {
      *
      * @param users the new users
      */
-    public void setUsers(List<IUserGroup> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 
@@ -134,7 +140,7 @@ public class Group implements IGroup {
      *
      * @param user the user
      */
-    public void addUser(IUserGroup user) {
+    public void addUser(User user) {
         this.users.add(user);
     }
 
