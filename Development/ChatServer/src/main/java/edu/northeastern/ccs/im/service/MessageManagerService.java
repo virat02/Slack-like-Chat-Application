@@ -54,7 +54,7 @@ public class MessageManagerService {
         }
         else {
             LOGGER.info("Cannot create a service since client is not present!");
-            return null;
+            throw new UnsupportedOperationException("Cannot create a service since client is not present!");
         }
     }
 
