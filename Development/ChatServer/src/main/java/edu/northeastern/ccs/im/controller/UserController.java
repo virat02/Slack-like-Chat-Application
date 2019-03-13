@@ -8,13 +8,12 @@ import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.userGroup.User;
 
 public final class UserController implements IController {
-    private UserService userService = new UserService();
 
     public NetworkResponse addEntity(Object object) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.addUser(object))));
-        } catch (IllegalArgumentException e) {
+                    new PayloadImpl(CommunicationUtils.toJson(UserService.addUser(object))));
+        }   catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
         }
@@ -23,7 +22,7 @@ public final class UserController implements IController {
     public NetworkResponse updateEntity(Object object) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.update(object))));
+                    new PayloadImpl(CommunicationUtils.toJson(UserService.update(object))));
         } catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
@@ -33,7 +32,7 @@ public final class UserController implements IController {
     public NetworkResponse deleteEntity(Object entity) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.delete(entity))));
+                    new PayloadImpl(CommunicationUtils.toJson(UserService.delete(entity))));
         } catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
@@ -43,7 +42,7 @@ public final class UserController implements IController {
     public NetworkResponse searchEntity(String username) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.search(username))));
+                    new PayloadImpl(CommunicationUtils.toJson(UserService.search(username))));
         } catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
@@ -51,6 +50,6 @@ public final class UserController implements IController {
     }
 
     public void followUser(String username, User currentUser) {
-        userService.follow(username, currentUser);
+        UserService.follow(username, currentUser);
     }
 }

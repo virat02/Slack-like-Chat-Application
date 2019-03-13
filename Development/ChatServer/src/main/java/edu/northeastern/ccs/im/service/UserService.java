@@ -1,20 +1,21 @@
 package edu.northeastern.ccs.im.service;
 
-import java.util.Date;
-
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
-public class UserService implements IService {
+import java.util.Date;
+
+public final class UserService implements IService {
     private UserJPAService userJPAService;
-    public UserService() {
+    private UserService() {
         userJPAService = new UserJPAService();
     }
 
 
-    public User addUser(Object user) {
-        int userId = userJPAService.createUser((User)user);
-        return userJPAService.getUser(userId);
+    public static User addUser(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
+        userJPAService.createUser((User)user);
+        return userJPAService.getUser(((User) user).getId());
     }
 
     /**
@@ -22,7 +23,8 @@ public class UserService implements IService {
      * @param username the name of the user being searched
      * @return the users with the name searched for
      */
-    public User search(String username) {
+    public static User search(String username) {
+        UserJPAService userJPAService = new UserJPAService();
         return userJPAService.search(username);
         //return null;
     }
@@ -31,16 +33,18 @@ public class UserService implements IService {
      * Follow a particular user given their username.
      * @param username of the user we want to follow.
      */
-    public void follow(String username, User currentUser) {
+    public static void follow(String username, User currentUser) {
         currentUser.addFollowee(search(username));
     }
 
-    public User update(Object user) {
+    public static User update(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
         userJPAService.updateUser((User) user);
         return userJPAService.getUser(((User) user).getId());
     }
 
-    public User delete(Object user) {
+    public static User delete(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
         userJPAService.deleteUser((User) user);
         return userJPAService.getUser(((User) user).getId());
     }
@@ -63,7 +67,7 @@ public class UserService implements IService {
 //                newMessage.setGroup(group);
 //            }
 //        }
-//        this.messages.add(newMessage);
+        this.messages.add(newMessage);
 }
 
     private boolean isValidUsername(String uname) {
