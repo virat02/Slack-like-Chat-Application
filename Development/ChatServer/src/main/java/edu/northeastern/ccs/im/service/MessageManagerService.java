@@ -2,6 +2,9 @@ package edu.northeastern.ccs.im.service;
 
 import java.util.logging.Logger;
 
+/**
+ * Class to manage all the message services
+ */
 public class MessageManagerService {
 
     // static variable instance of type MessageManagerService
@@ -12,7 +15,7 @@ public class MessageManagerService {
 
     /**
      * Singleton class MessageManagerService
-     * @return
+     * @return the instance of MessageManagerService class
      */
     public static MessageManagerService getInstance() {
 
@@ -33,7 +36,8 @@ public class MessageManagerService {
             return new MessageBroadCastService();
         }
         else {
-            return null;
+            LOGGER.info("Couldn't get a service since no such group with given unique identifier was found!");
+            throw new NullPointerException("No such group found with unique identifier: "+groupUniqueKey);
         }
     }
 

@@ -7,11 +7,19 @@ import edu.northeastern.ccs.im.userGroup.*;
 
 public final class UserService implements IService {
     private UserJPAService userJPAService;
+
+    /**
+     * Constructor for UserService
+     */
     public UserService() {
         userJPAService = new UserJPAService();
     }
 
-
+    /**
+     * Persists a user using the JPA service
+     * @param user
+     * @return A user object
+     */
     public User addUser(Object user) {
         userJPAService.createUser((User)user);
         return userJPAService.getUser(((User) user).getId());
@@ -24,7 +32,6 @@ public final class UserService implements IService {
      */
     public User search(String username) {
         return userJPAService.search(username);
-        //return null;
     }
 
     /**
@@ -45,10 +52,6 @@ public final class UserService implements IService {
         return userJPAService.getUser(((User) user).getId());
     }
 
-    /**
-     * Check for valid username
-     */
-
     public void sendMessage(String messageText, int iGroupId) {
         Message newMessage = new Message();
         newMessage.setMessage(messageText);
@@ -65,11 +68,6 @@ public final class UserService implements IService {
 //        }
 //        this.messages.add(newMessage);
 }
-
-    private boolean isValidUsername(String uname) {
-        return (uname != null && uname.matches("[A-Za-z0-9_]+"));
-    }
-
 
     /**
      * Updates an existing profile username if the respective input is valid
@@ -96,6 +94,13 @@ public final class UserService implements IService {
         }
 
         return false;
+    }
+
+    /**
+     * Check for valid username
+     */
+    private boolean isValidUsername(String uname) {
+        return (uname != null && uname.matches("[A-Za-z0-9_]+"));
     }
 
     /**

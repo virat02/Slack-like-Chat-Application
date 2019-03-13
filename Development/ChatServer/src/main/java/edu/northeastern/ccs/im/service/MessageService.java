@@ -13,6 +13,10 @@ public class MessageService implements IService{
     private MessageJPAService messageJPAService;
     private UserService userService;
     private GroupService groupService;
+
+    /**
+     * Constructor for MessageService
+     */
     public MessageService() {
         messageJPAService = new MessageJPAService();
         userService = new UserService();
@@ -24,7 +28,7 @@ public class MessageService implements IService{
      * @param message the message object generated from the client input
      * @return
      */
-    public Message createMessage(Message message) {
+    private Message createMessage(Message message) {
         messageJPAService.createMessage(message);
         return messageJPAService.getMessage(message.getId());
 
