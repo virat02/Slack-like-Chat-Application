@@ -60,4 +60,16 @@ public class UserJPAService {
         Query query = entityManager.createQuery(queryString);
         return (User) query.getSingleResult();
     }
+
+    public User loginUser(User user) {
+        String queryString = "SELECT u " + "FROM User u WHERE u.id =" + user.getId();
+        EntityManager entityManager = beginTransaction();
+        Query query = entityManager.createQuery(queryString);
+        User newUser = (User) query.getSingleResult();
+        if(!user.getUsername().equals(newUser.getUsername()) || !user.getPassword().equals(newUser.getPassword())) {
+            return null;
+        } else {
+            return newUser;
+        }
+    }
 }
