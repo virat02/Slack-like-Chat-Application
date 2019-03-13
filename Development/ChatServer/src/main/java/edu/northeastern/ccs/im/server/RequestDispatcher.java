@@ -78,7 +78,6 @@ public class RequestDispatcher {
       return handleDeleteGroup(networkRequest);
     }
 
-
     return networkResponseFactory.createFailedResponse();
   }
 
@@ -88,40 +87,58 @@ public class RequestDispatcher {
   }
 
   private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
-    return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-            () -> CommunicationUtils.getObjectMapper().writeValueAsString(new ArrayList<>(Arrays.asList("sibendu", "tarun", "sangeetha", "jerry", "virat"))));
+    try {
+      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      final User newUser = (new UserController()).searchEntity(user.getUsername());
+      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
+    } catch (IOException e) {
+      return networkResponseFactory.createFailedResponse();
+    }
+//    return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+//            () -> CommunicationUtils.getObjectMapper().writeValueAsString(new ArrayList<>(Arrays.asList("sibendu", "tarun", "sangeetha", "jerry", "virat"))));
   }
 
   private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
-    return handleCreateUserRequest(networkRequest);
+    try {
+      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      NetworkResponse response = (new UserController()).addEntity(user);
+      return response;
+    } catch (IOException e) {
+      return networkResponseFactory.createFailedResponse();
+    }
   }
 
   private NetworkResponse handleCreateUserRequest(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-//            userController.addIUserGroup(user);
+      NetworkResponse response = (new UserController()).addEntity(user);
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
-    return networkResponseFactory.createSuccessfulResponse();
   }
 
   private NetworkResponse handleUpdateUserName(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      final User newUser = (new UserController()).updateEntity(user);
+      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
-    return networkResponseFactory.createSuccessfulResponse();
   }
 
   private NetworkResponse handleUpdateUserStatus(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      final User newUser = (new UserController()).updateEntity(user);
+      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
-    return networkResponseFactory.createSuccessfulResponse();
   }
 
   private NetworkResponse handleDeleteGroup(NetworkRequest networkRequest) {

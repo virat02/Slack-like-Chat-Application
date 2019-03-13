@@ -47,6 +47,8 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.LOGIN_USER,
                 () -> {
                     User user = new User();
+                    user.setUsername(userName);
+                    user.setPassword(password);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
@@ -73,6 +75,7 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_USER,
                 () -> {
                     User user = new User();
+                    user.setUsername(searchString);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }

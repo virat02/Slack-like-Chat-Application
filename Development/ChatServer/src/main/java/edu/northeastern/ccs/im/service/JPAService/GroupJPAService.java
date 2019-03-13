@@ -9,24 +9,34 @@ import edu.northeastern.ccs.im.userGroup.IGroup;
 import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.User;
 
-@Entity
-@Table(name="groupcomposite")
 public class GroupJPAService{
 	/** The emfactory. */
-	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
 
+	EntityManagerFactory emfactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
+	private EntityManager beginTransaction() {
+		EntityManager entitymanager = emfactory.createEntityManager();
+		entitymanager.getTransaction().begin();
+		return entitymanager;
+	}
+
+	private void endTransaction(EntityManager entitymanager) {
+		entitymanager.getTransaction().commit();
+		entitymanager.close();
+	}
 
 	public void createGroup(Group group) {
-		EntityManager entitymanager = beginTransaction();
+		EntityManager entitymanager = emfactory.createEntityManager();
+		entitymanager.getTransaction().begin();
 		entitymanager.persist(group);
-		endTransaction(entitymanager);
+		entitymanager.getTransaction().commit();
+		entitymanager.close();
 	}
 
 	public Group getGroup(String name) {
 		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + name;
-        EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (Group) query.getSingleResult();
+		EntityManager entityManager = beginTransaction();
+		Query query = entityManager.createQuery(queryString);
+		return (Group) query.getSingleResult();
 	}
 
 	public void updateGroup(Group currentGroup) {
@@ -35,7 +45,7 @@ public class GroupJPAService{
 
 		if (group == null) {
 			throw new EntityNotFoundException("Can't find Group for ID "
-					+ currentGroup.getId());
+							+ currentGroup.getId());
 		}
 
 		group.setName(currentGroup.getName());
@@ -56,21 +66,21 @@ public class GroupJPAService{
 		Group group=getGroup(name);
 		return group.getMsgs();
 	}
-	
-    @SuppressWarnings("unchecked")
+
+	@SuppressWarnings("unchecked")
 	public List<Group> searchUsingName(String groupName) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + groupName;
-        EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (List<Group>) query.getResultList();
-    }
-    
-    public Group searchUsingCode(String groupCode) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.groupcode =" + groupCode;
-        EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (Group) query.getSingleResult();
-    }
+		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + groupName;
+		EntityManager entityManager = beginTransaction();
+		Query query = entityManager.createQuery(queryString);
+		return (List<Group>) query.getResultList();
+	}
+
+	public Group searchUsingCode(String groupCode) {
+		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.groupcode =" + groupCode;
+		EntityManager entityManager = beginTransaction();
+		Query query = entityManager.createQuery(queryString);
+		return (Group) query.getSingleResult();
+	}
 
 
 	public void deleteGroup(Group currentGroup) {
@@ -79,15 +89,5 @@ public class GroupJPAService{
 		entitymanager.remove(group);
 		endTransaction(entitymanager);
 	}
-	
-	private EntityManager beginTransaction() {
-		EntityManager entitymanager = emfactory.createEntityManager();
-		entitymanager.getTransaction().begin();
-		return entitymanager;
-	}
-	
-	private void endTransaction(EntityManager entitymanager) {
-		entitymanager.getTransaction().commit();
-		entitymanager.close();
-	}
+
 }

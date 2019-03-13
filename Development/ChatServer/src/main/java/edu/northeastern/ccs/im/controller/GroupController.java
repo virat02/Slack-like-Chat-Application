@@ -3,49 +3,83 @@ package edu.northeastern.ccs.im.controller;
 import java.util.List;
 
 import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.communication.PayloadImpl;
 
 public class GroupController implements IController<Group>{
 	private GroupService groupService;
 
 	@Override
-	public Group addEntity(Group group) {
+	public NetworkResponse addEntity(Group group) {
 		try {
-			 return groupService.create(group);
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJson(groupService.create(group))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
 		}
-		catch(IllegalArgumentException e) {
-			throw new IllegalArgumentException("Cannot create a new group");
+
+	}
+
+	public NetworkResponse getEntity(String groupName) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupName))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
 		}
-		
-	}
-
-	public Group getEntity(String groupName) {
-		
-		return groupService.get(groupName);
 	}
 
 	@Override
-	public Group updateEntity(Group group) {
-		return groupService.update(group);
-		
+	public NetworkResponse updateEntity(Group group) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJson(groupService.update(group))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
+		}
+
 	}
 
 	@Override
-	public Group deleteEntity(Group group) {
-		return groupService.delete(group);
-		
-	}
-	
-	@Override
-	public Group searchEntity(String groupCode) {
-		return groupService.searchUsingCode(groupCode);
+	public NetworkResponse deleteEntity(Group group) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJson(groupService.delete(group))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
+		}
+
 	}
 
-	
-	public List<Group> searchAllGroup(String groupName) {
-		return groupService.searchUsingName(groupName);
+	@Override
+	public NetworkResponse searchEntity(String groupCode) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
+		}
 	}
-	
-	
+
+
+	public NetworkResponse searchAllGroup(String groupName) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+							new PayloadImpl(CommunicationUtils.toJsonArray(groupService.searchUsingName(groupName))));
+		} catch (IllegalArgumentException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+							new PayloadImpl(null));
+		}
+	}
+
+
 
 }

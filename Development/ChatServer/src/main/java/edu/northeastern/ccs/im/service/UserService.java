@@ -5,9 +5,9 @@ import java.util.Date;
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
-public final class UserService implements IService {
+public class UserService implements IService {
     private UserJPAService userJPAService;
-    private UserService() {
+    public UserService() {
         userJPAService = new UserJPAService();
     }
 

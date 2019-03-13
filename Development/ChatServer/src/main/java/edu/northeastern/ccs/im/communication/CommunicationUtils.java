@@ -3,11 +3,14 @@ package edu.northeastern.ccs.im.communication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import edu.northeastern.ccs.im.ChatLogger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.List;
 
 /***
  * A Utility class for obtaining an instance of jackson object mapper.
@@ -29,6 +32,17 @@ public class CommunicationUtils {
      */
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
+    }
+
+    public static <T> String toJsonArray(List<T> T) {
+        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            return objWriter.writeValueAsString(T);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /***
@@ -100,11 +114,13 @@ public class CommunicationUtils {
      * @return Json String representation of the object.
      */
     public static String toJson(Object object) {
-        try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            return ow.writeValueAsString(object);
-        } catch (IOException io) {
-            return null;
-        }
+      ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+      try {
+        return objWriter.writeValueAsString(object);
+      } catch (JsonProcessingException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return null;
     }
 }

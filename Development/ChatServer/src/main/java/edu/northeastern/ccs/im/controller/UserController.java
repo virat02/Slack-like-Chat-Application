@@ -8,7 +8,7 @@ import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.userGroup.User;
 
 public final class UserController implements IController {
-    private UserService userService;
+    private UserService userService = new UserService();
 
     public NetworkResponse addEntity(Object object) {
         try {
