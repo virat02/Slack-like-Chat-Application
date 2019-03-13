@@ -54,11 +54,15 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
   }
 
   private boolean initiateRecovery(String recoveryAddress) {
-    if (!recoveryAddress.contains("@")) {
+    try {
+      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createForgotPasswordRequest(recoveryAddress));
+
+      return ResponseParser.parseForgotPasswordResponse(networkResponse);
+    } catch (IOException exception) {
+      // TODO Provide some good custom message
+      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       return false;
-    }
-    else {
-      return true;
     }
   }
 }

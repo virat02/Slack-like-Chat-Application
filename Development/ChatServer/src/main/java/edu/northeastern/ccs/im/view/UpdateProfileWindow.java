@@ -1,19 +1,13 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
 public class UpdateProfileWindow extends AbstractTerminalWindow {
-
-  private TerminalWindow chatTerminalWindow;
-  private TerminalWindow forgotPasswordWindow;
 
   public UpdateProfileWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
@@ -60,7 +54,8 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUpdateUserName(userName));
-      return updateSuccessful(networkResponse);
+
+      return ResponseParser.parseUpdateUserNameRequest(networkResponse);
     } catch (IOException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
@@ -72,18 +67,12 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUpdateUserStatus(userStatus));
-      return updateSuccessful(networkResponse);
+
+      return ResponseParser.parseUpdateUserStatusRequest(networkResponse);
     } catch (IOException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       return false;
     }
-  }
-
-  private boolean updateSuccessful(NetworkResponse networkResponse) throws IOException {
-    JsonNode jsonNode = CommunicationUtils
-            .getObjectMapper().readTree(networkResponse.payload().jsonString());
-    boolean status = jsonNode.get("status").asBoolean();
-    return status;
   }
 }

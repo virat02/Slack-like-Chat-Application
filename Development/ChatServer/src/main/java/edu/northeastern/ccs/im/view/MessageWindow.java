@@ -1,57 +1,55 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import java.io.IOException;
 import java.util.HashMap;
 
+import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
-import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
-import edu.northeastern.ccs.im.communication.NetworkResponse;
 
-public class MessageWindow extends AbstractTerminalWindow {
+public class MessageWindow extends AbstractTerminalWindow implements MessageListerner {
+
+  private final Listener messageSocketListener;
+  private final Thread threadObject;
 
   public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
+      put(0, "Message Window");
     }}, clientConnectionFactory);
+    messageSocketListener = new MessageSocketListener(this);
+    threadObject = new Thread((Runnable) messageSocketListener);
+  }
+  @Override
+  public void runWindow() {
+//    threadObject.run();
+    super.runWindow();
   }
 
   @Override
   void inputFetchedFromUser(String inputString) {
-    if (getCurrentProcess() == 0) {
-
+    if (inputString.equals("1")) {
+      printInConsoleForProcess(0);
+    } else if (inputString.equals("0")) {
+      goBack();
+    } else if (inputString.equals("*")) {
+      exitWindow();
     } else {
-      if (inputString.equals("1")) {
-        printInConsoleForProcess(0);
-      } else if (inputString.equals("0")) {
-        goBack();
-      } else if (inputString.equals("*")) {
-        exitWindow();
-      } else {
-        invalidInputPassed();
-      }
+      invalidInputPassed();
     }
   }
 
-  private int sendMessage() {
-    try {
-      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createLoginRequest("", ""));
-      return getUserId(networkResponse);
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-      return -1;
-    }
+  @Override
+  public void goBack() {
+    messageSocketListener.shouldStopListening();
+    super.goBack();
   }
 
-  private int getUserId(NetworkResponse networkResponse) throws IOException {
-    JsonNode jsonNode = CommunicationUtils
-            .getObjectMapper().readTree(networkResponse.payload().jsonString());
-    int userId = jsonNode.get("id").asInt();
-    UserConstants.setUserId(userId);
-    return userId;
+  @Override
+  public void exitWindow() {
+    messageSocketListener.shouldStopListening();
+    super.exitWindow();
+  }
+
+  @Override
+  public Message newMessageReceived() {
+    return null;
   }
 }

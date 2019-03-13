@@ -29,7 +29,6 @@ public class NetworkRequestFactory {
                     user.setPassword(password);
 
                     Profile profile = new Profile();
-                    profile.setId(0);
                     profile.setEmail(emailAddress);
                     profile.setImageUrl("");
 

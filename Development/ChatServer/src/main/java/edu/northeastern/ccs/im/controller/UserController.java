@@ -2,11 +2,9 @@ package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.userGroup.User;
-import edu.northeastern.ccs.im.view.View;
 
 public final class UserController implements IController {
     private UserService userService;
-    private View view;
 
     public User addEntity(Object User) {
         try {

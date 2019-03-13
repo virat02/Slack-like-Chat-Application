@@ -58,11 +58,11 @@ public class ConstantStrings {
 
     //Create Group
     public static final String CREATE_GROUP = "Enter Group Name: ";
-    public static final String CREATE_GROUP_SUCCESS = "Group created successfully" + DEFAULT_MENU;
-    public static final String CREATE_GROUP_FAILED = "Group creation failed" + FAILURE_MENU;
+    public static final String CREATE_GROUP_SUCCESS = "Group created successfully\n" + DEFAULT_MENU;
+    public static final String CREATE_GROUP_FAILED = "Group creation failed\n" + FAILURE_MENU;
 
     //Delete Group
     public static final String DELETE_GROUP = "Enter Group Name To Delete: ";
-    public static final String DELETE_GROUP_SUCCESS = "Group deleted successfully" + DEFAULT_MENU;
-    public static final String DELETE_GROUP_FAILED = "Group deletion failed" + FAILURE_MENU;
+    public static final String DELETE_GROUP_SUCCESS = "Group deleted successfully\n" + DEFAULT_MENU;
+    public static final String DELETE_GROUP_FAILED = "Group deletion failed\n" + FAILURE_MENU;
 }

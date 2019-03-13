@@ -1,12 +1,9 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
@@ -47,18 +44,12 @@ public class DeleteGroupWindow extends AbstractTerminalWindow {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createDeleteGroupRequest(groupName));
-      return getGroupDeletionStatus(networkResponse);
+
+      return ResponseParser.parseDeleteGroupResponse(networkResponse);
     } catch (IOException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       return false;
     }
-  }
-
-  private boolean getGroupDeletionStatus(NetworkResponse networkResponse) throws IOException {
-    JsonNode jsonNode = CommunicationUtils
-            .getObjectMapper().readTree(networkResponse.payload().jsonString());
-    boolean status = jsonNode.get("status").asBoolean();
-    return status;
   }
 }

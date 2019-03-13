@@ -73,28 +73,13 @@ public class SignUpWindow extends AbstractTerminalWindow {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUserRequest(userName, emailAddress, passwordString));
-
-      return getUserId(networkResponse);
+      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
     } catch (IOException exception) {
-      exception.printStackTrace();
+      // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
       printMessageInConsole(exception.getMessage());
     }
-    return 0;
-  }
-
-  private int getUserId(NetworkResponse networkResponse) {
-    if (!emailAddress.contains("@")) {
-      return -1;
-    }
-    try {
-      JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkResponse.payload().jsonString());
-      int userId = jsonNode.get("id").asInt();
-      UserConstants.setUserId(userId);
-      return userId;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return -1;
-    }
+    return -1;
   }
 }

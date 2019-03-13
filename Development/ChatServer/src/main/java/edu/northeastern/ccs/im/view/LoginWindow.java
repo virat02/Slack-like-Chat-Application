@@ -76,19 +76,18 @@ public class LoginWindow extends AbstractTerminalWindow {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createLoginRequest(userIdString, passwordString));
-      return getUserId(networkResponse);
+
+      return 1;
+      // TODO Must use the below line and not the above
+//      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
     } catch (IOException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-      return -1;
     }
-  }
-
-  private int getUserId(NetworkResponse networkResponse) throws IOException {
-    JsonNode jsonNode = CommunicationUtils
-            .getObjectMapper().readTree(networkResponse.payload().jsonString());
-    int userId = jsonNode.get("id").asInt();
-    UserConstants.setUserId(userId);
-    return userId;
+    // TODO Must use the below line and not the above
+//    catch (NetworkResponseFailureException exception) {
+//      printMessageInConsole(exception.getMessage());
+//    }
+    return -1;
   }
 }

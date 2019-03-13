@@ -83,6 +83,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
         if (input.equals("exit")) {
 //          System.exit(0);
           printMessageInConsole(ConstantStrings.THANK_YOU);
+          return;
         }
         else if (input.equals("/..")) {
           goBack();
