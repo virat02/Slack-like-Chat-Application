@@ -1,56 +1,29 @@
 package edu.northeastern.ccs.im.readers;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class JsonBufferReader {
-    private long bytesRead;
+/***
+ * A Reader class to read the Message transmitted by socket.
+ */
+public interface JsonBufferReader {
+    /***
+     * Returns the number of bytes from which message has been successfully
+     * extracted from the buffer.
+     * Returns 0 by default if this method is invoked
+     * before messageList()
+     * @return the bytes rea
+     */
+    long bytesRead();
 
-    public long bytesRead() {
-        return bytesRead;
-    }
-
-    public List<Message> messageList(ByteBuffer buffer) throws IOException {
-        List<Message> messages = new ArrayList<>();
-        try (JsonParser jsonParser = CommunicationUtils.getObjectMapper().getFactory().createParser(buffer.array())) {
-            String srcName = null;
-            String text = null;
-            while (!jsonParser.isClosed()) {
-                JsonToken jsonToken = jsonParser.nextToken();
-                if (jsonToken == null)
-                    continue;
-
-                if (jsonToken.equals(JsonToken.START_OBJECT)) {
-                    srcName = "";
-                    text = "";
-                } else if (jsonToken.equals(JsonToken.FIELD_NAME)) {
-                    String fieldName = jsonParser.getCurrentName();
-                    if (fieldName.equals("name")) {
-                        jsonParser.nextToken();
-                        srcName = jsonParser.getText();
-                    } else if (fieldName.equals("text")) {
-                        jsonParser.nextToken();
-                        text = jsonParser.getText();
-                    } else if (fieldName.equals("msgType")) {
-                        jsonParser.nextToken();
-                    }
-                } else if (jsonToken.equals(JsonToken.END_OBJECT)) {
-                    Message message = Message.makeBroadcastMessage(srcName, text);
-                    messages.add(message);
-                }
-            }
-        }
-
-        for (Message m : messages)
-            bytesRead += CommunicationUtils.getObjectMapper().writeValueAsBytes(m).length;
-        return Collections.unmodifiableList(messages);
-    }
+    /***
+     * Returns a list of Messages read from the buffer
+     * @param buffer
+     * @return A list returning the list of messages.
+     * @throws IOException
+     */
+    List<Message> messageList(ByteBuffer buffer) throws IOException;
 }
