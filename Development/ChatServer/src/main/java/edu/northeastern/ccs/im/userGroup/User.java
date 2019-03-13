@@ -1,9 +1,8 @@
 package edu.northeastern.ccs.im.userGroup;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.*;
 
 /**
  * The Class User.
@@ -204,7 +203,4 @@ public class User implements IUser {
 
         this.password = password;
     }
-
-
-
 }

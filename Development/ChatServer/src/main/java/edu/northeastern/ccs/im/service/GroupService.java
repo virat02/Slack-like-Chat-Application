@@ -1,11 +1,9 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.service.JPAService.GroupJPAService;
 import edu.northeastern.ccs.im.userGroup.Group;
 
 import java.util.List;
-
-import edu.northeastern.ccs.im.service.JPAService.GroupJPAService;
 
 public class GroupService implements IService{
 	
