@@ -67,7 +67,7 @@ public final class UserService implements IService {
 //                newMessage.setGroup(group);
 //            }
 //        }
-        this.messages.add(newMessage);
+//        this.messages.add(newMessage);
 }
 
     private boolean isValidUsername(String uname) {
