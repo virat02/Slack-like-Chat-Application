@@ -13,8 +13,8 @@ public class UserService implements IService {
 
 
     public User addUser(Object user) {
-        userJPAService.createUser((User)user);
-        return userJPAService.getUser(((User) user).getId());
+        int userId = userJPAService.createUser((User)user);
+        return userJPAService.getUser(userId);
     }
 
     /**

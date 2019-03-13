@@ -55,7 +55,7 @@ public class UserJPAService {
     }
 
     public User getUser(int id) {
-        String queryString = "SELECT u" + "FROM User u WHERE u.id =" + id;
+        String queryString = "SELECT u " + "FROM User u WHERE u.id =" + id;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (User) query.getSingleResult();

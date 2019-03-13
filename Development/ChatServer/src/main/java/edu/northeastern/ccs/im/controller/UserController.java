@@ -20,16 +20,34 @@ public final class UserController implements IController {
         }
     }
 
-    public User updateEntity(Object object) {
-        return userService.update(object);
+    public NetworkResponse updateEntity(Object object) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(userService.update(object))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 
-    public User deleteEntity(Object entity) {
-        return userService.delete(entity);
+    public NetworkResponse deleteEntity(Object entity) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(userService.delete(entity))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 
-    public User searchEntity(String username) {
-        return userService.search(username);
+    public NetworkResponse searchEntity(String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(userService.search(username))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 
     public void followUser(String username, User currentUser) {

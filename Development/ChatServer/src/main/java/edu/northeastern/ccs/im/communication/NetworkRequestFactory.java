@@ -24,15 +24,14 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
                 () -> {
                     User user = new User();
-                    user.setId(0);
                     user.setUsername(userName);
                     user.setPassword(password);
 
-                    Profile profile = new Profile();
-                    profile.setEmail(emailAddress);
-                    profile.setImageUrl("");
-
-                    user.setProfile(profile);
+//                    Profile profile = new Profile();
+//                    profile.setEmail(emailAddress);
+//                    profile.setImageUrl("");
+//
+//                    user.setProfile(profile);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }

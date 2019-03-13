@@ -89,9 +89,8 @@ public class RequestDispatcher {
   private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      final User newUser = (new UserController()).searchEntity(user.getUsername());
-      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
+      NetworkResponse response = (new UserController()).searchEntity(user.getUsername());
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
@@ -122,9 +121,8 @@ public class RequestDispatcher {
   private NetworkResponse handleUpdateUserName(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      final User newUser = (new UserController()).updateEntity(user);
-      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
+      NetworkResponse response = (new UserController()).updateEntity(user);
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
@@ -133,9 +131,8 @@ public class RequestDispatcher {
   private NetworkResponse handleUpdateUserStatus(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      final User newUser = (new UserController()).updateEntity(user);
-      return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-              () -> CommunicationUtils.getObjectMapper().writeValueAsString(newUser));
+      NetworkResponse response = (new UserController()).updateEntity(user);
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }

@@ -18,7 +18,7 @@ public class UserConstants {
   }
 
   public static void setUserObj(User userObj) {
-    userConstantsInstance.userObj = userObj;
+    getInstance().userObj = userObj;
   }
 
   public static int getUserId() {

@@ -72,7 +72,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
   private int createUserAndFetchId() {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createUserRequest(userName, emailAddress, passwordString));
+              .createUserRequest(userName, passwordString, emailAddress));
       return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
     } catch (IOException exception) {
       // TODO Provide some good custom message
