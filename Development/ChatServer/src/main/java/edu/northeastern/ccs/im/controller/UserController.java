@@ -49,6 +49,21 @@ public final class UserController implements IController {
         }
     }
 
+    public NetworkResponse loginUser(Object potentialUser) {
+        try {
+            User newUser = UserService.loginUser(potentialUser);
+            if(newUser == null) {
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(null));
+            }
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(newUser)));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+    }
+
     public void followUser(String username, User currentUser) {
         UserService.follow(username, currentUser);
     }
