@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.service.JPAService;
 
 import edu.northeastern.ccs.im.userGroup.User;
 
+import javax.jws.soap.SOAPBinding;
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.List;
@@ -56,10 +57,12 @@ public class UserJPAService {
     }
 
     public User search(String username) {
-        String thisString = "SELECT u" + "FROM User u,Profile p WHERE u.id = p.userId AND u.username =" + username;
+        StringBuilder thisString = new StringBuilder("SELECT u FROM User u,Profile p WHERE u.id = p.userId AND u.username = '");
+        thisString.append(username);
+        thisString.append("'");
         EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(thisString);
-        return (User)query.getSingleResult();
+        TypedQuery<User> query = entityManager.createQuery(thisString.toString(), User.class);
+        return query.getSingleResult();
     }
 
     public User getUser(int id) {
@@ -112,7 +115,7 @@ public class UserJPAService {
      */
     public List<User> getFollowees(User user) {
         String queryString =
-                "SELECT u FROM user_followee u WHERE u.userID ='" + user.getId() + "'";
+                "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
         EntityManager entityManager = beginTransaction();
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
