@@ -1,11 +1,15 @@
 package edu.northeastern.ccs.im.service;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
  * Class to manage all the message services
  */
 public class MessageManagerService {
+
+    //Maps the messageBroadcastService to the unique group identifier
+    private HashMap<String, MessageBroadCastService> hmap = new HashMap<>();
 
     // static variable instance of type MessageManagerService
     private static MessageManagerService instance = null;
@@ -32,8 +36,15 @@ public class MessageManagerService {
      */
     public MessageBroadCastService getService(String groupUniqueKey) {
 
+        //Check if the group with the given unique identifier exists
         if (groupService.searchUsingCode(groupUniqueKey) != null) {
-            return new MessageBroadCastService();
+
+            if(!hmap.containsKey(groupUniqueKey)){
+                hmap.put(groupUniqueKey, new MessageBroadCastService());
+            }
+
+            return hmap.get(groupUniqueKey);
+
         }
         else {
             LOGGER.info("Couldn't get a service since no such group with given unique identifier was found!");
