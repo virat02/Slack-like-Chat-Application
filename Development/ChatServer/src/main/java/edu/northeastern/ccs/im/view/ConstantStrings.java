@@ -51,9 +51,9 @@ public class ConstantStrings {
 
     //Update Profile
     public static final String UPDATE_PROFILE =
-            "1 - Update Email\n2 - Update Status\n3-View Profile" + DEFAULT_MENU;
+            "1 - Update Email\n2 - Update Image Url\n3 - View Profile\n" + DEFAULT_MENU;
     public static final String UPDATE_PROFILE_EMAIL = "Enter new email id: ";
-    public static final String UPDATE_PROFILE_STATUS = "Enter new status: ";
+    public static final String UPDATE_PROFILE_IMAGEURL = "Enter new image URL: ";
     public static final String UPDATE_PROFILE_SUCCESS = "Profile updated successfully";
     public static final String UPDATE_PROFILE_FAILED = "Profile update failed";
 

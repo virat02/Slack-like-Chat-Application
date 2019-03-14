@@ -34,7 +34,9 @@ public interface NetworkRequest {
         SELECT_CHAT,
         JOIN_GROUP,
         SEND_MESSAGE,
-        UPDATE_USERNAME,
-        UPDATE_USERSTATUS,
+        CREATE_PROFILE,
+        UPDATE_PROFILE,
+        UPDATE_USERPROFILE,
+        UPDATE_PASSWORD,
     }
 }

@@ -24,7 +24,7 @@ public class JpaTest {
 		user.setUsername("John");
 		user.setPassword("password");
 		userJPA.createUser(user);
-		assertEquals()
+//		assertEquals();
 	}
 	
 	public void test2() {

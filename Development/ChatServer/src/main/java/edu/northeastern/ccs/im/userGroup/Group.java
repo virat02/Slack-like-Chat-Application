@@ -94,7 +94,7 @@ public class Group implements IGroup {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdOn;
 	
-	private String groupPassword;
+//	private String groupPassword;
 
 
 	/**
@@ -264,13 +264,13 @@ public class Group implements IGroup {
 		this.followees.add(followee);
 	}
 	
-    public String getGroupPassword() {
-		return groupPassword;
-	}
+//    public String getGroupPassword() {
+//		return groupPassword;
+//	}
 
-	public void setGroupPassword(String groupPassword) {
-		this.groupPassword = groupPassword;
-	}
+//	public void setGroupPassword(String groupPassword) {
+//		this.groupPassword = groupPassword;
+//	}
 
 	
 

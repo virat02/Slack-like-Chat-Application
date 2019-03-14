@@ -47,7 +47,7 @@ public class ProfileJPAService {
     }
 
     public Profile getProfile(int id) {
-        String queryString = "SELECT p" + "FROM profile p WHERE p.id =" + id;
+        String queryString = "SELECT p " + "FROM Profile p WHERE p.id =" + id;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (Profile) query.getSingleResult();
