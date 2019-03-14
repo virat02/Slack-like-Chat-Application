@@ -5,10 +5,14 @@ import edu.northeastern.ccs.im.userGroup.User;
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class UserJPAService {
+
+    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
 	EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-    private EntityManager beginTransaction() {
+
+	private EntityManager beginTransaction() {
         EntityManager entityManager = emFactory.createEntityManager();
         entityManager.getTransaction().begin();
         return entityManager;
@@ -90,33 +94,33 @@ public class UserJPAService {
      */
     public List<User> getFollowers(User user) {
         String queryString =
-                "SELECT u FROM user_user u WHERE u.userID ='" + user.getId() + "'";
+                "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
         EntityManager entityManager = beginTransaction();
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             return query.getResultList();
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
         return Collections.emptyList();
     }
 
-//    /**
-//     * @param user
-//     * @return The list of followee's of the given user
-//     */
-//    public List<User> getFollowees(User user) {
-//        String queryString =
-//                "SELECT u FROM user_user u WHERE u.userID ='" + user.getId() + "'";
-//        EntityManager entityManager = beginTransaction();
-//        try {
-//            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
-//            return query.getResultList();
-//        }
-//        catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//        return Collections.emptyList();
-//    }
+    /**
+     * @param user
+     * @return The list of followee's of the given user
+     */
+    public List<User> getFollowees(User user) {
+        String queryString =
+                "SELECT u FROM user_followee u WHERE u.userID ='" + user.getId() + "'";
+        EntityManager entityManager = beginTransaction();
+        try {
+            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
+            return query.getResultList();
+        }
+        catch (Exception e) {
+            LOGGER.info(e.getMessage());
+        }
+        return Collections.emptyList();
+    }
 }

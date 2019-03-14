@@ -61,21 +61,21 @@ public final class UserService implements IService {
         }
     }
 
-//    /**
-//     * Get a list of followees for this user
-//     * @param username
-//     * @return
-//     */
-//    public List<User> getFollowees(String username){
-//        User u = search(username);
-//
-//        if(u != null) {
-//            return userJPAService.getFollowees(u);
-//        }
-//        else{
-//            return Collections.emptyList();
-//        }
-//    }
+    /**
+     * Get a list of followees for this user
+     * @param username
+     * @return
+     */
+    public List<User> getFollowees(String username){
+        User u = search(username);
+
+        if(u != null) {
+            return userJPAService.getFollowees(u);
+        }
+        else{
+            return Collections.emptyList();
+        }
+    }
 
     public static User update(Object user) {
         UserJPAService userJPAService = new UserJPAService();

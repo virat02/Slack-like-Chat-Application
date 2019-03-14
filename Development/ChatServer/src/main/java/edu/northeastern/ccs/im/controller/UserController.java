@@ -9,6 +9,8 @@ import edu.northeastern.ccs.im.userGroup.User;
 
 public final class UserController implements IController {
 
+    private UserService userService = new UserService();
+
     public NetworkResponse addEntity(Object object) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
@@ -66,5 +68,35 @@ public final class UserController implements IController {
 
     public void followUser(String username, User currentUser) {
         UserService.follow(username, currentUser);
+    }
+
+    /**
+     * Get the followers for this user
+     * @param username
+     * @return
+     */
+    public NetworkResponse viewFollowers(String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowers(username))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+    }
+
+    /**
+     * Get the followees for this user
+     * @param username
+     * @return
+     */
+    public NetworkResponse viewFollowees(String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowees(username))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 }
