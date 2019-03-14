@@ -5,20 +5,17 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import edu.northeastern.ccs.im.userGroup.Group;
-import edu.northeastern.ccs.im.userGroup.IGroup;
-import edu.northeastern.ccs.im.userGroup.IUser;
-import edu.northeastern.ccs.im.userGroup.User;
 
 /**
  * The Class Group.
@@ -37,23 +34,58 @@ public class Group implements IGroup {
 
     /** The users. */
     @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="basegroup_user",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") }
+    )
     private List<User> users = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="basegroup_moderator",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="MODERATOR_ID", referencedColumnName="ID") }
+    )
 	private List<User> moderators= new ArrayList<>();
 
     /** The msgs. */
     @OneToMany(targetEntity=Message.class)
+    @JoinTable
+    (
+        name="basegroup_message",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="MESSAGE_ID", referencedColumnName="ID") }
+    )
     private List<Message> msgs = new ArrayList<>();
     
 	/** The groups. */
 	@OneToMany(targetEntity=Group.class)
+    @JoinTable
+    (
+        name="basegroup_subgroup",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="SUBGROUP_ID", referencedColumnName="ID") }
+    )
 	private List<Group> groups = new ArrayList<>();
     
 	@OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="basegroup_follower",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
+    )
 	private List<User> followers = new ArrayList<>();
 	
-	//@ManyToOne(targetEntity=User.class)
+    @JoinTable
+    (
+        name="basegroup_followee",
+        joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWEE_ID", referencedColumnName="ID") }
+    )
 	private List<User> followees = new ArrayList<>();
 	
 	@Column(unique=true)
@@ -61,8 +93,11 @@ public class Group implements IGroup {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdOn;
+	
+	private String groupPassword;
 
-    /**
+
+	/**
      * Instantiates a new userGroup.
      *
      * @param id the id
@@ -227,6 +262,14 @@ public class Group implements IGroup {
 	
 	public void addFollowee(User followee) {
 		this.followees.add(followee);
+	}
+	
+    public String getGroupPassword() {
+		return groupPassword;
+	}
+
+	public void setGroupPassword(String groupPassword) {
+		this.groupPassword = groupPassword;
 	}
 
 	
