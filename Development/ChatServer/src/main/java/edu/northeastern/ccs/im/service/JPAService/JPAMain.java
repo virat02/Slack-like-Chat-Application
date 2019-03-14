@@ -7,22 +7,12 @@ public class JPAMain {
 
 	public static void main(String[] args) {
 		
-		UserJPAService userJPA = new UserJPAService();
-		User user = new User();
-		user.setUsername("John");
-		user.setPassword("password");
-		int id= userJPA.createUser(user);
-		user.setId(id);
-		
 		GroupJPAService groupJPA = new GroupJPAService();
 		Group group = new Group();
-		group.setName("testgroup");
-		groupJPA.createGroup(group);
-		group.addUser(user);
-		group.setName("testing");
-		groupJPA.updateGroup(group);
-		user.addGroup(group);
-		userJPA.updateUser(user);
+		group.setName("groupOne");
+		group.setGroupCode("g123");
+		groupJPA.deleteGroup(group);
+
 
 	}
 

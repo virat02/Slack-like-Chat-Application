@@ -74,25 +74,26 @@ public class GroupJPAService{
 		return null;
 	}
 	
-    @SuppressWarnings("unchecked")
 	public List<Group> searchUsingName(String groupName) {
-        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.name = " + groupName;
+        String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"'";
+        
         EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (List<Group>) query.getResultList();
+        TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
+        return query.getResultList();
     }
     
     public Group searchUsingCode(String groupCode) {
-        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.groupcode = " + groupCode;
+        String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode+"'";
         EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (Group) query.getSingleResult();
+        TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
+        return query.getSingleResult();
     }
 
 
 	public void deleteGroup(Group currentGroup) {
+		Group retrievedGroup = searchUsingCode(currentGroup.getGroupCode());
 		EntityManager entitymanager = beginTransaction();
-		Group group = entitymanager.find(Group.class, currentGroup.getId());
+		Group group = entitymanager.find(Group.class, retrievedGroup.getId());
 		entitymanager.remove(group);
 		endTransaction(entitymanager);
 	}

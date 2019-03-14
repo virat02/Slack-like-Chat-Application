@@ -79,6 +79,16 @@ public class GroupController implements IController<Group>{
                     new PayloadImpl(null));
         }
 	}
+	
+	public NetworkResponse joinGroup(Group group) {
+		try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.joinGroup(group))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+	}
 
 
 

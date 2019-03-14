@@ -61,7 +61,8 @@ public class RequestDispatcher {
     } else if (networkRequestType == NetworkRequestType.SEARCH_USER) {
       return searchQueryResults(networkRequest);
     } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
-      try {
+      try {  
+    	handleJoinGroup(networkRequest); 
         messageBroadCastService.addConnection(socketChannel);
       } catch (IOException e) {
         e.printStackTrace();
@@ -176,6 +177,16 @@ public class RequestDispatcher {
       return networkResponseFactory.createFailedResponse();
     }
   }
+  
+  private NetworkResponse handleJoinGroup(NetworkRequest networkRequest) {
+	    try {
+	      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+	      NetworkResponse response = (new GroupController()).joinGroup(group);
+	      return response;
+	    } catch (IOException e) {
+	      return networkResponseFactory.createFailedResponse();
+	    }
+	  }
 
   private NetworkResponse handleCreateGroup(NetworkRequest networkRequest) {
     try {

@@ -74,6 +74,7 @@ public class ConstantStrings {
 
     //Create Group
     public static final String CREATE_GROUP = "Enter Group Name: ";
+    public static final String CREATE_GROUP_CODE = "Enter a unique group code:";
     public static final String CREATE_GROUP_SUCCESS = "Group created successfully\n" + DEFAULT_MENU;
     public static final String CREATE_GROUP_FAILED = "Group creation failed\n" + FAILURE_MENU;
 

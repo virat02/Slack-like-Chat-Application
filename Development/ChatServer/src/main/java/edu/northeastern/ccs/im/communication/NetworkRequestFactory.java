@@ -120,11 +120,12 @@ public class NetworkRequestFactory {
    * @param groupName
    * @return NetworkRequest
    */
-  public NetworkRequest createGroupRequest(String groupName) {
+  public NetworkRequest createGroupRequest(String groupName,String groupCode) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_GROUP,
             () -> {
               Group group = new Group();
               group.setName(groupName);
+              group.setGroupCode(groupCode);
               List<User> moderators = new ArrayList<>();
               moderators.add(UserConstants.getUserObj());
               group.setModerators(moderators);
@@ -163,16 +164,24 @@ public class NetworkRequestFactory {
    * Creates a request for joining a group.
    * @return NetworkRequest
    */
-  public NetworkRequest createJoinGroup() {
+  public NetworkRequest createJoinGroup(String groupCode, int userid) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
-            () -> "");
+            () -> {
+            	Group group = new Group();
+                group.setGroupCode(groupCode);
+                User user = new User();
+                user.setId(userid);
+                group.addUser(user);
+                return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+            });
   }
 
-  public NetworkRequest createDeleteGroupRequest(String groupName) {
+  public NetworkRequest createDeleteGroupRequest(String groupName, String groupCode) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
             () -> {
               Group group = new Group();
               group.setName(groupName);
+              group.setGroupCode(groupCode);
               List<User> moderators = new ArrayList<>();
               moderators.add(UserConstants.getUserObj());
               group.setModerators(moderators);
