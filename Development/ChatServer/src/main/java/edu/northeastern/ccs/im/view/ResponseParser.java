@@ -15,8 +15,7 @@ public class ResponseParser {
     if (networkResponse.status().equals(NetworkResponse.STATUS.FAILED)) {
       JsonNode jsonNode = CommunicationUtils
               .getObjectMapper().readTree(networkResponse.payload().jsonString());
-      String errorMessage = jsonNode.get("errorMessage").asText();
-      throw new NetworkResponseFailureException(errorMessage);
+      throw new NetworkResponseFailureException("Error");
     }
   }
 

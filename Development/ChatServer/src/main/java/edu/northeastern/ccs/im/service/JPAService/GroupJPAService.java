@@ -32,11 +32,11 @@ public class GroupJPAService{
 		entitymanager.close();
 	}
 
-	public Group getGroup(String name) {
-		String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + name;
-        EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        return (Group) query.getSingleResult();
+	public Group getGroup(int id) {
+		//String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.name = " + name;
+		EntityManager entityManager = beginTransaction();
+		Group group = entityManager.find(Group.class, id);
+        return group;
 	}
 
 	public void updateGroup(Group currentGroup) {
@@ -48,9 +48,15 @@ public class GroupJPAService{
 					+ currentGroup.getId());
 		}
 
+		group.setFollowees(currentGroup.getFollowees());
+		group.setFollowers(currentGroup.getFollowers());
+		group.setGroupCode(currentGroup.getGroupCode());
+		group.setGroups(currentGroup.getGroups());
+		group.setModerators(currentGroup.getModerators());
+		group.setUsers(currentGroup.getUsers());
 		group.setName(currentGroup.getName());
 		group.setCreatedOn(currentGroup.getCreatedOn());
-		//add other attributes too;will this work??
+		group.setMsgs(currentGroup.getMsgs());
 		endTransaction(entitymanager);
 	}
 
@@ -63,20 +69,21 @@ public class GroupJPAService{
 
 
 	public List<Message> retrieveMessage(String name){
-		Group group=getGroup(name);
-		return group.getMsgs();
+//		Group group=getGroup(name);
+//		return group.getMsgs();
+		return null;
 	}
 	
     @SuppressWarnings("unchecked")
 	public List<Group> searchUsingName(String groupName) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.name =" + groupName;
+        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.name = " + groupName;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (List<Group>) query.getResultList();
     }
     
     public Group searchUsingCode(String groupCode) {
-        String queryString = "SELECT g" + "FROM Groupcomposite g WHERE g.groupcode =" + groupCode;
+        String queryString = "SELECT g " + "FROM prattle_server.basegroup g WHERE g.groupcode = " + groupCode;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (Group) query.getSingleResult();

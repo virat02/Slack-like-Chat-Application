@@ -26,7 +26,6 @@ public final class UserService implements IService {
     public static User search(String username) {
         UserJPAService userJPAService = new UserJPAService();
         return userJPAService.search(username);
-        //return null;
     }
 
     /**
@@ -47,6 +46,11 @@ public final class UserService implements IService {
         UserJPAService userJPAService = new UserJPAService();
         userJPAService.deleteUser((User) user);
         return userJPAService.getUser(((User) user).getId());
+    }
+
+    public static User loginUser(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
+        return userJPAService.loginUser((User) user);
     }
 
     /**
@@ -129,4 +133,5 @@ public final class UserService implements IService {
         }
         return true;
     }
+
 }

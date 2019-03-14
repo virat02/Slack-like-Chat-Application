@@ -43,15 +43,16 @@ public class ConstantStrings {
     public static final String CHAT_MAIN_COMMAND = "1 - Search User/Group\n"
             + "2 - Create Group\n"
             + "3 - Delete Group\n"
-            + "4 - Update Profile\n"
+            + "4 - Profile\n"
             + "5 - Sign out\n"
             + "* - Exit";
     public static final String SEARCH_USER = "Search user";
     public static final String SIGN_OUT = "Sign out";
 
     //Update Profile
-    public static final String UPDATE_PROFILE = "1 - Update User Name\n2 - Update Status\n" + DEFAULT_MENU;
-    public static final String UPDATE_PROFILE_USERNAME = "Enter new user name: ";
+    public static final String UPDATE_PROFILE =
+            "1 - Update Email\n2 - Update Status\n3-View Profile" + DEFAULT_MENU;
+    public static final String UPDATE_PROFILE_EMAIL = "Enter new email id: ";
     public static final String UPDATE_PROFILE_STATUS = "Enter new status: ";
     public static final String UPDATE_PROFILE_SUCCESS = "Profile updated successfully";
     public static final String UPDATE_PROFILE_FAILED = "Profile update failed";

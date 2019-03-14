@@ -10,7 +10,7 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 
 public class GroupController implements IController<Group>{
-	private GroupService groupService;
+	private GroupService groupService = new GroupService();
 
 	@Override
 	public NetworkResponse addEntity(Group group) {
@@ -24,10 +24,10 @@ public class GroupController implements IController<Group>{
 
 	}
 
-	public NetworkResponse getEntity(String groupName) {
+	public NetworkResponse getEntity(int groupID) {
 		try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupName))));
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupID))));
         } catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));

@@ -12,7 +12,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
   public UpdateProfileWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.UPDATE_PROFILE);
-      put(1, ConstantStrings.UPDATE_PROFILE_USERNAME);
+      put(1, ConstantStrings.UPDATE_PROFILE_EMAIL);
       put(2, ConstantStrings.UPDATE_PROFILE_STATUS);
     }}, clientConnectionFactory);
   }
@@ -29,6 +29,15 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       printInConsoleForProcess(0);
     }
     else if (getCurrentProcess() == 2) {
+      if (updateUserStatus(inputString)) {
+        printMessageInConsole(ConstantStrings.UPDATE_PROFILE_SUCCESS);
+      }
+      else {
+        printMessageInConsole(ConstantStrings.UPDATE_PROFILE_FAILED);
+      }
+      printInConsoleForProcess(0);
+    }
+    else if (getCurrentProcess() == 3) {
       if (updateUserStatus(inputString)) {
         printMessageInConsole(ConstantStrings.UPDATE_PROFILE_SUCCESS);
       }

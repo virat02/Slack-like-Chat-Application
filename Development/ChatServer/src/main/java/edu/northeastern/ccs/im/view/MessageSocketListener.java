@@ -4,10 +4,12 @@ public class MessageSocketListener implements Runnable, Listener {
 
   private final MessageListerner messageListerner;
   private boolean isRunning;
+  private String groupCode;
 
-  public MessageSocketListener(MessageListerner messageListerner) {
+  public MessageSocketListener(MessageListerner messageListerner, String groupCode) {
     this.messageListerner = messageListerner;
-    isRunning = true;
+    this.isRunning = true;
+    this.groupCode = groupCode;
   }
 
   //Runnable methods

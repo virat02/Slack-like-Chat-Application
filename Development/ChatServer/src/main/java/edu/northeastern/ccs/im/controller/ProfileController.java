@@ -9,7 +9,7 @@ import edu.northeastern.ccs.im.userGroup.Profile;
 
 public class ProfileController implements IController<Profile> {
 
-    private ProfileService profileService;
+    private ProfileService profileService = new ProfileService();
 
     public NetworkResponse addEntity(Profile pf) {
         try {

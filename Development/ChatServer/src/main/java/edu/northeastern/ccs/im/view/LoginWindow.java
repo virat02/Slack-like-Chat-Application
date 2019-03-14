@@ -9,6 +9,7 @@ import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.User;
 
 public class LoginWindow extends AbstractTerminalWindow {
 
@@ -70,24 +71,16 @@ public class LoginWindow extends AbstractTerminalWindow {
   }
 
   private int loginUser() {
-    if (!userIdString.contains("@")) {
-      return -1;
-    }
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createLoginRequest(userIdString, passwordString));
-
-      return 1;
-      // TODO Must use the below line and not the above
-//      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
     } catch (IOException exception) {
-      // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
     }
-    // TODO Must use the below line and not the above
-//    catch (NetworkResponseFailureException exception) {
-//      printMessageInConsole(exception.getMessage());
-//    }
+    catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
+    }
     return -1;
   }
 }

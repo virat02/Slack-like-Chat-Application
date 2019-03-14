@@ -3,10 +3,12 @@ package edu.northeastern.ccs.im.server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
+import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
+import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.User;
 
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static edu.northeastern.ccs.im.communication.NetworkRequest.NetworkRequestType;
 
@@ -101,7 +104,7 @@ public class RequestDispatcher {
   private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      NetworkResponse response = (new UserController()).addEntity(user);
+      NetworkResponse response = (new UserController()).loginUser(user);
       return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
@@ -149,8 +152,16 @@ public class RequestDispatcher {
 
   private NetworkResponse handleCreateGroup(NetworkRequest networkRequest) {
     try {
-      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      return networkResponseFactory.createSuccessfulResponse();
+      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+      List<User> moderators = group.getModerators();
+      group.setModerators(null);
+      NetworkResponse response = (new GroupController()).addEntity(group);
+      if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
+        group.setModerators(moderators);
+        NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
+        return moderatorResponse;
+      }
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
