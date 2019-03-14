@@ -6,11 +6,13 @@ import java.util.HashMap;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
+import edu.northeastern.ccs.im.controller.UserController;
 
 public class MessageWindow extends AbstractTerminalWindow implements MessageListerner {
 
     private Listener messageSocketListener;
     private final String groupCode;
+    private MessageClientConnection messageClientConnection;
 
     public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory, String groupCode) {
         super(caller, new HashMap<Integer, String>() {{
@@ -21,16 +23,17 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
     @Override
     public void runWindow() {
-        ClientConnection clientConnection = clientConnectionFactory.createMessageClientConnection(hostName, port);
+        messageClientConnection = (MessageClientConnection) clientConnectionFactory.createMessageClientConnection(hostName, port);
         NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode);
         try {
-            clientConnection.sendRequest(networkRequest);
-            NetworkResponse networkResponse = clientConnection.readResponse();
+            messageClientConnection.sendRequest(networkRequest);
+            NetworkResponse networkResponse = messageClientConnection.readResponse();
             if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-                messageSocketListener = new MessageSocketListener((MessageClientConnection) clientConnection);
+                messageSocketListener = new MessageSocketListener(messageClientConnection);
                 Thread threadObject = new Thread((Runnable) messageSocketListener);
                 threadObject.start();
                 super.runWindow();
+                messageClientConnection.sendMessage(Message.makeSimpleLoginMessage(UserConstants.getUserName(), groupCode));
             }
         } catch (IOException e) {
             ChatLogger.error("Could not be joined to chat group due to an error");
@@ -40,20 +43,14 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
     @Override
     void inputFetchedFromUser(String inputString) {
-        if (inputString.equals("1")) {
-            printInConsoleForProcess(0);
-        } else if (inputString.equals("0")) {
-            goBack();
-        } else if (inputString.equals("*")) {
-            exitWindow();
-        } else {
-            invalidInputPassed();
-        }
+        Message message = Message.makeBroadcastMessage(inputString, UserConstants.getUserName(), groupCode);
+        messageClientConnection.sendMessage(message);
     }
 
     @Override
     public void goBack() {
-        messageSocketListener.shouldStopListening();
+        if (messageSocketListener != null)
+            messageSocketListener.shouldStopListening();
         super.goBack();
     }
 
@@ -66,5 +63,10 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
     @Override
     public Message newMessageReceived() {
         return null;
+    }
+
+    public static void main(String args[])  {
+        MessageWindow messageWindow = new MessageWindow(null, new ClientConnectionFactory(), "");
+
     }
 }

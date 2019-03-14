@@ -26,12 +26,6 @@ public class NetworkRequestFactory {
                     User user = new User();
                     user.setUsername(userName);
                     user.setPassword(password);
-
-//                    Profile profile = new Profile();
-//                    profile.setEmail(emailAddress);
-//                    profile.setImageUrl("");
-//
-//                    user.setProfile(profile);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }

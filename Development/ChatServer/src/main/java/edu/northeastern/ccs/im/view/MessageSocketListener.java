@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.view;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.MessageClientConnection;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MessageSocketListener implements Runnable, Listener {
@@ -28,6 +29,11 @@ public class MessageSocketListener implements Runnable, Listener {
     //Listener Methods
     @Override
     public void shouldStopListening() {
+        try {
+            clientConnection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         isRunning = false;
     }
 }

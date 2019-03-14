@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
@@ -11,14 +10,11 @@ import edu.northeastern.ccs.im.controller.UserController;
 import edu.northeastern.ccs.im.service.BroadCastService;
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.im.service.MessageManagerService;
-import edu.northeastern.ccs.im.service.MessageService;
 import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import static edu.northeastern.ccs.im.communication.NetworkRequest.NetworkRequestType;
 
@@ -34,11 +30,14 @@ public class RequestDispatcher {
         return requestDispatcher;
     }
 
+    public void setMessageManagerService(MessageManagerService messageManagerService) {
+        this.messageManagerService = messageManagerService;
+    }
+
     private ObjectMapper objectMapper = new ObjectMapper();
     private IController userController = new UserController();
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
     private MessageManagerService messageManagerService = MessageManagerService.getInstance();
-    private MessageBroadCastService messageBroadCastService = new MessageBroadCastService();
 
     /***
      * The purpose of this method is mocking the IController.
@@ -62,14 +61,7 @@ public class RequestDispatcher {
         } else if (networkRequestType == NetworkRequestType.SEARCH_USER) {
             return searchQueryResults(networkRequest);
         } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
-            return handleJoinUserRequest(networkRequest, socketChannel);
-        } else if (networkRequestType == NetworkRequestType.SEND_MESSAGE) {
-            try {
-                Message message = parseMessage(networkRequest);
-//                groupService.receiveMessage(message);
-            } catch (IOException e) {
-                return networkResponseFactory.createFailedResponse();
-            }
+            return handleJoinGroupRequest(networkRequest, socketChannel);
         } else if (networkRequestType == NetworkRequestType.UPDATE_USERNAME) {
             return handleUpdateUserName(networkRequest);
         } else if (networkRequestType == NetworkRequestType.UPDATE_USERSTATUS) {
@@ -80,17 +72,11 @@ public class RequestDispatcher {
             return handleDeleteGroup(networkRequest);
         }
 
-
         return networkResponseFactory.createFailedResponse();
     }
 
 
-    private Message parseMessage(NetworkRequest networkRequest) throws IOException {
-        Message message = objectMapper.readValue(networkRequest.payload().jsonString(), Message.class);
-        return message;
-    }
-
-    private NetworkResponse handleJoinUserRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
+    private NetworkResponse handleJoinGroupRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
         // Get the message service
         try {
             JsonNode jsonNode = CommunicationUtils
@@ -112,7 +98,7 @@ public class RequestDispatcher {
     private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).searchEntity(user.getUsername());
+            NetworkResponse response = userController.searchEntity(user.getUsername());
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -122,7 +108,7 @@ public class RequestDispatcher {
     private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).addEntity(user);
+            NetworkResponse response = userController.addEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -132,7 +118,7 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUserRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).addEntity(user);
+            NetworkResponse response = userController.addEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -142,7 +128,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateUserName(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).updateEntity(user);
+            NetworkResponse response = userController.updateEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -152,7 +138,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateUserStatus(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).updateEntity(user);
+            NetworkResponse response = userController.updateEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();

@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.communication;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.readers.JsonBufferReader;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class ClientMessageConnection implements MessageClientConnection {
     private final int port;
     private final SocketFactory socketFactory;
     private SocketChannel socketChannel;
-    private final int BUFFER_SIZE = 64 * 1024;
+    private static final int BUFFER_SIZE = 64 * 1024;
     private ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
     public ClientMessageConnection(String hostName, int port, SocketFactory socketFactory) {
@@ -36,8 +34,8 @@ public class ClientMessageConnection implements MessageClientConnection {
 
     @Override
     public void sendRequest(NetworkRequest networkRequest) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
-        socketChannel.write(byteBuffer);
+        if(!CommunicationUtils.writeToChannel(socketChannel, networkRequest))
+            throw new IOException("Communication could not be successful");
     }
 
     @Override
