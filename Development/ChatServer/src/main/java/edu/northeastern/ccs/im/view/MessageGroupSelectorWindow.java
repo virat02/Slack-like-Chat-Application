@@ -7,7 +7,6 @@ import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
 
   private TerminalWindow messageWindow;
-  private boolean isGroupChatSelected;
   private String chatName;
 
   public MessageGroupSelectorWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
@@ -29,27 +28,15 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
   @Override
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 1) {
-      isGroupChatSelected = true;
-      chatName = inputString;
-      if (checkIfChatIsValid(chatName)) {
-        getMessageWindow(chatName).runWindow();
-      }
-      else {
-        printInConsoleForProcess(3);
-      }
-    }
-    else if (getCurrentProcess() == 2) {
-      isGroupChatSelected = true;
       chatName = UserConstants.getUserName() + "_" + inputString;
       if (UserConstants.getUserName().compareTo(inputString) > 0) {
         chatName = inputString + "_" + UserConstants.getUserName();
       }
-      if (checkIfChatIsValid(chatName)) {
-        getMessageWindow(chatName).runWindow();
-      }
-      else {
-        printInConsoleForProcess(3);
-      }
+      getMessageWindow(chatName).runWindow();
+    }
+    else if (getCurrentProcess() == 2) {
+      chatName = inputString;
+      getMessageWindow(chatName).runWindow();
     }
     if ((getCurrentProcess() == 3) && (inputString.equals("1"))) {
       printInConsoleForProcess(0);
@@ -64,10 +51,5 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
     } else {
       invalidInputPassed();
     }
-  }
-
-  private boolean checkIfChatIsValid(String chatName) {
-    /* TODO Must check if the given chat name is valid */
-    return true;
   }
 }

@@ -2,7 +2,9 @@ package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.Profile;
 
 import java.io.IOException;
 import java.util.*;
@@ -38,13 +40,13 @@ public class SearchWindow extends AbstractTerminalWindow {
         }
         else if (getCurrentProcess() == 1) {
             searchQuery = inputString;
-            try {
-                NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory.createSearchUserRequest(""));
-                List<String> userResults = parseUserResults(networkResponse);
-                userResults.forEach(this::printMessageInConsole);
-            } catch (IOException e) {
-                printMessageInConsole("Search Request failed");
-            }
+//            try {
+//                NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory.createSearchUserRequest(""));
+//                List<String> userResults = parseUserResults(networkResponse);
+//                userResults.forEach(this::printMessageInConsole);
+//            } catch (IOException e) {
+//                printMessageInConsole("Search Request failed");
+//            }
             //SENDING THE NW REQ
             printInConsoleForNextProcess();
         } else if (getCurrentProcess() == 2) {
@@ -62,7 +64,13 @@ public class SearchWindow extends AbstractTerminalWindow {
         }
     }
 
-    private List<String> parseUserResults(NetworkResponse networkResponse) throws IOException {
-        return CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(), ArrayList.class);
+    private List<String> parseUserResults(String userEmailAddress, String imageUrl) {
+        try {
+            NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory.createSearchUserRequest(""));
+        } catch (IOException exception) {
+            /* TODO Provide some good custom message */
+            printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+        }
+        return null;
     }
 }

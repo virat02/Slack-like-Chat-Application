@@ -12,6 +12,7 @@ public class ConstantStrings {
     public static final String CONFIRM_EXIT_MESSAGE = "Confirm(Y/N)";
     public static final String DEFAULT_MENU = "0 - Go Back\n* - Exit";
     public static final String FAILURE_MENU = "1 - Retry\n" + DEFAULT_MENU;
+    public static final String FETCH_DATA_FAILED = "Unable to fetch data";
 
     //Network Related
     public static final String NETWORK_ERROR = "Network Error";

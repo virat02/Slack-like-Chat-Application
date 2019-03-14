@@ -208,4 +208,31 @@ public class NetworkRequestFactory {
               return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
             });
   }
+
+  public NetworkRequest createGetUserFollowersList(String userName) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWERS,
+            () -> {
+              User user = new User();
+              user.setUsername(userName);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+            });
+  }
+
+  public NetworkRequest createGetUserFolloweesList(String userName) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
+            () -> {
+              User user = new User();
+              user.setUsername(userName);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+            });
+  }
+
+  public NetworkRequest createSetUserFolloweresList(String userName) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
+            () -> {
+              User user = new User();
+              user.setUsername(userName);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+            });
+  }
 }

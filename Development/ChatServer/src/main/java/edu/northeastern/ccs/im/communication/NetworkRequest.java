@@ -38,5 +38,8 @@ public interface NetworkRequest {
         UPDATE_PROFILE,
         UPDATE_USERPROFILE,
         UPDATE_PASSWORD,
+        GET_FOLLOWEES,
+        GET_FOLLOWERS,
+        SET_FOLLOWERS,
     }
 }

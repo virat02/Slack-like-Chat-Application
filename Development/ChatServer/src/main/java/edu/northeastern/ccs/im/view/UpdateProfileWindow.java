@@ -73,7 +73,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       }
       else {
         networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-                .createUserProfile(userEmailAddress, imageUrl));
+                .createUpdateUserProfile(userEmailAddress, imageUrl));
       }
       if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
         Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);

@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.view;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
+import java.util.List;
 
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
@@ -51,5 +52,13 @@ public class ResponseParser {
     Profile parsedProfileObj = CommunicationUtils
             .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
     return parsedProfileObj;
+  }
+
+  static List<User> parseFollowersList(NetworkResponse networkResponse) throws IOException,
+          NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    Profile parsedProfileObj = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
+    return null;
   }
 }
