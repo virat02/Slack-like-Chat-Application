@@ -27,13 +27,25 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
-    @OneToMany
+    @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="user_follower",
+        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
+    )
     private List<User> following = new ArrayList<>();
 
     /**
      * The list of people following this user.
      */
-    @OneToMany
+    @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="user_followee",
+        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWEE_ID", referencedColumnName="ID") }
+    )
     private List<User> followee = new ArrayList<>();
 
     /** The name. */
