@@ -3,6 +3,8 @@ package edu.northeastern.ccs.im.service.JPAService;
 import edu.northeastern.ccs.im.userGroup.User;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
 
 public class UserJPAService {
 	EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
@@ -81,4 +83,40 @@ public class UserJPAService {
         }
         return null;
     }
+
+    /**
+     * @param user
+     * @return The list of follower's of the given user
+     */
+    public List<User> getFollowers(User user) {
+        String queryString =
+                "SELECT u FROM user_user u WHERE u.userID ='" + user.getId() + "'";
+        EntityManager entityManager = beginTransaction();
+        try {
+            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
+            return query.getResultList();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+//    /**
+//     * @param user
+//     * @return The list of followee's of the given user
+//     */
+//    public List<User> getFollowees(User user) {
+//        String queryString =
+//                "SELECT u FROM user_user u WHERE u.userID ='" + user.getId() + "'";
+//        EntityManager entityManager = beginTransaction();
+//        try {
+//            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
+//            return query.getResultList();
+//        }
+//        catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//        return Collections.emptyList();
+//    }
 }
