@@ -1,13 +1,18 @@
 package edu.northeastern.ccs.im.service;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 public final class UserService implements IService {
+
+    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
+
     private UserJPAService userJPAService;
     public UserService() {
         userJPAService = new UserJPAService();
@@ -34,13 +39,19 @@ public final class UserService implements IService {
      * Follow a particular user given their username.
      * @param username of the user we want to follow.
      */
-    public static void follow(String username, User currentUser) {
+    public static User follow(String username, User currentUser) {
 
         User u = search(username);
 
         if(currentUser != null && u != null){
             currentUser.addFollowing(u);
             u.addFollowee(currentUser);
+
+            return currentUser;
+        }
+        else{
+            LOGGER.info("Could not successfully follow the user!");
+            throw new IllegalArgumentException("Could not successfully follow the user with username: "+username);
         }
 
     }
