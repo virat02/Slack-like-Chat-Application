@@ -27,8 +27,26 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
-    @OneToMany
+    @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="user_follower",
+        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
+    )
     private List<User> following = new ArrayList<>();
+
+    /**
+     * The list of people following this user.
+     */
+    @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="user_followee",
+        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWEE_ID", referencedColumnName="ID") }
+    )
+    private List<User> followee = new ArrayList<>();
 
     /** The name. */
     private String username;
@@ -155,12 +173,43 @@ public class User implements IUser {
     }
 
     /**
+     * Gets the followees.
+     *
+     * @return the followee
+     */
+    public List<User> getFollowee() {
+        return this.followee;
+    }
+
+    /**
+     * Sets the following.
+     *
+     * @param followee the new profile
+     */
+    public void setFollowee(List<User> followee) {
+        this.followee = followee;
+    }
+
+    /**
      * Adds a user to the list of people we are following.
      * @param user the person we are following.
      */
-    public void addFollowee(User user) {
+    public void addFollowing(User user) {
         if (user != null) {
             this.following.add(user);
+        }
+        else {
+            throw new NullPointerException("Cannot add a non-existing user");
+        }
+    }
+
+    /**
+     * Adds a user to the list of people following this user.
+     * @param user the person following this user.
+     */
+    public void addFollowee(User user) {
+        if (user != null) {
+            this.followee.add(user);
         }
         else {
             throw new NullPointerException("Cannot add a non-existing user");
