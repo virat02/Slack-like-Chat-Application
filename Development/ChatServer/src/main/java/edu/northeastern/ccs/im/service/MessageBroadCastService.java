@@ -11,7 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.*;
 
 public class MessageBroadCastService implements BroadCastService {
-    private static ConcurrentLinkedQueue<ClientRunnable> active = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<ClientRunnable> active = new ConcurrentLinkedQueue<>();
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10);
     private MessageService messageService = new MessageService();
 

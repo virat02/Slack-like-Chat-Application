@@ -28,7 +28,7 @@ public class MessageService implements IService{
      * @param message the message object generated from the client input
      * @return
      */
-    private Message createMessage(Message message) {
+    public Message createMessage(Message message) {
         messageJPAService.createMessage(message);
         return messageJPAService.getMessage(message.getId());
 

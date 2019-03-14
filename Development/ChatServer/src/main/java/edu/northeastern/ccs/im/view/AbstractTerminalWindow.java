@@ -13,8 +13,8 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
   private final Map<Integer,String> processMap;
 
   private ClientConnection clientConnection;
-  private static final String hostName = "localhost";
-  private static final int port = 4545;
+  static final String hostName = "localhost";
+  static final int port = 4545;
   private SocketFactory socketFactory;
   protected NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
 
@@ -83,6 +83,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
         if (input.equals("exit")) {
 //          System.exit(0);
           printMessageInConsole(ConstantStrings.THANK_YOU);
+          return;
         }
         else if (input.equals("/..")) {
           goBack();

@@ -24,16 +24,14 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
                 () -> {
                     User user = new User();
-                    user.setId(0);
                     user.setUsername(userName);
                     user.setPassword(password);
 
-                    Profile profile = new Profile();
-                    profile.setId(0);
-                    profile.setEmail(emailAddress);
-                    profile.setImageUrl("");
-
-                    user.setProfile(profile);
+//                    Profile profile = new Profile();
+//                    profile.setEmail(emailAddress);
+//                    profile.setImageUrl("");
+//
+//                    user.setProfile(profile);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
@@ -48,6 +46,8 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.LOGIN_USER,
                 () -> {
                     User user = new User();
+                    user.setUsername(userName);
+                    user.setPassword(password);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
@@ -74,6 +74,7 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_USER,
                 () -> {
                     User user = new User();
+                    user.setUsername(searchString);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
@@ -135,9 +136,9 @@ public class NetworkRequestFactory {
      * Creates a request for joining a group.
      * @return NetworkRequest
      */
-    public NetworkRequest createJoinGroup() {
+    public NetworkRequest createJoinGroup(String groupCode) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
-                () -> "");
+                () -> "{\"groupCode\":" + groupCode + "}");
     }
 
     public NetworkRequest createDeleteGroupRequest(String groupId) {

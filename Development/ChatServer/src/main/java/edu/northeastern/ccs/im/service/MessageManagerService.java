@@ -34,11 +34,10 @@ public class MessageManagerService {
      * @param groupUniqueKey
      * @return
      */
-    public MessageBroadCastService getService(String groupUniqueKey) {
+    public MessageBroadCastService getService(String groupUniqueKey) throws IllegalAccessException {
 
         //Check if the group with the given unique identifier exists
         if (groupService.searchUsingCode(groupUniqueKey) != null) {
-
             if(!hmap.containsKey(groupUniqueKey)){
                 hmap.put(groupUniqueKey, new MessageBroadCastService());
             }
@@ -48,7 +47,7 @@ public class MessageManagerService {
         }
         else {
             LOGGER.info("Couldn't get a service since no such group with given unique identifier was found!");
-            throw new NullPointerException("No such group found with unique identifier: "+groupUniqueKey);
+            throw new IllegalAccessException("No such group found with unique identifier: "+groupUniqueKey);
         }
     }
 

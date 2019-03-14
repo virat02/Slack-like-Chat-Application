@@ -2,15 +2,11 @@ package edu.northeastern.ccs.im.service.JPAService;
 
 import edu.northeastern.ccs.im.userGroup.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.*;
 
 public class UserJPAService {
-
+	EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
     private EntityManager beginTransaction() {
-        EntityManagerFactory emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
         EntityManager entityManager = emFactory.createEntityManager();
         entityManager.getTransaction().begin();
         return entityManager;
@@ -21,10 +17,13 @@ public class UserJPAService {
         entityManager.close();
     }
 
-    public void createUser(User user) {
+    public int createUser(User user) {
         EntityManager entityManager = beginTransaction();
         entityManager.persist(user);
+        entityManager.flush();
+        int id= user.getId();
         endTransaction(entityManager);
+        return id;
     }
 
     public void deleteUser(User user) {
@@ -56,7 +55,7 @@ public class UserJPAService {
     }
 
     public User getUser(int id) {
-        String queryString = "SELECT u" + "FROM User u WHERE u.id =" + id;
+        String queryString = "SELECT u " + "FROM User u WHERE u.id =" + id;
         EntityManager entityManager = beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (User) query.getSingleResult();

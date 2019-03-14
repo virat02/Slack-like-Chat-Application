@@ -1,10 +1,10 @@
 package edu.northeastern.ccs.im.view;
 
+import edu.northeastern.ccs.im.userGroup.User;
+
 public class UserConstants {
 
-  private int userId;
-  private String userName;
-  private String emailAddress;
+  private User userObj;
 
   private static UserConstants userConstantsInstance;
 
@@ -17,27 +17,15 @@ public class UserConstants {
     return userConstantsInstance;
   }
 
-  public static int getUserId() {
-    return getInstance().userId;
+  public static void setUserObj(User userObj) {
+    getInstance().userObj = userObj;
   }
 
-  public static void setUserId(int userId) {
-    getInstance().userId = userId;
+  public static int getUserId() {
+    return getInstance().userObj.getId();
   }
 
   public static String getUserName() {
-    return getInstance().userName;
-  }
-
-  public static void setUserName(String userName) {
-    getInstance().userName = userName;
-  }
-
-  public static String getEmailAddress() {
-    return getInstance().emailAddress;
-  }
-
-  public static void setEmailAddress(String emailAddress) {
-    getInstance().emailAddress = emailAddress;
+    return getInstance().userObj.getUsername();
   }
 }

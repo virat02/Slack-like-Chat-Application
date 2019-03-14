@@ -2,33 +2,54 @@ package edu.northeastern.ccs.im.view;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.io.IOException;
+
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.User;
+
 public class ResponseParser {
 
-  static JsonNode parseLoginNetworkResponse() {
+  private static void throwErrorIfResponseFailed(NetworkResponse networkResponse) throws IOException
+          , NetworkResponseFailureException {
+    if (networkResponse.status().equals(NetworkResponse.STATUS.FAILED)) {
+      JsonNode jsonNode = CommunicationUtils
+              .getObjectMapper().readTree(networkResponse.payload().jsonString());
+      String errorMessage = jsonNode.get("errorMessage").asText();
+      throw new NetworkResponseFailureException(errorMessage);
+    }
+  }
+
+  static User parseLoginNetworkResponse(NetworkResponse networkResponse) throws IOException,
+          NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    User parsedUserObj = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+    UserConstants.setUserObj(parsedUserObj);
+    return parsedUserObj;
+  }
+
+  static boolean parseForgotPasswordResponse(NetworkResponse networkResponse) {
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
+  }
+
+  static JsonNode parseSearchUserNetworkResponse(NetworkResponse networkResponse) {
     return null;
   }
 
-  static JsonNode parseForgotPasswordResponse() {
-    return null;
+  static boolean parseAddGroupResponse(NetworkResponse networkResponse) {
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static JsonNode parseSearchUserNetworkResponse() {
-    return null;
+  static boolean parseDeleteGroupResponse(NetworkResponse networkResponse) {
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static JsonNode parseAddGroupResponse() {
-    return null;
+  static boolean parseUpdateUserNameRequest(NetworkResponse networkResponse) {
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static JsonNode parseDeleteGroupResponse() {
-    return null;
-  }
-
-  static JsonNode parseUpdateUserNameRequest() {
-    return null;
-  }
-
-  static JsonNode parseUpdateUserStatusRequest() {
-    return null;
+  static boolean parseUpdateUserStatusRequest(NetworkResponse networkResponse) {
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 }

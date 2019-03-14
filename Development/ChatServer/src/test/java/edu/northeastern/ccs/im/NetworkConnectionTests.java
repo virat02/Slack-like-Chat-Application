@@ -183,9 +183,7 @@ public class NetworkConnectionTests {
      */
     @Test(expected = AssertionError.class)
     public void testIteratorWhenSelectorSelectNowThrowsIOException() throws IOException {
-        setUpIteratorTests(invocation -> {
-            return null;
-        });
+        setUpIteratorTests(invocation -> null);
 
         doThrow(IOException.class).when(selector).selectNow();
         networkConnection = new NetworkConnection(socketChannel);

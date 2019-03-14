@@ -1,57 +1,70 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
 
-import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
-import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
-import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.communication.*;
 
-public class MessageWindow extends AbstractTerminalWindow {
+public class MessageWindow extends AbstractTerminalWindow implements MessageListerner {
 
-  public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
-    super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
-    }}, clientConnectionFactory);
-  }
+    private Listener messageSocketListener;
+    private final String groupCode;
 
-  @Override
-  void inputFetchedFromUser(String inputString) {
-    if (getCurrentProcess() == 0) {
-
-    } else {
-      if (inputString.equals("1")) {
-        printInConsoleForProcess(0);
-      } else if (inputString.equals("0")) {
-        goBack();
-      } else if (inputString.equals("*")) {
-        exitWindow();
-      } else {
-        invalidInputPassed();
-      }
+    public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory, String groupCode) {
+        super(caller, new HashMap<Integer, String>() {{
+            put(0, "Message Window");
+        }}, clientConnectionFactory);
+        this.groupCode = groupCode;
     }
-  }
 
-  private int sendMessage() {
-    try {
-      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createLoginRequest("", ""));
-      return getUserId(networkResponse);
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-      return -1;
+    @Override
+    public void runWindow() {
+        ClientConnection clientConnection = clientConnectionFactory.createMessageClientConnection(hostName, port);
+        NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode);
+        try {
+            clientConnection.sendRequest(networkRequest);
+            NetworkResponse networkResponse = clientConnection.readResponse();
+            if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
+                messageSocketListener = new MessageSocketListener((MessageClientConnection) clientConnection);
+                Thread threadObject = new Thread((Runnable) messageSocketListener);
+                threadObject.start();
+                super.runWindow();
+            }
+        } catch (IOException e) {
+            ChatLogger.error("Could not be joined to chat group due to an error");
+            goBack();
+        }
     }
-  }
 
-  private int getUserId(NetworkResponse networkResponse) throws IOException {
-    JsonNode jsonNode = CommunicationUtils
-            .getObjectMapper().readTree(networkResponse.payload().jsonString());
-    int userId = jsonNode.get("id").asInt();
-    UserConstants.setUserId(userId);
-    return userId;
-  }
+    @Override
+    void inputFetchedFromUser(String inputString) {
+        if (inputString.equals("1")) {
+            printInConsoleForProcess(0);
+        } else if (inputString.equals("0")) {
+            goBack();
+        } else if (inputString.equals("*")) {
+            exitWindow();
+        } else {
+            invalidInputPassed();
+        }
+    }
+
+    @Override
+    public void goBack() {
+        messageSocketListener.shouldStopListening();
+        super.goBack();
+    }
+
+    @Override
+    public void exitWindow() {
+        messageSocketListener.shouldStopListening();
+        super.exitWindow();
+    }
+
+    @Override
+    public Message newMessageReceived() {
+        return null;
+    }
 }

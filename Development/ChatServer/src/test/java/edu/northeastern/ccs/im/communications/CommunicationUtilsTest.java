@@ -67,7 +67,7 @@ public class CommunicationUtilsTest {
      */
     @Test
     public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() throws IOException {
-        message = Message.makeBroadcastMessage("", "");
+        message = Message.makeBroadcastMessage("", "", "");
         doAnswer(invocationOnMock -> {
             ByteBuffer byteBuffer = (ByteBuffer) invocationOnMock.getArguments()[0];
             byteBuffer.position(43);

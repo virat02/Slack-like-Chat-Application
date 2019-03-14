@@ -15,6 +15,7 @@ public class MessageJPAService {
 
     /**
      * Begin the entity manager
+     *
      * @return
      */
     private EntityManager beginTransaction() {
@@ -26,6 +27,7 @@ public class MessageJPAService {
 
     /**
      * Close the entity manager
+     *
      * @param entityManager
      */
     private void endTransaction(EntityManager entityManager) {
@@ -35,6 +37,7 @@ public class MessageJPAService {
 
     /**
      * Persists a message with the given message object
+     *
      * @param message
      * @return true iff the message could be persisted
      */
@@ -44,8 +47,7 @@ public class MessageJPAService {
             entityManager.persist(message);
             endTransaction(entityManager);
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             LOGGER.info("JPA Could not persist the message!");
             return false;
         }
@@ -53,6 +55,7 @@ public class MessageJPAService {
 
     /**
      * Updates a message with the given message object
+     *
      * @param message
      */
     public boolean updateMessage(Message message) {
@@ -70,9 +73,8 @@ public class MessageJPAService {
             endTransaction(entityManager);
 
             return true;
-        }
-        catch (Exception e) {
-            LOGGER.info("Can't find Message for ID:"+ message.getId());
+        } catch (Exception e) {
+            LOGGER.info("Can't find Message for ID:" + message.getId());
             return false;
         }
 
@@ -80,6 +82,7 @@ public class MessageJPAService {
 
     /**
      * Gets a message given it's id
+     *
      * @param id
      * @return
      */
@@ -89,15 +92,15 @@ public class MessageJPAService {
             EntityManager entityManager = beginTransaction();
             TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
             return query.getSingleResult();
-        }
-        catch(Exception e) {
-            LOGGER.info("Could not get any message with id: "+id);
-            throw new NullPointerException("No message found with id: "+id);
+        } catch (Exception e) {
+            LOGGER.info("Could not get any message with id: " + id);
+            throw new NullPointerException("No message found with id: " + id);
         }
     }
 
     /**
      * Gets the recent-most 15 messages given a group unique key
+     *
      * @param groupUniqueKey
      */
     public List<Message> getTop15Messages(String groupUniqueKey) {
@@ -106,11 +109,9 @@ public class MessageJPAService {
             EntityManager entityManager = beginTransaction();
             TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
             return query.setMaxResults(15).getResultList();
+        } catch (Exception e) {
+            LOGGER.info("Could not get messages for group unique key: " + groupUniqueKey);
+            throw new NullPointerException("No message found for group unique key: " + groupUniqueKey);
         }
-        catch(Exception e) {
-            LOGGER.info("Could not get messages for group unique key: "+groupUniqueKey);
-            throw new NullPointerException("No message found for group unique key: "+groupUniqueKey);
-        }
-
     }
 }

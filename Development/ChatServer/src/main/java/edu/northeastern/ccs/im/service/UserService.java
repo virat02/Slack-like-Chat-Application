@@ -1,9 +1,9 @@
 package edu.northeastern.ccs.im.service;
 
-import java.util.Date;
-
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
+
+import java.util.Date;
 
 public final class UserService implements IService {
     private UserJPAService userJPAService;
@@ -15,39 +15,40 @@ public final class UserService implements IService {
         userJPAService = new UserJPAService();
     }
 
-    /**
-     * Persists a user using the JPA service
-     * @param user
-     * @return A user object
-     */
-    public User addUser(Object user) {
+    public static User addUser(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
         userJPAService.createUser((User)user);
         return userJPAService.getUser(((User) user).getId());
     }
 
     /**
      * Searches for a particular user.
+     *
      * @param username the name of the user being searched
      * @return the users with the name searched for
      */
-    public User search(String username) {
+    public static User search(String username) {
+        UserJPAService userJPAService = new UserJPAService();
         return userJPAService.search(username);
     }
 
     /**
      * Follow a particular user given their username.
+     *
      * @param username of the user we want to follow.
      */
-    public void follow(String username, User currentUser) {
+    public static void follow(String username, User currentUser) {
         currentUser.addFollowee(search(username));
     }
 
-    public User update(Object user) {
+    public static User update(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
         userJPAService.updateUser((User) user);
         return userJPAService.getUser(((User) user).getId());
     }
 
-    public User delete(Object user) {
+    public static User delete(Object user) {
+        UserJPAService userJPAService = new UserJPAService();
         userJPAService.deleteUser((User) user);
         return userJPAService.getUser(((User) user).getId());
     }
@@ -60,14 +61,14 @@ public final class UserService implements IService {
         Date timeStamp = new Date();
         timeStamp.setTime(timeStamp.getTime());
         newMessage.setTimestamp(timeStamp);
-        newMessage.setId((int)timeStamp.getTime());
+        newMessage.setId((int) timeStamp.getTime());
 //        for(IGroup group: this.groups) {
 //            if(group.getId() == iGroupId) {
 //                newMessage.setGroup(group);
 //            }
 //        }
 //        this.messages.add(newMessage);
-}
+    }
 
     /**
      * Updates an existing profile username if the respective input is valid
@@ -106,9 +107,9 @@ public final class UserService implements IService {
     /**
      * Check for valid password
      * Returns true if and only if password:
-     *         1. have at least eight characters.
-     *         2. consists of only letters and digits.
-     *         3. must contain at least two digits.
+     * 1. have at least eight characters.
+     * 2. consists of only letters and digits.
+     * 3. must contain at least two digits.
      */
     private static boolean isValidPassword(String password) {
         if (password.length() < 8) {
@@ -122,7 +123,7 @@ public final class UserService implements IService {
                     return false;
                 } else if (Character.isDigit(c)) {
                     count++;
-                    if (count < 2)   {
+                    if (count < 2) {
                         return false;
                     }
                 }

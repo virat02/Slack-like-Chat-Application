@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im;
 import edu.northeastern.ccs.im.server.ClientRunnable;
 import edu.northeastern.ccs.im.server.ClientTimer;
 import edu.northeastern.ccs.im.server.Prattle;
+import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -64,7 +65,7 @@ public class ClientRunnableTest {
      */
     private void runClientRunnable(Iterator<Message> msgItr) {
         when(networkConnection.iterator()).thenReturn(msgItr);
-        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, null);
         clientRunnable.run();
     }
 
@@ -74,9 +75,9 @@ public class ClientRunnableTest {
     @Test
     public void testRunMethod() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!");
-            Message msg2 = Message.makeBroadcastMessage("sibendudey", "Hi, I'm Sibendu!");
-            Message msg3 = Message.makeBroadcastMessage("sangeetha", "Hi, I'm Sangeetha!");
+            Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!", "xyz");
+            Message msg2 = Message.makeBroadcastMessage("sibendudey", "Hi, I'm Sibendu!", "xyz");
+            Message msg3 = Message.makeBroadcastMessage("sangeetha", "Hi, I'm Sangeetha!", "xyz");
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -173,8 +174,8 @@ public class ClientRunnableTest {
     @Test
     public void testIsInitiliazeMethodWhenTrue() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!");
-            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!");
+            Message msg1 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", "");
+            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!", "");
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2));
 
             int position = 0;
@@ -196,7 +197,7 @@ public class ClientRunnableTest {
 
         runClientRunnable(msgItr);
         assertTrue(clientRunnable.isInitialized());
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!"));
+        Prattle.broadcastMessage(Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", ""));
         networkConnection.close();
     }
 
@@ -236,7 +237,7 @@ public class ClientRunnableTest {
     @Test
     public void testGetUserIdForNullUser() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 = Message.makeBroadcastMessage(null, "Hi, I'm Jerry!");
+            Message msg1 = Message.makeBroadcastMessage(null, "Hi, I'm Jerry!", "");
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1));
 
             int position = 0;
@@ -266,9 +267,9 @@ public class ClientRunnableTest {
     @Test
     public void testSetFutureMethod() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 =  Message.makeSimpleLoginMessage("sangeetha");
-            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!");
-            Message msg3 = Message.makeQuitMessage("virat02");
+            Message msg1 =  Message.makeSimpleLoginMessage("sangeetha", "");
+            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!", "");
+            Message msg3 = Message.makeQuitMessage("virat02", null);
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -303,9 +304,9 @@ public class ClientRunnableTest {
     @Test
     public void testEnqueueMessage() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 =  Message.makeSimpleLoginMessage("virat");
-            Message msg2 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!");
-            Message msg3 = Message.makeQuitMessage("virat02");
+            Message msg1 =  Message.makeSimpleLoginMessage("virat", "");
+            Message msg2 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", "");
+            Message msg3 = Message.makeQuitMessage("virat02", null);
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -327,7 +328,7 @@ public class ClientRunnableTest {
 
         when(networkConnection.iterator()).thenReturn(msgItr);
         when(networkConnection.sendMessage(any())).thenReturn(true);
-        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, new MessageBroadCastService());
         clientRunnable.run();
     }
 
@@ -338,9 +339,9 @@ public class ClientRunnableTest {
     public void testTerminateClientMethod() {
 
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 =  Message.makeSimpleLoginMessage("tarun");
-            Message msg2 = Message.makeBroadcastMessage("sangeetha", "Hi, I'm Sangeetha!");
-            Message msg3 = Message.makeQuitMessage("sibendudey");
+            Message msg1 =  Message.makeSimpleLoginMessage("tarun", "");
+            Message msg2 = Message.makeBroadcastMessage("sangeetha", "Hi, I'm Sangeetha!", "");
+            Message msg3 = Message.makeQuitMessage("sibendudey", null);
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -375,9 +376,9 @@ public class ClientRunnableTest {
     @Test
     public void testAllQuitMessages() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 =  Message.makeQuitMessage("tarun");
-            Message msg2 = Message.makeQuitMessage("sangeetha");
-            Message msg3 = Message.makeQuitMessage("sibendudey");
+            Message msg1 =  Message.makeQuitMessage("tarun", null);
+            Message msg2 = Message.makeQuitMessage("sangeetha", null);
+            Message msg3 = Message.makeQuitMessage("sibendudey", null);
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -399,7 +400,7 @@ public class ClientRunnableTest {
 
         when(networkConnection.iterator()).thenReturn(msgItr);
         when(networkConnection.sendMessage(any())).thenReturn(false);
-        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, new MessageBroadCastService());
         ScheduledFuture<?> cf = Executors.newSingleThreadScheduledExecutor()
                 .scheduleAtFixedRate(clientRunnable, 200,
                         200, TimeUnit.MILLISECONDS);
@@ -414,9 +415,9 @@ public class ClientRunnableTest {
     @Test
     public void testAllBroadcastMessages() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 =  Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!");
-            Message msg2 = Message.makeBroadcastMessage("sangeetha", "Hi. I'm Sangeetha!");
-            Message msg3 = Message.makeBroadcastMessage("sibendudey", "Hi, I'm Sibendu!");
+            Message msg1 =  Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!", "");
+            Message msg2 = Message.makeBroadcastMessage("sangeetha", "Hi. I'm Sangeetha!", "");
+            Message msg3 = Message.makeBroadcastMessage("sibendudey", "Hi, I'm Sibendu!", "");
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -438,7 +439,7 @@ public class ClientRunnableTest {
 
         when(networkConnection.iterator()).thenReturn(msgItr);
         when(networkConnection.sendMessage(any())).thenReturn(false);
-        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, new MessageBroadCastService());
         ScheduledFuture<?> cf = Executors.newSingleThreadScheduledExecutor()
                 .scheduleAtFixedRate(clientRunnable, 200,
                         200, TimeUnit.MILLISECONDS);
@@ -453,9 +454,9 @@ public class ClientRunnableTest {
     @Test
     public void testTerminateUserWhenTimerBehind() {
         Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!");
-            Message msg2 = Message.makeSimpleLoginMessage("sibendudey");
-            Message msg3 = Message.makeQuitMessage("sangeetha");
+            Message msg1 = Message.makeBroadcastMessage("virat02", "Hi, I'm Virat!", "");
+            Message msg2 = Message.makeSimpleLoginMessage("sibendudey", "");
+            Message msg3 = Message.makeQuitMessage("sangeetha", null);
             List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2, msg3));
 
             int position = 0;
@@ -476,7 +477,7 @@ public class ClientRunnableTest {
         };
 
         when(networkConnection.iterator()).thenReturn(msgItr);
-        clientRunnable = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, null);
         clientRunnable.setClientTimer(clientTimer);
         when(clientTimer.isBehind()).thenReturn(true);
         ScheduledFuture<?> cf = Executors.newSingleThreadScheduledExecutor()

@@ -50,7 +50,7 @@ public class ClientConnectionImpl implements ClientConnection {
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(new InetSocketAddress("localhost", 4545));
 
-            NetworkRequest networkRequest = new NetworkRequestFactory().createJoinGroup();
+            NetworkRequest networkRequest = new NetworkRequestFactory().createJoinGroup("");
             ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
             socketChannel.write(byteBuffer);
             byteBuffer.clear();

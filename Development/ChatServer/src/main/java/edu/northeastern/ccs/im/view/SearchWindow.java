@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class SearchWindow extends AbstractTerminalWindow {
 
+    private TerminalWindow messageWindow;
     Map<Integer, String> processMap = new HashMap<>();
     private String searchQuery;
 
@@ -24,6 +25,13 @@ public class SearchWindow extends AbstractTerminalWindow {
                         .stream().collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey,
                         AbstractMap.SimpleEntry::getValue)), clientConnectionFactory);
     }
+
+  public TerminalWindow getMessageWindow() {
+    if (messageWindow == null) {
+      messageWindow = new MessageWindow(this, clientConnectionFactory, searchQuery);
+    }
+    return messageWindow;
+  }
 
     @Override
     void inputFetchedFromUser(String inputString) {
@@ -56,7 +64,7 @@ public class SearchWindow extends AbstractTerminalWindow {
             }
         }
         else if (getCurrentProcess() == 2) {
-
+          getMessageWindow().runWindow();
         } else {
             invalidInputPassed();
         }
