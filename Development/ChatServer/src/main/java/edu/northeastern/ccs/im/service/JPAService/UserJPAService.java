@@ -8,25 +8,34 @@ import javax.persistence.*;
  * A JPA service that'll handle interacting with the database for all User interactions.
  */
 public class UserJPAService {
+    //The entity manager for this class.
+    private EntityManager entityManager;
 
-    //A private factory for making entity managers.
-	private EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
+    /**
+     * A function made to setup the entity manager for this class to make the class more testable.
+     * @param entityManager The entity manager for this class.
+     */
+    public void setEntityManager(EntityManager entityManager) {
+        if(entityManager == null) {
+            EntityManagerFactory emFactory;
+            emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
+            this.entityManager = emFactory.createEntityManager();
+        } else {
+            this.entityManager = entityManager;
+        }
+    }
 
     /**
      * A method to begin the transaction.
-     * @return Entity Manager which will manage our entity.
      */
-	private EntityManager beginTransaction() {
-        EntityManager entityManager = emFactory.createEntityManager();
+    private void beginTransaction() {
         entityManager.getTransaction().begin();
-        return entityManager;
     }
 
     /**
      * A private method that'll end the transaction.
-     * @param entityManager the manager we are ending the transaction for.
      */
-    private void endTransaction(EntityManager entityManager) {
+    private void endTransaction() {
         entityManager.getTransaction().commit();
         entityManager.close();
     }
@@ -37,19 +46,12 @@ public class UserJPAService {
      * @return the id of the user in the database.
      */
     public int createUser(User user) {
-        String queryString = "SELECT * FROM user u WHERE u.username =" + user.getUsername() +"";
-        EntityManager entityManager = beginTransaction();
-        try {
-            Query query = entityManager.createQuery(queryString);
-            query.getSingleResult();
-        } catch (javax.persistence.NoResultException nr) {
-            entityManager.persist(user);
-            entityManager.flush();
-            int id= user.getId();
-            endTransaction(entityManager);
-            return id;
-        }
-        return 0;
+        beginTransaction();
+        entityManager.persist(user);
+        entityManager.flush();
+        int id= user.getId();
+        endTransaction();
+        return id;
     }
 
     /**
@@ -57,9 +59,9 @@ public class UserJPAService {
      * @param user being deleted in the database.
      */
     public void deleteUser(User user) {
-        EntityManager entityManager = beginTransaction();
+        beginTransaction();
         entityManager.remove(user);
-        endTransaction(entityManager);
+        endTransaction();
     }
 
     /**
@@ -67,7 +69,7 @@ public class UserJPAService {
      * @param user being updated in the database.
      */
     public void updateUser(User user) {
-        EntityManager entityManager = beginTransaction();
+        beginTransaction();
         User thisUser = entityManager.find(User.class, user.getId());
         if (thisUser == null) {
             throw new EntityNotFoundException("Can't find User for ID "
@@ -80,7 +82,7 @@ public class UserJPAService {
         thisUser.setMessages(user.getMessages());
         thisUser.setGroups(user.getGroups());
         entityManager.merge(thisUser);
-        endTransaction(entityManager);
+        endTransaction();
     }
 
     /**
@@ -90,7 +92,7 @@ public class UserJPAService {
      */
     public User search(String username) {
         String thisString = "SELECT u" + "FROM User u,Profile p WHERE u.id = p.userId AND u.username =" + username;
-        EntityManager entityManager = beginTransaction();
+        beginTransaction();
         Query query = entityManager.createQuery(thisString);
         return (User)query.getSingleResult();
     }
@@ -101,10 +103,8 @@ public class UserJPAService {
      * @return a User instance when we are trying to get a User.
      */
     public User getUser(int id) {
-        StringBuilder stringBuilder = new StringBuilder("SELECT u FROM User u WHERE u.id =");
-        stringBuilder.append(id);
-        String queryString = stringBuilder.toString();
-        EntityManager entityManager = beginTransaction();
+        String queryString = "SELECT u " + "FROM User u WHERE u.id =" + id;
+        beginTransaction();
         Query query = entityManager.createQuery(queryString);
         return (User) query.getSingleResult();
     }
@@ -117,7 +117,7 @@ public class UserJPAService {
     public User loginUser(User user) {
         String queryString =
                 "SELECT u FROM User u WHERE u.username ='" + user.getUsername() + "'";
-        EntityManager entityManager = beginTransaction();
+        beginTransaction();
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             User newUser = query.getSingleResult();
@@ -126,8 +126,10 @@ public class UserJPAService {
             } else {
                 return newUser;
             }
-        } catch (Exception e) {
-            return null;
         }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }
