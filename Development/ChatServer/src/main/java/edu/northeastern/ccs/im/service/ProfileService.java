@@ -13,6 +13,7 @@ public class ProfileService {
      * Constructor for profile service class
      */
     public ProfileService() {
+        profileJPAService = new ProfileJPAService();
     }
 
 

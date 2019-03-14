@@ -24,9 +24,9 @@ public class SignUpWindow extends AbstractTerminalWindow {
     }}, clientConnectionFactory);
   }
 
-  public TerminalWindow getChatTerminalWindow(int userId) {
+  public TerminalWindow getChatTerminalWindow() {
     if (chatTerminalWindow == null) {
-      chatTerminalWindow = new ChatTerminalWindow(this, userId, clientConnectionFactory);
+      chatTerminalWindow = new ChatTerminalWindow(this, clientConnectionFactory);
     }
     return chatTerminalWindow;
   }
@@ -53,7 +53,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
         }
         else {
           printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
-          getChatTerminalWindow(id).runWindow();
+          getChatTerminalWindow().runWindow();
         }
       }
     } else {

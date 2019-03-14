@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 
 public class ResponseParser {
@@ -44,11 +45,11 @@ public class ResponseParser {
     return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static boolean parseUpdateUserNameRequest(NetworkResponse networkResponse) {
-    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
-  }
-
-  static boolean parseUpdateUserStatusRequest(NetworkResponse networkResponse) {
-    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
+  static Profile parseUpdateUserProfile(NetworkResponse networkResponse) throws IOException,
+          NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    Profile parsedProfileObj = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
+    return parsedProfileObj;
   }
 }

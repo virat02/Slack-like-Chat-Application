@@ -5,11 +5,13 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.IController;
+import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
@@ -71,10 +73,14 @@ public class RequestDispatcher {
       } catch (IOException e) {
         return networkResponseFactory.createFailedResponse();
       }
-    } else if (networkRequestType == NetworkRequestType.UPDATE_USERNAME) {
-      return handleUpdateUserName(networkRequest);
-    } else if (networkRequestType == NetworkRequestType.UPDATE_USERSTATUS) {
-      return handleUpdateUserStatus(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.CREATE_PROFILE) {
+      return handleCreateUserProfile(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.UPDATE_PROFILE) {
+      return handleUpdateProfileObj(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.UPDATE_USERPROFILE) {
+      return handleUpdateUserProfileObj(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.UPDATE_PASSWORD) {
+      return handleUpdatePasswordChange(networkRequest);
     } else if (networkRequestType == NetworkRequestType.CREATE_GROUP) {
       return handleCreateGroup(networkRequest);
     } else if (networkRequestType == NetworkRequestType.DELETE_GROUP) {
@@ -121,7 +127,27 @@ public class RequestDispatcher {
     }
   }
 
-  private NetworkResponse handleUpdateUserName(NetworkRequest networkRequest) {
+  private NetworkResponse handleCreateUserProfile(NetworkRequest networkRequest) {
+    try {
+      Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
+      NetworkResponse response = (new ProfileController()).addEntity(profile);
+      return response;
+    } catch (IOException e) {
+      return networkResponseFactory.createFailedResponse();
+    }
+  }
+
+  private NetworkResponse handleUpdateProfileObj(NetworkRequest networkRequest) {
+    try {
+      Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
+      NetworkResponse response = (new ProfileController()).updateEntity(profile);
+      return response;
+    } catch (IOException e) {
+      return networkResponseFactory.createFailedResponse();
+    }
+  }
+
+  private NetworkResponse handleUpdateUserProfileObj(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
       NetworkResponse response = (new UserController()).updateEntity(user);
@@ -131,7 +157,7 @@ public class RequestDispatcher {
     }
   }
 
-  private NetworkResponse handleUpdateUserStatus(NetworkRequest networkRequest) {
+  private NetworkResponse handleUpdatePasswordChange(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
       NetworkResponse response = (new UserController()).updateEntity(user);
@@ -143,11 +169,12 @@ public class RequestDispatcher {
 
   private NetworkResponse handleDeleteGroup(NetworkRequest networkRequest) {
     try {
-      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+      NetworkResponse response = (new GroupController()).deleteEntity(group);
+      return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
-    return networkResponseFactory.createSuccessfulResponse();
   }
 
   private NetworkResponse handleCreateGroup(NetworkRequest networkRequest) {

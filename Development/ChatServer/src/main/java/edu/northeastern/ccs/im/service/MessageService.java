@@ -8,6 +8,7 @@ public class MessageService implements IService{
 
     private MessageJPAService messageJPAService;
     public MessageService() {
+        messageJPAService = new MessageJPAService();
     }
 
 //    /**
