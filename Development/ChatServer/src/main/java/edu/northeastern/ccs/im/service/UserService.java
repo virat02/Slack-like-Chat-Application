@@ -3,10 +3,17 @@ package edu.northeastern.ccs.im.service;
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.User;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
 /**
  * The class made to delegate tasks to the JPA service and send results back to Service.
  */
 public final class UserService implements IService {
+
+    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
+
     private UserJPAService userJPAService;
 
     /**
@@ -49,12 +56,55 @@ public final class UserService implements IService {
         return userJPAService.search(username);
     }
 
-    /** Follow a particular user given their username.
+    /**
+     * Follow a particular user given their username.
      * @param username of the user we want to follow.
      */
-    public void follow(String username, User currentUser) {
-        currentUser.addFollowee(search(username));
-        userJPAService.updateUser(currentUser);
+    public User follow(String username, User currentUser) {
+
+        User u = search(username);
+
+        if(currentUser != null && u != null){
+            currentUser.addFollowing(u);
+            return currentUser;
+        }
+        else{
+            LOGGER.info("Could not successfully follow the user!");
+            throw new IllegalArgumentException("Could not successfully follow the user with username: "+username);
+        }
+
+    }
+
+    /**
+     * Get a list of followers for this user
+     * @param username
+     * @return
+     */
+    public List<User> getFollowers(String username){
+        User u = search(username);
+
+        if(u != null) {
+            return userJPAService.getFollowers(u);
+        }
+        else{
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get a list of followees for this user
+     * @param username
+     * @return
+     */
+    public List<User> getFollowees(String username){
+        User u = search(username);
+
+        if(u != null) {
+            return userJPAService.getFollowees(u);
+        }
+        else{
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -85,5 +135,6 @@ public final class UserService implements IService {
     public User loginUser(Object user) {
         return userJPAService.loginUser((User) user);
     }
+
 
 }

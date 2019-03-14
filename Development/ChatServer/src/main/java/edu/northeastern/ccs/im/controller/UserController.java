@@ -110,4 +110,34 @@ public final class UserController implements IController {
     public void followUser(String username, User currentUser) {
         userService.follow(username, currentUser);
     }
+
+    /**
+     * Get the followers for this user
+     * @param username
+     * @return
+     */
+    public NetworkResponse viewFollowers(String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowers(username))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+    }
+
+    /**
+     * Get the followees for this user
+     * @param username
+     * @return
+     */
+    public NetworkResponse viewFollowees(String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowees(username))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+    }
 }

@@ -3,11 +3,17 @@ package edu.northeastern.ccs.im.service.JPAService;
 import edu.northeastern.ccs.im.userGroup.User;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A JPA service that'll handle interacting with the database for all User interactions.
  */
 public class UserJPAService {
+
+    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
+
     //The entity manager for this class.
     private EntityManager entityManager;
 
@@ -93,7 +99,7 @@ public class UserJPAService {
     public User search(String username) {
         String thisString = "SELECT u" + "FROM User u,Profile p WHERE u.id = p.userId AND u.username =" + username;
         beginTransaction();
-        Query query = entityManager.createQuery(thisString);
+        TypedQuery<User> query = entityManager.createQuery(thisString, User.class);
         return (User)query.getSingleResult();
     }
 
@@ -105,7 +111,7 @@ public class UserJPAService {
     public User getUser(int id) {
         String queryString = "SELECT u " + "FROM User u WHERE u.id =" + id;
         beginTransaction();
-        Query query = entityManager.createQuery(queryString);
+        TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
         return (User) query.getSingleResult();
     }
 
@@ -128,8 +134,60 @@ public class UserJPAService {
             }
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * @param user
+     * @return The list of follower's of the given user
+     */
+    public List<User> getFollowers(User user) {
+        String queryString =
+                "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
+        beginTransaction();
+        List<User> followerList = getUsers(queryString, entityManager);
+        if (followerList != null) return followerList;
+        return Collections.emptyList();
+    }
+
+    /**
+     * Gets the users who have a profile access
+     * @param queryString
+     * @param entityManager
+     * @return
+     */
+    private List<User> getUsers(String queryString, EntityManager entityManager) {
+        try {
+            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
+            List<User> followerList = query.getResultList();
+
+            //Filter out users with no profile access
+            for (User u : followerList) {
+                if (!u.getProfile().getProfileAccess()) {
+                    followerList.remove(u);
+                }
+            }
+
+            return followerList;
+        }
+        catch (Exception e) {
+            LOGGER.info(e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * @param user
+     * @return The list of followee's of the given user
+     */
+    public List<User> getFollowees(User user) {
+        String queryString =
+                "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
+        beginTransaction();
+        List<User> followeeList = getUsers(queryString, entityManager);
+        if (followeeList != null) return followeeList;
+        return Collections.emptyList();
     }
 }
