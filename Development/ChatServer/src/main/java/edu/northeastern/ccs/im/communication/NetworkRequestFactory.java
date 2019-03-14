@@ -107,9 +107,9 @@ public class NetworkRequestFactory {
                 () -> {
                   Group group = new Group();
                   group.setName(groupName);
-//                  List<User> moderators = new ArrayList<>();
-//                  moderators.add(UserConstants.getUserObj());
-//                  group.setModerators(moderators);
+                  List<User> moderators = new ArrayList<>();
+                  moderators.add(UserConstants.getUserObj());
+                  group.setModerators(moderators);
                   return CommunicationUtils.getObjectMapper().writeValueAsString(group);
                 });
     }

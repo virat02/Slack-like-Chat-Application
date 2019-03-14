@@ -43,6 +43,8 @@ public class UserJPAService {
         thisUser.setFollowing(user.getFollowing());
         thisUser.setProfile(user.getProfile());
         thisUser.setUsername(user.getUsername());
+        thisUser.setMessages(user.getMessages());
+        thisUser.setGroups(user.getGroups());
         entityManager.merge(thisUser);
         endTransaction(entityManager);
     }
@@ -62,14 +64,21 @@ public class UserJPAService {
     }
 
     public User loginUser(User user) {
-        String queryString = "SELECT u " + "FROM User u WHERE u.id =" + user.getId();
+        String queryString =
+                "SELECT u FROM User u WHERE u.username ='" + user.getUsername() + "'";
         EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(queryString);
-        User newUser = (User) query.getSingleResult();
-        if(!user.getUsername().equals(newUser.getUsername()) || !user.getPassword().equals(newUser.getPassword())) {
-            return null;
-        } else {
-            return newUser;
+        try {
+            TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
+            User newUser = query.getSingleResult();
+            if(!user.getUsername().equals(newUser.getUsername()) || !user.getPassword().equals(newUser.getPassword())) {
+                return null;
+            } else {
+                return newUser;
+            }
         }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }

@@ -26,9 +26,9 @@ public class SearchWindow extends AbstractTerminalWindow {
                         AbstractMap.SimpleEntry::getValue)), clientConnectionFactory);
     }
 
-  public TerminalWindow getMessageWindow() {
+  public TerminalWindow getMessageWindow(String chatId) {
     if (messageWindow == null) {
-      messageWindow = new MessageWindow(this, clientConnectionFactory);
+      messageWindow = new MessageWindow(this, clientConnectionFactory, chatId);
     }
     return messageWindow;
   }
@@ -64,7 +64,12 @@ public class SearchWindow extends AbstractTerminalWindow {
             }
         }
         else if (getCurrentProcess() == 2) {
-          getMessageWindow().runWindow();
+          if (UserConstants.getUserName().compareTo(inputString) > 0) {
+            getMessageWindow(inputString + "_" + UserConstants.getUserName()).runWindow();
+          }
+          else {
+            getMessageWindow(UserConstants.getUserName() + "_" + inputString).runWindow();
+          }
         } else {
             invalidInputPassed();
         }

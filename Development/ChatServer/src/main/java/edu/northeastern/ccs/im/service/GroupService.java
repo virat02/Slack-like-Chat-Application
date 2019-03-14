@@ -11,21 +11,21 @@ public class GroupService implements IService{
 	
 	public Group create(Group group) {
 		groupJPA.createGroup(group);
-		return groupJPA.getGroup(group.getName());
+		return groupJPA.getGroup(group.getId());
 	}
 	
-	public Group get(String name) {
-		return groupJPA.getGroup(name);
+	public Group get(int id) {
+		return groupJPA.getGroup(id);
 	}
 	
 	public Group update(Group group) {
 		groupJPA.updateGroup(group);
-		return groupJPA.getGroup(group.getName());
+		return groupJPA.getGroup(group.getId());
 	}
 	
 	public Group delete(Group group) {
 		groupJPA.deleteGroup(group);
-		return groupJPA.getGroup(group.getName());
+		return groupJPA.getGroup(group.getId());
 	}
 	
 	public Group searchUsingCode(String groupCode){

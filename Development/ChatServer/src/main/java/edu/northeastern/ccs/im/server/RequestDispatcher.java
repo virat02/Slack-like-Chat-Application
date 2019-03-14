@@ -104,7 +104,7 @@ public class RequestDispatcher {
   private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-      NetworkResponse response = (new UserController()).addEntity(user);
+      NetworkResponse response = (new UserController()).loginUser(user);
       return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
