@@ -23,22 +23,22 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
                         e -> new MessageGroupSelectorWindow(this, clientConnectionFactory));
                 selectorWindow.runWindow();
             } else if (inputString.equals("2")) {
-                SearchWindow searchWindow = (SearchWindow) mapper.computeIfAbsent(1,
+                SearchWindow searchWindow = (SearchWindow) mapper.computeIfAbsent(2,
                         e -> new SearchWindow(this, clientConnectionFactory));
                 searchWindow.runWindow();
             } else if (inputString.equals("3")) {
                 CreateGroupWindow createGroupWindowWindow = (CreateGroupWindow) mapper
-                        .computeIfAbsent(2, e -> new CreateGroupWindow(this,
+                        .computeIfAbsent(3, e -> new CreateGroupWindow(this,
                                 clientConnectionFactory));
                 createGroupWindowWindow.runWindow();
             } else if (inputString.equals("4")) {
                 DeleteGroupWindow deleteGroupWindowWindow = (DeleteGroupWindow) mapper
-                        .computeIfAbsent(3, e -> new DeleteGroupWindow(this,
+                        .computeIfAbsent(4, e -> new DeleteGroupWindow(this,
                                 clientConnectionFactory));
                 deleteGroupWindowWindow.runWindow();
             } else if (inputString.equals("5")) {
                 UpdateProfileWindow updateProfileWindow = (UpdateProfileWindow) mapper
-                        .computeIfAbsent(4, e -> new UpdateProfileWindow(this,
+                        .computeIfAbsent(5, e -> new UpdateProfileWindow(this,
                                 clientConnectionFactory));
                 updateProfileWindow.runWindow();
             } else if (inputString.equals("6")) {
