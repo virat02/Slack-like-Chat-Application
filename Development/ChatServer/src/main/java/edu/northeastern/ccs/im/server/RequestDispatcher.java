@@ -211,15 +211,8 @@ public class RequestDispatcher {
 
   private NetworkResponse handleGetFollowers(NetworkRequest networkRequest) {
     try {
-      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-      List<User> moderators = group.getModerators();
-      group.setModerators(null);
-      NetworkResponse response = (new GroupController()).addEntity(group);
-      if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-        group.setModerators(moderators);
-        NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
-        return moderatorResponse;
-      }
+      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      NetworkResponse response = (new UserController()).viewFollowers(user.getUsername());
       return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
@@ -228,15 +221,8 @@ public class RequestDispatcher {
 
   private NetworkResponse handleGetFollowees(NetworkRequest networkRequest) {
     try {
-      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-      List<User> moderators = group.getModerators();
-      group.setModerators(null);
-      NetworkResponse response = (new GroupController()).addEntity(group);
-      if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-        group.setModerators(moderators);
-        NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
-        return moderatorResponse;
-      }
+      User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+      NetworkResponse response = (new UserController()).viewFollowees(user.getUsername());
       return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
@@ -245,15 +231,14 @@ public class RequestDispatcher {
 
   private NetworkResponse handleSetFollowers(NetworkRequest networkRequest) {
     try {
-      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-      List<User> moderators = group.getModerators();
-      group.setModerators(null);
-      NetworkResponse response = (new GroupController()).addEntity(group);
-      if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-        group.setModerators(moderators);
-        NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
-        return moderatorResponse;
+      String payloadString = networkRequest.payload().jsonString();
+      List<String> parsedString = Arrays.asList(payloadString.split("\n"));
+      if (parsedString.size() != 2) {
+        return networkResponseFactory.createFailedResponse();
       }
+      User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
+      String userToFollow = parsedString.get(1);
+      NetworkResponse response = (new UserController()).followUser(userToFollow, currentUser);
       return response;
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();

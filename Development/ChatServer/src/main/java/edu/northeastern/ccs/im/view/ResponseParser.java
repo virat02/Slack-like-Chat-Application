@@ -61,4 +61,12 @@ public class ResponseParser {
             .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
     return null;
   }
+
+  static void parseSetFollowersList(NetworkResponse networkResponse) throws IOException,
+          NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    User parsedUserObj = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+    UserConstants.setUserObj(parsedUserObj);
+  }
 }

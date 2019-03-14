@@ -52,11 +52,11 @@ public class CirclesWindow extends AbstractTerminalWindow {
         printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
         printInConsoleForProcess(0);
       } else if (currentOperation == 4) {
-        followUser();
+        followUser(inputString);
         printMessageInConsole(ConstantStrings.FOLLOW_FAILED);
         printInConsoleForProcess(0);
       } else if (currentOperation == 5) {
-        followUser();
+        unfollowUser(inputString);
         printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
         printInConsoleForProcess(0);
       }
@@ -107,20 +107,19 @@ public class CirclesWindow extends AbstractTerminalWindow {
 //    return null;
   }
 
-  private void followUser() {
-//    NetworkResponse networkResponse;
-//    try {
-//      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-//              .createGetUserFollowersList(UserConstants.getUserName()));
-//      return ResponseParser.parseFollowersList(networkResponse);
-//    } catch (IOException | NetworkResponseFailureException e) {
-//      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
-//      printInConsoleForProcess(0);
-//    }
-//    return null;
+  private void followUser(String userName) {
+    NetworkResponse networkResponse;
+    try {
+      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createSetUserFolloweresList(userName));
+      ResponseParser.parseSetFollowersList(networkResponse);
+    } catch (IOException | NetworkResponseFailureException e) {
+      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+      printInConsoleForProcess(0);
+    }
   }
 
-  private void unfollowUser() {
+  private void unfollowUser(String userName) {
 
   }
 }

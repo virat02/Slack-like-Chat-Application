@@ -228,11 +228,12 @@ public class NetworkRequestFactory {
   }
 
   public NetworkRequest createSetUserFolloweresList(String userName) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
             () -> {
-              User user = new User();
-              user.setUsername(userName);
-              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+
+              User user = UserConstants.getUserObj();
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                      "\n" + userName;
             });
   }
 }

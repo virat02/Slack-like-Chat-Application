@@ -56,10 +56,11 @@ public class UserJPAService {
     }
 
     public User search(String username) {
-        String thisString = "SELECT u" + "FROM User u,Profile p WHERE u.id = p.userId AND u.username =" + username;
+        String thisString = "SELECT u " + "FROM User u,Profile p WHERE u.id = p.id AND u" +
+                ".username = '" + username + "'";
         EntityManager entityManager = beginTransaction();
-        Query query = entityManager.createQuery(thisString);
-        return (User)query.getSingleResult();
+        TypedQuery<User> query = entityManager.createQuery(thisString, User.class);
+        return query.getSingleResult();
     }
 
     public User getUser(int id) {
