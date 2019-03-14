@@ -18,7 +18,7 @@ public class LoginWindow extends AbstractTerminalWindow {
 
   public TerminalWindow getChatTerminalWindow(int userId) {
     if (chatTerminalWindow == null) {
-      chatTerminalWindow = new ChatTerminalWindow(this, userId, clientConnectionFactory);
+      chatTerminalWindow = new ChatTerminalWindow(this, clientConnectionFactory);
     }
     return chatTerminalWindow;
   }
