@@ -1,16 +1,14 @@
 package edu.northeastern.ccs.im.controller;
 
-import java.util.List;
-
-import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
-import edu.northeastern.ccs.im.service.GroupService;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
+import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.userGroup.Group;
 
 public class GroupController implements IController<Group>{
-	private GroupService groupService;
+	private GroupService groupService = new GroupService();
 
 	@Override
 	public NetworkResponse addEntity(Group group) {
@@ -24,10 +22,10 @@ public class GroupController implements IController<Group>{
 
 	}
 
-	public NetworkResponse getEntity(String groupName) {
+	public NetworkResponse getEntity(int groupID) {
 		try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupName))));
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.get(groupID))));
         } catch (IllegalArgumentException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));

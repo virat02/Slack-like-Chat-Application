@@ -10,11 +10,12 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
   private final Listener messageSocketListener;
   private final Thread threadObject;
 
-  public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
+  public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory,
+                       String chatId) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, "Message Window");
     }}, clientConnectionFactory);
-    messageSocketListener = new MessageSocketListener(this);
+    messageSocketListener = new MessageSocketListener(this, chatId);
     threadObject = new Thread((Runnable) messageSocketListener);
   }
   @Override

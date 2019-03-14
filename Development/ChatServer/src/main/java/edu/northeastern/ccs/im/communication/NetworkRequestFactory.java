@@ -4,9 +4,14 @@ package edu.northeastern.ccs.im.communication;
 //import edu.northeastern.ccs.jpa.Profile;
 //import edu.northeastern.ccs.jpa.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.view.UserConstants;
 
 /***
  * A NetworkRequestFactory which returns instance of Network Request depending upon
@@ -100,8 +105,12 @@ public class NetworkRequestFactory {
     public NetworkRequest createGroupRequest(String groupName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_GROUP,
                 () -> {
-                    User user = new User();
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                  Group group = new Group();
+                  group.setName(groupName);
+                  List<User> moderators = new ArrayList<>();
+                  moderators.add(UserConstants.getUserObj());
+                  group.setModerators(moderators);
+                  return CommunicationUtils.getObjectMapper().writeValueAsString(group);
                 });
     }
 
@@ -141,11 +150,15 @@ public class NetworkRequestFactory {
                 () -> "");
     }
 
-    public NetworkRequest createDeleteGroupRequest(String groupId) {
+    public NetworkRequest createDeleteGroupRequest(String groupName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
                 () -> {
-                    User user = new User();
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                  Group group = new Group();
+                  group.setName(groupName);
+                  List<User> moderators = new ArrayList<>();
+                  moderators.add(UserConstants.getUserObj());
+                  group.setModerators(moderators);
+                  return CommunicationUtils.getObjectMapper().writeValueAsString(group);
                 });
     }
 
