@@ -15,4 +15,8 @@ public class ClientConnectionFactory {
     public ClientConnection createClientConnection(String hostName, int port)  {
         return new ClientConnectionImpl(hostName, port, socketFactory);
     }
+
+    public ClientConnection createMessageClientConnection(String hostName, int port)    {
+        return new ClientMessageConnection(hostName, port, socketFactory);
+    }
 }

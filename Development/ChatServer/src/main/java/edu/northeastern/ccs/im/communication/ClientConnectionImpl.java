@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.communication;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.readers.JsonBufferReader;
+import edu.northeastern.ccs.im.readers.JsonBufferReaderImpl;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -49,6 +50,7 @@ public class ClientConnectionImpl implements ClientConnection {
         try (SocketChannel socketChannel = SocketChannel.open()) {
             socketChannel.connect(new InetSocketAddress("localhost", 4545));
 
+
             NetworkRequest networkRequest = new NetworkRequestFactory().createJoinGroup("",0);
             ByteBuffer byteBuffer = ByteBuffer.wrap(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequest));
             socketChannel.write(byteBuffer);
@@ -66,7 +68,7 @@ public class ClientConnectionImpl implements ClientConnection {
                         // Convert the buffer to a format that we can actually use.
                         CharBuffer charBuffer = decoder.decode(messageBuffer);
                         ByteBuffer bf = charset.encode(charBuffer);
-                        JsonBufferReader jsonBufferReader = new JsonBufferReader();
+                        JsonBufferReader jsonBufferReader = new JsonBufferReaderImpl();
                         List<Message> messagesList = jsonBufferReader.messageList(bf);
                         for (Message message : messagesList)
                             ChatLogger.info(message.toString());
@@ -81,7 +83,7 @@ public class ClientConnectionImpl implements ClientConnection {
             });
 
             t.start();
-            byte[] message = CommunicationUtils.getObjectMapper().writeValueAsBytes(Message.makeBroadcastMessage("sibendu", "Helllooooo"));
+            byte[] message = CommunicationUtils.getObjectMapper().writeValueAsBytes(Message.makeBroadcastMessage("sibendu", "Helllooooo", ""));
             ByteBuffer byteBuffer1 = ByteBuffer.wrap(message);
             socketChannel.write(byteBuffer1);
             byteBuffer1 = ByteBuffer.wrap(message);

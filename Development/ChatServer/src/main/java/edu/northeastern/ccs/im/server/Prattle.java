@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -13,13 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.communication.NetworkRequest;
-import edu.northeastern.ccs.im.communication.NetworkRequestImpl;
 
 /**
  * A network server that communicates with IM clients that connect to it. This

@@ -1,31 +1,39 @@
 package edu.northeastern.ccs.im.view;
 
+import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.communication.MessageClientConnection;
+
+import java.io.IOException;
+import java.util.List;
+
 public class MessageSocketListener implements Runnable, Listener {
 
-  private final MessageListerner messageListerner;
-  private boolean isRunning;
-  private String groupCode;
+    private final MessageClientConnection clientConnection;
+    private boolean isRunning;
 
-  public MessageSocketListener(MessageListerner messageListerner, String groupCode) {
-    this.messageListerner = messageListerner;
-    this.isRunning = true;
-    this.groupCode = groupCode;
-  }
-
-  //Runnable methods
-  @Override
-  public void run() {
-    System.out.println("Entered");
-    while (isRunning) {
-      /* TODO: Must make a socket connection and make the class listen to new messages of the
-      group */
+    public MessageSocketListener(MessageClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
+        isRunning = true;
     }
-    System.out.println("Ended");
-  }
 
-  //Listener Methods
-  @Override
-  public void shouldStopListening() {
-    isRunning = false;
-  }
+    @Override
+    public void run() {
+        ViewConstants.getOutputStream().println("Entered");
+        while (isRunning) {
+            List<Message> messages = clientConnection.readMessages();
+            messages.forEach(ViewConstants.getOutputStream()::println);
+        }
+        ViewConstants.getOutputStream().println("Ended");
+    }
+
+    //Listener Methods
+    @Override
+    public void shouldStopListening() {
+        try {
+            clientConnection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        isRunning = false;
+    }
 }
