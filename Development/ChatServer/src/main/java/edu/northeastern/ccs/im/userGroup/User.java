@@ -36,18 +36,6 @@ public class User implements IUser {
     )
     private List<User> following = new ArrayList<>();
 
-    /**
-     * The list of people following this user.
-     */
-    @OneToMany(targetEntity=User.class)
-    @JoinTable
-    (
-        name="user_followee",
-        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
-        inverseJoinColumns={ @JoinColumn(name="FOLLOWEE_ID", referencedColumnName="ID") }
-    )
-    private List<User> followee = new ArrayList<>();
-
     /** The name. */
     private String username;
 
@@ -170,24 +158,6 @@ public class User implements IUser {
      */
     public void setFollowing(List<User> following) {
         this.following = following;
-    }
-
-    /**
-     * Gets the followees.
-     *
-     * @return the followee
-     */
-    public List<User> getFollowee() {
-        return this.followee;
-    }
-
-    /**
-     * Sets the following.
-     *
-     * @param followee the new profile
-     */
-    public void setFollowee(List<User> followee) {
-        this.followee = followee;
     }
 
     /**
