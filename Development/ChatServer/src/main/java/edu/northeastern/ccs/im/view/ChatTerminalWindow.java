@@ -42,7 +42,10 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
                                 clientConnectionFactory));
                 updateProfileWindow.runWindow();
             } else if (inputString.equals("6")) {
-
+                CirclesWindow circlesWindow = (CirclesWindow) mapper
+                        .computeIfAbsent(6, e -> new CirclesWindow(this,
+                                clientConnectionFactory));
+                circlesWindow.runWindow();
             } else if (inputString.equals("7")) {
                 goBack();
             } else if (inputString.equals("*")) {

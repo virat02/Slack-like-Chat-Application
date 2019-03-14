@@ -81,4 +81,14 @@ public class ConstantStrings {
     public static final String DELETE_GROUP = "Enter Group Name To Delete: ";
     public static final String DELETE_GROUP_SUCCESS = "Group deleted successfully\n" + DEFAULT_MENU;
     public static final String DELETE_GROUP_FAILED = "Group deletion failed\n" + FAILURE_MENU;
+
+    //Circles
+    public static final String CIRCLE_MENU = "1 - Users following\n"
+            + "2 - Users following you\n"
+            + "3 - Users followed by another user\n"
+            + "4 - Follow user\n"
+            + "5 - Un-Follow user\n" + DEFAULT_MENU;
+    public static final String USERS_FOLLOWED_USER = "Enter user name: ";
+    public static final String FOLLOW_SUCCESSFUL = "Success";
+    public static final String FOLLOW_FAILED = "Failed";
 }
