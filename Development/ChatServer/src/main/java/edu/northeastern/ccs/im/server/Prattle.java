@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.Message;
 
 /**
  * A network server that communicates with IM clients that connect to it. This
