@@ -17,8 +17,8 @@ import java.util.List;
  *
  */
 public class CommunicationUtils {
-    private final static int MAXIMUM_TRIES_SENDING = 100;
-    private final static int BUFFER_SIZE = 64 * 1024;
+    private static final int MAXIMUM_TRIES_SENDING = 100;
+    private static final int BUFFER_SIZE = 64 * 1024;
 
     private CommunicationUtils() {
 
@@ -28,21 +28,20 @@ public class CommunicationUtils {
 
     /***
      * Reuse the instance of objectMapper from jackson. Documentation states that it threadsafe.
-     * @return
+     * @return the instance of objectMapper
      */
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
-    public static <T> String toJsonArray(List<T> T) {
-    	ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    	try {
-    		return objWriter.writeValueAsString(T);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+    public static <T> String toJsonArray(List<T> t) {
+        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            return objWriter.writeValueAsString(t);
+        } catch (JsonProcessingException e) {
+            ChatLogger.error(e.getMessage());
+        }
+        return "{}";
     }
 
     /***
@@ -55,11 +54,11 @@ public class CommunicationUtils {
      * configuration of socket channel, Consumers should handle the result of
      * this operation accordingly.
      *
-     * @param channel
-     * @param object
+     * @param channel The socket channel to which this object has to be written
+     * @param object The Object which has to be written to socket
      * @return Boolean value indicating the success of the message.
      */
-    public static boolean writeToChannel(SocketChannel channel, Object object)    {
+    public static boolean writeToChannel(SocketChannel channel, Object object) {
         byte[] encoded = new byte[]{};
         boolean result = true;
         try {
@@ -93,16 +92,16 @@ public class CommunicationUtils {
     /***
      * Parse the network request from socket channel.
      * Assumptions: SocketChannel is blocking.
-     * @param socketChannel
+     * @param socketChannel The channel from which request will be read.
      * @return NetworkRequest read from channel
      */
-    public static NetworkRequest networkRequestReadFromSocket(SocketChannel socketChannel)   {
+    public static NetworkRequest networkRequestReadFromSocket(SocketChannel socketChannel) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         try {
             socketChannel.read(byteBuffer);
             return CommunicationUtils.getObjectMapper().readValue(byteBuffer.array(), NetworkRequestImpl.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            ChatLogger.error(e.getMessage());
         }
 
         return null;
@@ -110,17 +109,18 @@ public class CommunicationUtils {
 
     /**
      * Parses the object and creates a Json string.
+     *
      * @param object being parsed into a Json string
      * @return Json String representation of the object.
      */
     public static String toJson(Object object) {
-      ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-      try {
-        return objWriter.writeValueAsString(object);
-      } catch (JsonProcessingException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      return "";
+        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            return objWriter.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            ChatLogger.error("Error processing object during conversion to json");
+            ChatLogger.warning("Returning empty json string");
+        }
+        return "{}";
     }
 }

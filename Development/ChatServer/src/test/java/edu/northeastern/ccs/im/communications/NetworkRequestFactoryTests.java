@@ -14,11 +14,11 @@ public class NetworkRequestFactoryTests {
     @Test
     public void whenCreateUserRequestIsCalledJsonPayloadShouldBeSame() throws JsonProcessingException {
         String name = "Sibendu";
-        String email = "sibendu.dey@gmail.com";
-        NetworkRequest networkRequest = networkRequestFactory.createUserRequest(name, email);
+        String password = "password";
+        NetworkRequest networkRequest = networkRequestFactory.createUserRequest(name, password);
         User user = new User();
-        //The below line gave an error
-        //User user = new User(name, email);
+        user.setUsername(name);
+        user.setPassword(password);
         String expectedJSON = CommunicationUtils.getObjectMapper().writeValueAsString(user);
         Assert.assertEquals(expectedJSON, networkRequest.payload().jsonString());
     }

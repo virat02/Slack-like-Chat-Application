@@ -76,6 +76,10 @@ public class RequestDispatcher {
             return handleLoginRequest(networkRequest);
         } else if (networkRequestType == NetworkRequestType.SEARCH_USER) {
             return searchQueryResults(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.GET_GROUP) {
+            return getGroupQueryResults(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.UPDATE_GROUP) {
+            return updateGroupQueryResults(networkRequest);
         } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
             return handleJoinGroupRequest(networkRequest, socketChannel);
         } else if (networkRequestType == NetworkRequestType.CREATE_PROFILE) {
@@ -192,17 +196,7 @@ public class RequestDispatcher {
     private NetworkResponse handleDeleteGroup(NetworkRequest networkRequest) {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = (new GroupController()).deleteEntity(group);
-            return response;
-        } catch (IOException e) {
-            return networkResponseFactory.createFailedResponse();
-        }
-    }
-
-    private NetworkResponse handleJoinGroup(NetworkRequest networkRequest) {
-        try {
-            Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = groupController.joinGroup(group);
+            NetworkResponse response = groupController.deleteEntity(group);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -214,7 +208,7 @@ public class RequestDispatcher {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
             List<User> moderators = group.getModerators();
             group.setModerators(null);
-            NetworkResponse response = (new GroupController()).addEntity(group);
+            NetworkResponse response = groupController.addEntity(group);
             if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                 group.setModerators(moderators);
                 NetworkResponse moderatorResponse = groupController.updateEntity(group);
@@ -256,6 +250,26 @@ public class RequestDispatcher {
             User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
             String userToFollow = parsedString.get(1);
             NetworkResponse response = userController.followUser(userToFollow, currentUser);
+            return response;
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse getGroupQueryResults(NetworkRequest networkRequest) {
+        try {
+            Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+            NetworkResponse response = groupController.getEntity(group.getGroupCode());
+            return response;
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse updateGroupQueryResults(NetworkRequest networkRequest) {
+        try {
+            Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+            NetworkResponse response = groupController.updateEntity(group);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();

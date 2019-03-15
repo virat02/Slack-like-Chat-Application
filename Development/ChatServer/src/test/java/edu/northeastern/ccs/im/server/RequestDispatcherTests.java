@@ -89,6 +89,11 @@ public class RequestDispatcherTests {
         Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
     }
 
+    /**
+     * When handle network request if create user throws io exception check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
     @Test
     public void whenHandleNetworkRequestIfCreateUserThrowsIOExceptionCheckNetworkResponse() throws JsonProcessingException {
         initializeForUserEntityRequests();
@@ -130,6 +135,11 @@ public class RequestDispatcherTests {
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
     }
 
+    /**
+     * When handle network request if login throws io exception check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
     @Test
     public void whenHandleNetworkRequestIfLoginThrowsIOExceptionCheckNetworkResponse() throws JsonProcessingException {
         initializeForUserEntityRequests();
@@ -166,6 +176,11 @@ public class RequestDispatcherTests {
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
     }
 
+    /**
+     * When handle network request if search query results throw exception check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
     @Test
     public void whenHandleNetworkRequestIfSearchQueryResultsThrowExceptionCheckNetworkResponse() throws JsonProcessingException {
         initializeForUserEntityRequests();
@@ -427,4 +442,213 @@ public class RequestDispatcherTests {
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
     }
 
+    /**
+     * When handle network request get group query results is successful check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestGetGroupQueryResultsIsSuccessfulCheckNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        when(groupController.getEntity(anyString())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createSuccessfulResponse().status());
+    }
+
+    /**
+     * When handle network request get group query results is failure check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestGetGroupQueryResultsIsFailureCheckNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        when(groupController.getEntity(anyString())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request get group query results throws io exception network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestGetGroupQueryResultsThrowsIOExceptionNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        doThrow(IOException.class).when(groupController).getEntity(anyString());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request update group query results is successful check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestUpdateGroupQueryResultsIsSuccessfulCheckNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        when(groupController.updateEntity(any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createSuccessfulResponse().status());
+    }
+
+    /**
+     * When handle network request update group query results is failure check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestUpdateGroupQueryResultsIsFailureCheckNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        when(groupController.updateEntity(any())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request update group query results throws io exception network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestUpdateGroupQueryResultsThrowsIOExceptionNetworkResponse() throws JsonProcessingException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        requestDispatcher.setGroupController(groupController);
+        doThrow(IOException.class).when(groupController).updateEntity(any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_GROUP);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle update user profile obj is successful check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFollowersIsSuccessfulCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.viewFollowers(anyString())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle update user profile obj is failed check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFollowersIsFailedCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.viewFollowers(any())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle update user profile obj throws exception check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFollowersThrowsExceptionCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        doThrow(IOException.class).when(userController).viewFollowers(any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+
+    /**
+     * When handle network request handle get followees is successful check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFolloweesIsSuccessfulCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.viewFollowees(anyString())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWEES);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle get followees is failed check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFolloweesIsFailedCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.viewFollowees(any())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWEES);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle get followees throws exception check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleGetFolloweesThrowsExceptionCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        doThrow(IOException.class).when(userController).viewFollowees(any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.GET_FOLLOWEES);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle set followers is successful check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetFollowersIsSuccessfulCheckNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}" + "\n" + "{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.followUser(anyString(), any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_FOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createSuccessfulResponse().status());
+    }
+
+    /**
+     * When handle network request handle set followers parsed size is one check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetFollowersParsedSizeIsOneCheckNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_FOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
+    }
 }

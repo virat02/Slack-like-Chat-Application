@@ -60,7 +60,7 @@ public class MessageTest {
         assertEquals("Virat", quit.getName());
         assertEquals("Sangeetha", broadcastMsg.getName());
         assertEquals("Successfully logged in as Virat", loginMsg.getName());
-        assertNull(helloMsg.getName());
+        assertEquals("virat02", helloMsg.getName());
         assertEquals("Jerry", broadcastEmptyMsg.getName());
 
         assertEquals("Client1", simpleLoginMessage.getName());
@@ -75,7 +75,7 @@ public class MessageTest {
     public void getText() {
         assertNull(quit.getText());
         assertEquals("This is Sangeetha's broadcast message.", broadcastMsg.getText());
-        assertEquals("virat02", helloMsg.getText());
+        assertEquals("virat02", helloMsg.getName());
         assertNull(broadcastEmptyMsg.getText());
 
         assertNull(simpleLoginMessage.getText());
@@ -143,7 +143,7 @@ public class MessageTest {
         assertEquals("BYE 5 Virat 2 --", quit.toString());
         assertEquals("BCT 9 Sangeetha 38 This is Sangeetha's broadcast message.", broadcastMsg.toString());
         assertEquals("HLO 31 Successfully logged in as Virat 2 --", loginMsg.toString());
-        assertEquals("HLO 2 -- 7 virat02", helloMsg.toString());
+        assertEquals("HLO 7 virat02 2 --", helloMsg.toString());
         assertEquals("BCT 5 Jerry 2 --", broadcastEmptyMsg.toString());
 
         assertEquals("HLO 7 Client1 2 --", simpleLoginMessage.toString());

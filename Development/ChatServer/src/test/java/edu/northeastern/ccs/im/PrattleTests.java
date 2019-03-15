@@ -1,11 +1,11 @@
 package edu.northeastern.ccs.im;
 
 import edu.northeastern.ccs.im.communications.*;
+import edu.northeastern.ccs.im.readers.ReadersTest;
 import edu.northeastern.ccs.im.server.RequestDispatcherTests;
 import edu.northeastern.ccs.im.server.RequestHandlerTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import edu.northeastern.ccs.jpa.JpaTest;
 
 /**
  * Junit test suite for prattle test classes.
@@ -19,7 +19,6 @@ import edu.northeastern.ccs.jpa.JpaTest;
         NetworkConnectionTests.class,
         ClientTimerTest.class,
         MessageTest.class,
-        JpaTest.class,
         ClientRunnableTest.class,
         edu.northeastern.ccs.im.server.PrattleTests.class,
         ClientConnectionImplTests.class,
@@ -30,6 +29,7 @@ import edu.northeastern.ccs.jpa.JpaTest;
         RequestDispatcherTests.class,
         PayloadImplTests.class,
         RequestHandlerTests.class,
+        ReadersTest.class,
 })
 public class PrattleTests {
 

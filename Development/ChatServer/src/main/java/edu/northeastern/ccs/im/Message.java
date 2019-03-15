@@ -109,11 +109,12 @@ public class Message {
      * Create a new message stating the name with which the user would like to
      * login.
      *
-     * @param text Name the user wishes to use as their screen name.
+     * @param msgSender Name the user wishes to use as their screen name.
+     * @param groupCode The group under which this message has been sent
      * @return Instance of Message that can be sent to the server to try and login.
      */
-    protected static Message makeHelloMessage(String text, String groupCode) {
-        return new Message(MessageType.HELLO, null, groupCode);
+    protected static Message makeHelloMessage(String msgSender, String groupCode) {
+        return new Message(MessageType.HELLO, msgSender, groupCode);
     }
 
     public String groupCode() {

@@ -105,6 +105,42 @@ public class NetworkRequestFactory {
     }
 
     /***
+     * Creates a network request for searching the group
+     * @param code
+     * @return NetworkRequest
+     */
+    public NetworkRequest createGetGroupRequest(String code) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_GROUP,
+                () -> {
+                    Group group = new Group();
+                    group.setGroupCode(code);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+                });
+    }
+
+    /***
+     * Creates a network request for searching the group
+     * @param group
+     * @return NetworkRequest
+     */
+    public NetworkRequest createUpdateGroupRequest(Group group) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_GROUP,
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(group));
+    }
+
+    public NetworkRequest createUpdateGroupRequest(String groupName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+                () -> {
+                    Group group = new Group();
+                    group.setName(groupName);
+                    group.setGroupCode(groupCode);
+                    List<User> moderators = new ArrayList<>();
+                    moderators.add(UserConstants.getUserObj());
+                    group.setModerators(moderators);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+                });
+    }
+    /***
      * Creates a request for creation of a new group.
      * @param groupName
      * @return NetworkRequest
@@ -122,6 +158,18 @@ public class NetworkRequestFactory {
                 });
     }
 
+    public NetworkRequest createRemoveGroupUserRequest(String groupName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+                () -> {
+                    Group group = new Group();
+                    group.setName(groupName);
+                    group.setGroupCode(groupCode);
+                    List<User> moderators = new ArrayList<>();
+                    moderators.add(UserConstants.getUserObj());
+                    group.setModerators(moderators);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+                });
+    }
     /***
      * Creates a request for selecting a chat
      * @param chatId

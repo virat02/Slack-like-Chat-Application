@@ -6,12 +6,9 @@ import edu.northeastern.ccs.im.readers.JsonBufferReaderImpl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -38,11 +35,6 @@ public class NetworkConnection implements Iterable<Message> {
      * The size of the incoming buffer.
      */
     private static final int BUFFER_SIZE = 64 * 1024;
-
-    /**
-     * The default character set.
-     */
-    private static final String CHARSET_NAME = "us-ascii";
 
     /**
      * Channel over which we will send and receive messages.

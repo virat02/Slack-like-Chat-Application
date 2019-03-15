@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestImpl;
 import edu.northeastern.ccs.im.communication.Payload;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -21,6 +22,8 @@ public class NetworkRequestImplTests {
         payload = mock(Payload.class);
         networkRequest = new NetworkRequestImpl(networkRequestType, payload);
     }
+
+    @Test
     public void testWhenNetworkRequestInstantiatedShouldReturnNetworkRequestType()  {
 
     }

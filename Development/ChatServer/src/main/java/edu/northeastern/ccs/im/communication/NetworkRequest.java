@@ -29,6 +29,8 @@ public interface NetworkRequest {
         FORGOT_PASSWORD,
         SEARCH_USER,
         SEARCH_GROUP,
+        GET_GROUP,
+        UPDATE_GROUP,
         CREATE_GROUP,
         DELETE_GROUP,
         SELECT_CHAT,
