@@ -89,6 +89,16 @@ public class GroupController implements IController<Group>{
                     new PayloadImpl(null));
         }
 	}
+	
+	public NetworkResponse removeUserFromGroup(String groupCode, int userId) {
+		try {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(groupService.removeUserFromGroup(groupCode, userId))));
+		} catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
+	}
 
 
 
