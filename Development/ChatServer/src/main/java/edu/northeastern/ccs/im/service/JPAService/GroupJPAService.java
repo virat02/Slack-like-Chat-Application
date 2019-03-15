@@ -24,12 +24,15 @@ public class GroupJPAService{
 		entitymanager.close();
 	}
 
-	public void createGroup(Group group) {
+	public int createGroup(Group group) {
 		EntityManager entitymanager = emfactory.createEntityManager();
 		entitymanager.getTransaction().begin();
 		entitymanager.persist(group);
+		entitymanager.flush();
+        int id= group.getId();
 		entitymanager.getTransaction().commit();
 		entitymanager.close();
+		return id;
 	}
 
 	public Group getGroup(int id) {
@@ -96,6 +99,19 @@ public class GroupJPAService{
 		Group group = entitymanager.find(Group.class, retrievedGroup.getId());
 		entitymanager.remove(group);
 		endTransaction(entitymanager);
+	}
+	
+	public int removeUserFromGroup(Group currentGroup, int userId) {
+		EntityManager entityManager = beginTransaction();
+		 int result = entityManager.createNativeQuery("DELETE FROM basegroup_user WHERE user_id="+ userId+
+				 " AND group_id="+currentGroup.getId()).executeUpdate();
+		 int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id="+ userId+
+				 " AND groups_id="+currentGroup.getId()).executeUpdate();
+		endTransaction(entityManager);
+		if(result==1 && result2==1)
+			return 1;
+		else
+			return 0;
 	}
 	
 }
