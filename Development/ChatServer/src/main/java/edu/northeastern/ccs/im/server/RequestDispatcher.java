@@ -86,6 +86,8 @@ public class RequestDispatcher {
       return handleUpdatePasswordChange(networkRequest);
     } else if (networkRequestType == NetworkRequestType.CREATE_GROUP) {
       return handleCreateGroup(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.DELETE_GROUP) {
+      return handleDeleteGroup(networkRequest);
     } else if (networkRequestType == NetworkRequestType.GET_FOLLOWERS) {
       return handleGetFollowers(networkRequest);
     } else if (networkRequestType == NetworkRequestType.GET_FOLLOWEES) {

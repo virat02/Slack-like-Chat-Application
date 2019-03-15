@@ -2,6 +2,8 @@ package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,10 +39,37 @@ public class SearchWindow extends AbstractTerminalWindow {
         else if (getCurrentProcess() == 1) {
             searchQuery = inputString;
             if (isSearchingForUser) {
-                searchForUsers(inputString);
+                User searchedUser = searchForUsers(inputString);
+                if (searchedUser == null) {
+                    printMessageInConsole(ConstantStrings.SEARCH_EMPTY);
+                }
+                else  {
+                    printMessageInConsole("UserName: " + searchedUser.getUsername());
+                    printMessageInConsole("Email ID: " + searchedUser.getProfile().getEmail());
+                    printMessageInConsole("ImageURL: " + searchedUser.getProfile().getImageUrl());
+                }
             }
             else {
-                searchForGroup(inputString);
+                List<Group> searchedGroups = searchForGroup(inputString);
+                if (searchedGroups == null || searchedGroups.size() == 0) {
+                    printMessageInConsole(ConstantStrings.SEARCH_EMPTY);
+                }
+                else {
+                    printMessageInConsole(searchedGroups.size() + " Groups Found");
+//                    for (int index = 0 ; index < searchedGroups.size() ; index++) {
+//                        printMessageInConsole("Group" + index + "->");
+//                        Group groupObj = searchedGroups.get(index);
+//                        printMessageInConsole("Group Name: " + searchedGroups.get(index).getName());
+//                        printMessageInConsole("Group ID: " + searchedGroups.get(index).getId());
+//                        StringBuilder moderators = new StringBuilder(searchedGroups
+//                                .get(index).getModerators().get(0).getUsername());
+//                        for (int mod = 1 ; mod < searchedGroups.get(index).getModerators().size() ; mod++) {
+//                            moderators.append(searchedGroups
+//                                    .get(index).getModerators().get(mod).getUsername());
+//                        }
+//                        printMessageInConsole("Moderators: " + moderators.toString());
+//                    }
+                }
             }
             printInConsoleForNextProcess();
         } else if (getCurrentProcess() == 2) {
@@ -58,25 +87,27 @@ public class SearchWindow extends AbstractTerminalWindow {
         }
     }
 
-    private void searchForUsers(String inputString) {
+    private User searchForUsers(String inputString) {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
                     .createSearchUserRequest(inputString));
-            ResponseParser.parseSearchUserNetworkResponse(networkResponse);
-        } catch (IOException exception) {
+            return ResponseParser.parseSearchUserNetworkResponse(networkResponse);
+        } catch (IOException | NetworkResponseFailureException exception) {
             /* TODO Provide some good custom message */
             printMessageInConsole(ConstantStrings.NETWORK_ERROR);
         }
+        return null;
     }
 
-    private void searchForGroup(String inputString) {
+    private List<Group> searchForGroup(String inputString) {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
                     .createSearchGroupRequest(inputString));
-            ResponseParser.parseSearchGroupNetworkResponse(networkResponse);
-        } catch (IOException exception) {
+            return ResponseParser.parseSearchGroupNetworkResponse(networkResponse);
+        } catch (IOException | NetworkResponseFailureException exception) {
             /* TODO Provide some good custom message */
             printMessageInConsole(ConstantStrings.NETWORK_ERROR);
         }
+        return null;
     }
 }
