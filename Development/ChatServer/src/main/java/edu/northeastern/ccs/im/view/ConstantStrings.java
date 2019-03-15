@@ -63,7 +63,8 @@ public class ConstantStrings {
     public static final String SEARCH_MESSAGE = "1 - Search Users\n"
             + "2 - Search Groups\n" + DEFAULT_MENU;
     public static final String SEARCH_QUERY = "Enter Search String: ";
-    public static final String SEARCH_COMPLETE = "1 - Search Again\n2 - Select Chat\n" + DEFAULT_MENU;
+    public static final String SEARCH_COMPLETE = "1 - Search Again\n" + DEFAULT_MENU;
+    public static final String SEARCH_EMPTY = "No results found";
 
     //Update Profile
     public static final String UPDATE_PROFILE =

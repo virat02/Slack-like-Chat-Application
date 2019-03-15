@@ -3,10 +3,13 @@ package edu.northeastern.ccs.im.view;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 
@@ -34,12 +37,25 @@ public class ResponseParser {
     return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static JsonNode parseSearchUserNetworkResponse(NetworkResponse networkResponse) {
-    return null;
+  static User parseSearchUserNetworkResponse(NetworkResponse networkResponse) throws IOException,
+          NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    User parsedUserObj = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+    return parsedUserObj;
   }
 
-  static JsonNode parseSearchGroupNetworkResponse(NetworkResponse networkResponse) {
-    return null;
+  static List<Group> parseSearchGroupNetworkResponse(NetworkResponse networkResponse) throws
+          IOException, NetworkResponseFailureException {
+    throwErrorIfResponseFailed(networkResponse);
+    List<Group> parsedObjects = CommunicationUtils
+            .getObjectMapper().readValue(networkResponse.payload().jsonString(), List.class);
+//    List<Group> groupList = new ArrayList<>();
+//    for (String obj : parsedObjects) {
+//      groupList.add(CommunicationUtils
+//              .getObjectMapper().readValue(obj, Group.class));
+//    }
+    return parsedObjects;
   }
 
   static boolean parseAddGroupResponse(NetworkResponse networkResponse) {
