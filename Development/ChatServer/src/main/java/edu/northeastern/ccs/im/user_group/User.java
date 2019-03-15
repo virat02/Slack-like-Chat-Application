@@ -223,7 +223,7 @@ public class User implements IUser {
 
     /**
      * Sets the user profile access
-     * @param access
+     * @param access The access level of the profile
      */
     public void setProfileAccess(boolean access) {
         this.profileAccess = access;
