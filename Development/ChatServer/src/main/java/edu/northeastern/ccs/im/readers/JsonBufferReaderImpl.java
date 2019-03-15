@@ -73,7 +73,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
                 }
             }
         } catch (IOException e) {
-
+            ChatLogger.info(e.getMessage());
         }
 
         for (Message m : messages)

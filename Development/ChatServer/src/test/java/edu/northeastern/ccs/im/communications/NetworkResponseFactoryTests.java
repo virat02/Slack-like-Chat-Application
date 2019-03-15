@@ -3,7 +3,7 @@ package edu.northeastern.ccs.im.communications;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseFactory;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Assert;
 import org.junit.Test;
 

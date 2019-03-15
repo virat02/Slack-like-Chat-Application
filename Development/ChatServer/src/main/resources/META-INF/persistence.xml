@@ -3,10 +3,10 @@
              xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="PrattlePersistance" transaction-type="RESOURCE_LOCAL">
-        <class>edu.northeastern.ccs.im.userGroup.User</class>
-        <class>edu.northeastern.ccs.im.userGroup.Message</class>
-        <class>edu.northeastern.ccs.im.userGroup.Profile</class>
-        <class>edu.northeastern.ccs.im.userGroup.Group</class>
+        <class>edu.northeastern.ccs.im.user_group.User</class>
+        <class>edu.northeastern.ccs.im.user_group.Message</class>
+        <class>edu.northeastern.ccs.im.user_group.Profile</class>
+        <class>edu.northeastern.ccs.im.user_group.Group</class>
         <properties>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>

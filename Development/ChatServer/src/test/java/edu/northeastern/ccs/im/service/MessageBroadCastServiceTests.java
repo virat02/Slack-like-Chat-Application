@@ -6,7 +6,9 @@ import edu.northeastern.ccs.im.user_group.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -24,7 +26,7 @@ public class MessageBroadCastServiceTests {
     private MessageService messageService;
     private Message message;
 
-    @Mock
+
     private ClientRunnable clientRunnable;
 
     /**
@@ -32,6 +34,7 @@ public class MessageBroadCastServiceTests {
      */
     @Before
     public void setup() {
+        clientRunnable = mock(ClientRunnable.class);
         messageService = mock(MessageService.class);
         message = mock(Message.class);
         socketChannel = mock(SocketChannel.class);

@@ -71,6 +71,5 @@ public class MessageManagerService extends TimerTask {
 
     @Override
     public void run() {
-        //checkForInactivity(mess);
     }
 }

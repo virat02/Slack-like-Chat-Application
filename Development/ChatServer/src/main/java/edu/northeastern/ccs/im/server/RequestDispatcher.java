@@ -147,9 +147,7 @@ public class RequestDispatcher {
             List<Message> messages = messageService.getRecentMessages();
             messageService.addConnection(socketChannel);
             return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
-        } catch (IllegalAccessException e) {
-            ChatLogger.error(e.getMessage());
-        } catch (IOException e) {
+        } catch (IllegalAccessException | IOException e ) {
             ChatLogger.error(e.getMessage());
         }
         return networkResponseFactory.createFailedResponse();
@@ -185,8 +183,7 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUserProfile(NetworkRequest networkRequest) {
         try {
             Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
-            NetworkResponse response = profileController.addEntity(profile);
-            return response;
+            return profileController.addEntity(profile);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -236,8 +233,7 @@ public class RequestDispatcher {
             NetworkResponse response = groupController.addEntity(group);
             if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                 group.setModerators(moderators);
-                NetworkResponse moderatorResponse = groupController.updateEntity(group);
-                return moderatorResponse;
+                return groupController.updateEntity(group);
             }
             return response;
         } catch (IOException e) {
