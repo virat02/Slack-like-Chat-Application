@@ -87,6 +87,7 @@ public class UserJPAService {
         thisUser.setProfile(user.getProfile());
         thisUser.setUsername(user.getUsername());
         thisUser.setMessages(user.getMessages());
+        thisUser.setProfileAccess(user.getProfileAccess());
         thisUser.setGroups(user.getGroups());
         entityManager.merge(thisUser);
         endTransaction();
@@ -163,7 +164,7 @@ public class UserJPAService {
 
             //Filter out users with no profile access
             for (User u : followerList) {
-                if (!u.getProfile().getProfileAccess()) {
+                if (!u.getProfileAccess()) {
                     followerList.remove(u);
                 }
             }

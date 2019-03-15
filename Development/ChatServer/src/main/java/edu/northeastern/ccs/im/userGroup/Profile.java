@@ -1,11 +1,6 @@
 package edu.northeastern.ccs.im.userGroup;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * The Class Profile.
@@ -25,9 +20,6 @@ public class Profile {
     /** The image url. */
     private String imageUrl;
 
-    /** The profile access. */
-    private Boolean profileAccess;
-
     /**
      * Instantiates a new profile.
      *
@@ -35,12 +27,11 @@ public class Profile {
      * @param email the email
      * @param imageUrl the image url
      */
-    public Profile(int id, String email, String imageUrl, Boolean access) {
+    public Profile(int id, String email, String imageUrl) {
         super();
         this.id = id;
         this.email = email;
         this.imageUrl = imageUrl;
-        this.profileAccess = access;
     }
     /**
      * Instantiates a new profile.
@@ -102,25 +93,9 @@ public class Profile {
         this.imageUrl = imageUrl;
     }
 
-    /**
-     * Gets the profile access
-     * @return the profile access
-     */
-    public Boolean getProfileAccess() {
-        return this.profileAccess;
-    }
-
-    /**
-     * Sets the user profile access
-     * @param access
-     */
-    public void setProfileAccess(boolean access) {
-        this.profileAccess = access;
-    }
-
     @Override
     public String toString() {
-        return "Id: "+getId()+ "\nEmail: "+getEmail()+"\nImage URL: "+ getImageUrl()+"\nProfile visible? : "+getProfileAccess();
+        return "Id: "+getId()+ "\nEmail: "+getEmail()+"\nImage URL: "+ getImageUrl();
     }
 
 }

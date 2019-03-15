@@ -45,6 +45,9 @@ public class User implements IUser {
     /** The profile. */
     private Profile profile;
 
+    /** The profile access. */
+    private Boolean profileAccess;
+
     /**
      * Instantiates a new user.
      */
@@ -208,5 +211,21 @@ public class User implements IUser {
     public void setPassword(String password) {
 
         this.password = password;
+    }
+
+    /**
+     * Gets the profile access
+     * @return the profile access
+     */
+    public Boolean getProfileAccess() {
+        return this.profileAccess;
+    }
+
+    /**
+     * Sets the user profile access
+     * @param access
+     */
+    public void setProfileAccess(boolean access) {
+        this.profileAccess = access;
     }
 }
