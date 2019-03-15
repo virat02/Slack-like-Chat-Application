@@ -70,8 +70,8 @@ public class CommunicationUtilsTest {
         message = Message.makeBroadcastMessage("", "", "");
         doAnswer(invocationOnMock -> {
             ByteBuffer byteBuffer = (ByteBuffer) invocationOnMock.getArguments()[0];
-            byteBuffer.position(43);
-            return 43;
+            byteBuffer.position(58);
+            return 58;
         }).when(socketChannel).write(any(ByteBuffer.class));
         Assert.assertTrue(CommunicationUtils.writeToChannel(socketChannel, message));
     }
@@ -84,7 +84,7 @@ public class CommunicationUtilsTest {
             byteBuffer.put(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequestFactory.createUserRequest("", "")));
             return 100;
         }).when(socketChannel).read(any(ByteBuffer.class));
-        NetworkRequest networkRequest  = CommunicationUtils.networkRequestReadFromSocket(socketChannel);
+        NetworkRequest networkRequest = CommunicationUtils.networkRequestReadFromSocket(socketChannel);
         Assert.assertEquals(NetworkRequest.NetworkRequestType.CREATE_USER, networkRequest.networkRequestType());
     }
 }

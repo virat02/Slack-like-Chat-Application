@@ -1,11 +1,9 @@
 package edu.northeastern.ccs.im.server;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -95,13 +93,6 @@ public class PrattleTests {
         }
     }
 
-    @Test
-    public void testCreateThread() throws IOException {
-        when(serverSocketChannel.accept()).thenReturn(socketChannel);
-        Prattle.createClientThread(serverSocketChannel, scheduledExecutorService);
-    }
-
-
     /**
      * A test to see whether or not we can stop the server.
      */
@@ -109,79 +100,4 @@ public class PrattleTests {
     public void testStop() {
         Prattle.stopServer();
     }
-
-    /**
-     * @throws IllegalAccessException if we can't access the field
-     * @throws NoSuchFieldException   If there are no such fields
-     */
-    @Test
-    public void testBroadcast() throws IllegalAccessException,
-            NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("Jerry",
-                "Hello World", ""));
-
-    }
-
-    /**
-     * @throws IllegalAccessException if we can't access the field
-     * @throws NoSuchFieldException   If there are no such fields
-     */
-    @Test
-    public void testBroadcastFail() throws IllegalAccessException,
-            NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("Jerry",
-                "", ""));
-
-    }
-
-
-    /**
-     * What happens when we give it someone who doesn't exist? it should throw an error
-     *
-     * @throws IllegalAccessException access to field is denied
-     * @throws NoSuchFieldException   no such field exists
-     */
-    @Test
-    public void testFakeClient() throws IllegalAccessException, NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-
-        Object returned = thisField.get(null);
-        Prattle.removeClient(clientRunnable);
-        assertEquals("[]", returned.toString());
-
-        Prattle.removeClient(clientRunnable);
-        Prattle.removeClient(clientRunnable2);
-        Prattle.removeClient(clientRunnable2);
-        Prattle.stopServer();
-    }
-
-    /**
-     * If there are no clients in the clientRunnables queue, then the string should be empty.
-     *
-     * @throws IllegalAccessException the illegal access exception
-     * @throws NoSuchFieldException   the no such field exception
-     */
-    @Test
-    public void testRemove() throws IllegalAccessException, NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-        Object returned = thisField.get(null);
-        Prattle.removeClient(clientRunnable);
-        assertEquals("[]", returned.toString());
-    }
-
-
 }

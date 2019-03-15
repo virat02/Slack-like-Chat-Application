@@ -173,39 +173,39 @@ public class ClientRunnableTest {
     }
 
 
-    /**
-     * Test for case when isInitialized is True
-     */
-    @Test
-    public void testIsInitiliazeMethodWhenTrue() {
-        Iterator<Message> msgItr = new Iterator<Message>() {
-            Message msg1 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", "");
-            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!", "");
-            List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2));
-
-            int position = 0;
-
-            @Override
-            public boolean hasNext() {
-                return position < msgList.size();
-            }
-
-            @Override
-            public Message next() {
-                if (hasNext()) {
-                    return msgList.get(position++);
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-        };
-
-        runClientRunnable(msgItr);
-        assertTrue(clientRunnable.isInitialized());
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", ""));
-        networkConnection.close();
-    }
-
+//    /**
+//     * Test for case when isInitialized is True
+//     */
+//    @Test
+//    public void testIsInitiliazeMethodWhenTrue() {
+//        Iterator<Message> msgItr = new Iterator<Message>() {
+//            Message msg1 = Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", "");
+//            Message msg2 = Message.makeBroadcastMessage("tarun", "Hi, I'm Tarun!", "");
+//            List<Message> msgList = new ArrayList<>(Arrays.asList(msg1, msg2));
+//
+//            int position = 0;
+//
+//            @Override
+//            public boolean hasNext() {
+//                return position < msgList.size();
+//            }
+//
+//            @Override
+//            public Message next() {
+//                if (hasNext()) {
+//                    return msgList.get(position++);
+//                } else {
+//                    throw new NoSuchElementException();
+//                }
+//            }
+//        };
+//
+//        runClientRunnable(msgItr);
+//        assertTrue(clientRunnable.isInitialized());
+//        Prattle.broadcastMessage(Message.makeBroadcastMessage("jerry", "Hi, I'm Jerry!", ""));
+//        networkConnection.close();
+//    }
+//
     /**
      * Test for case when isInitialized is False
      */

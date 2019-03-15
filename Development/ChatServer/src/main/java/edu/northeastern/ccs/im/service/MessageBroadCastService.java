@@ -13,16 +13,38 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+/**
+ * The type Message broad cast service.
+ */
 public class MessageBroadCastService implements BroadCastService {
     private String groupCode;
     private ConcurrentLinkedQueue<ClientRunnable> active = new ConcurrentLinkedQueue<>();
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10);
+
+    /**
+     * Sets message service.
+     *
+     * @param messageService the message service
+     */
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
     private MessageService messageService = new MessageService();
 
+    /**
+     * Instantiates a new Message broad cast service.
+     */
     public MessageBroadCastService() {
 
     }
 
+
+    /**
+     * Instantiates a new Message broad cast service.
+     *
+     * @param groupCode the group code
+     */
     public MessageBroadCastService(String groupCode) {
         this.groupCode = groupCode;
     }
