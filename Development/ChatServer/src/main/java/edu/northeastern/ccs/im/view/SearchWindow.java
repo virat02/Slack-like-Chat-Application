@@ -32,8 +32,15 @@ public class SearchWindow extends AbstractTerminalWindow {
                 printInConsoleForProcess(1);
             }
             else {
-                printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
-                printInConsoleForProcess(0);
+                if (inputString.equals("1")) {
+                    printInConsoleForProcess(0);
+                } else if (inputString.equals("0")) {
+                    goBack();
+                }
+                else {
+                    printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
+                    printInConsoleForProcess(0);
+                }
             }
         }
         else if (getCurrentProcess() == 1) {
