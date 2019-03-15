@@ -23,6 +23,10 @@ import java.util.List;
 
 import static edu.northeastern.ccs.im.communication.NetworkRequest.NetworkRequestType;
 
+/**
+ * A Singleton class taking care of dispatching the requests
+ * to appropriate controllers and manager services.
+ */
 public class RequestDispatcher {
 
     private static RequestDispatcher requestDispatcher = new RequestDispatcher();
@@ -31,10 +35,21 @@ public class RequestDispatcher {
 
     }
 
+    /***
+     * Provides a way of injecting message manager service
+     * to this dispatcher service.
+     *
+     * @param messageManagerService the message manager service
+     */
     public void setMessageManagerService(MessageManagerService messageManagerService) {
         this.messageManagerService = messageManagerService;
     }
 
+    /**
+     * Gets the single instance of this class.
+     *
+     * @return the instance
+     */
     public static RequestDispatcher getInstance() {
         return requestDispatcher;
     }
@@ -44,6 +59,12 @@ public class RequestDispatcher {
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
     private MessageManagerService messageManagerService = MessageManagerService.getInstance();
 
+    /**
+     * Provides a way of injecting group controller
+     * to this dispatcher service.
+     *
+     * @param groupController the group controller
+     */
     public void setGroupController(GroupController groupController) {
         this.groupController = groupController;
     }
@@ -52,21 +73,36 @@ public class RequestDispatcher {
     private ProfileController profileController = new ProfileController();
 
     /***
-     * The purpose of this method is mocking the IController.
-     * Though there can be dependency injection done for user controller
-     * in this application, but I think it is not required
-     * for this application, hence just having a setter in
-     * place to mock the controller
-     * @param controller
+     * Provides a way of injecting user controller
+     * to this dispatcher service.
+     * @param controller the controller
      */
     public void setUserController(UserController controller) {
         this.userController = controller;
     }
 
+    /**
+     * Provides a way of injecting user controller
+     * to this dispatcher service.
+     *
+     * @param profileController the profile controller
+     */
     public void setProfileController(ProfileController profileController) {
         this.profileController = profileController;
     }
 
+    /**
+     * Handle the networks requests coming from clients.
+     *
+     * Network Requests has different types. Hence, once the
+     * network request type is being found, it will be parsed accordingly,
+     * and the appropriate controller and service is being called.
+     * @param networkRequest the network request
+     * @param socketChannel  the socket channel -> The client connection, basically used for
+     *                       chat communications, apart from that every request/ response is stateless
+     *                       and we don't need to keep the connection persistent.
+     * @return the network response
+     */
     public NetworkResponse handleNetworkRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
         ChatLogger.info("Request dispatcher called");
         NetworkRequest.NetworkRequestType networkRequestType = networkRequest.networkRequestType();
@@ -126,8 +162,7 @@ public class RequestDispatcher {
     private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.searchEntity(user.getUsername());
-            return response;
+            return userController.searchEntity(user.getUsername());
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -136,8 +171,7 @@ public class RequestDispatcher {
     private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.loginUser(user);
-            return response;
+            return userController.loginUser(user);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -146,8 +180,7 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUserRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.addEntity(user);
-            return response;
+            return userController.addEntity(user);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -166,8 +199,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateProfileObj(NetworkRequest networkRequest) {
         try {
             Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
-            NetworkResponse response = profileController.updateEntity(profile);
-            return response;
+            return profileController.updateEntity(profile);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -176,8 +208,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateUserProfileObj(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.updateEntity(user);
-            return response;
+            return userController.updateEntity(user);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -186,8 +217,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdatePasswordChange(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.updateEntity(user);
-            return response;
+            return userController.updateEntity(user);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -196,8 +226,7 @@ public class RequestDispatcher {
     private NetworkResponse handleDeleteGroup(NetworkRequest networkRequest) {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = groupController.deleteEntity(group);
-            return response;
+            return groupController.deleteEntity(group);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -223,8 +252,7 @@ public class RequestDispatcher {
     private NetworkResponse handleGetFollowers(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.viewFollowers(user.getUsername());
-            return response;
+            return userController.viewFollowers(user.getUsername());
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -233,8 +261,7 @@ public class RequestDispatcher {
     private NetworkResponse handleGetFollowees(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = userController.viewFollowees(user.getUsername());
-            return response;
+            return userController.viewFollowees(user.getUsername());
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -249,8 +276,7 @@ public class RequestDispatcher {
             }
             User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
             String userToFollow = parsedString.get(1);
-            NetworkResponse response = userController.followUser(userToFollow, currentUser);
-            return response;
+            return userController.followUser(userToFollow, currentUser);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -259,8 +285,7 @@ public class RequestDispatcher {
     private NetworkResponse getGroupQueryResults(NetworkRequest networkRequest) {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = groupController.getEntity(group.getGroupCode());
-            return response;
+            return groupController.getEntity(group.getGroupCode());
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
@@ -269,8 +294,7 @@ public class RequestDispatcher {
     private NetworkResponse updateGroupQueryResults(NetworkRequest networkRequest) {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = groupController.updateEntity(group);
-            return response;
+            return groupController.updateEntity(group);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }

@@ -3,14 +3,11 @@ package edu.northeastern.ccs.im.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.GroupController;
-import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 import edu.northeastern.ccs.im.service.BroadCastService;
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.im.service.MessageManagerService;
-import edu.northeastern.ccs.im.userGroup.Group;
-import edu.northeastern.ccs.im.userGroup.Profile;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +27,6 @@ import static org.mockito.Mockito.*;
 public class RequestDispatcherTests {
     private RequestDispatcher requestDispatcher;
     private NetworkRequest networkRequest;
-    private NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
     private Payload payload;
     private UserController userController;
     private SocketChannel mockSocketChannel;
@@ -66,11 +62,12 @@ public class RequestDispatcherTests {
      * When handle network request if create user response successful.
      */
     @Test
-    public void whenHandleNetworkRequestIfCreateUserResponseSuccessful() {
-        networkRequest = networkRequestFactory.createUserRequest("123", "password");
+    public void whenHandleNetworkRequestIfCreateUserResponseSuccessful() throws JsonProcessingException {
+        initializeForUserEntityRequests();
         RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         requestDispatcher.setUserController(userController);
         when(userController.addEntity(any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.CREATE_USER);
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
     }
