@@ -14,7 +14,8 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
- * The type Message broad cast service.
+ * MessageBroadCastService takes care of handling messages within a
+ * group
  */
 public class MessageBroadCastService implements BroadCastService {
     private String groupCode;
