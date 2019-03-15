@@ -1,13 +1,19 @@
 package edu.northeastern.ccs.im.service.JPAService;
 
 
+import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -21,6 +27,8 @@ public class UserJPAServiceTest {
 
     private UserJPAService userJPAService;
     private User userOne;
+    private User userTwo;
+    private User userThree;
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
 
@@ -30,6 +38,30 @@ public class UserJPAServiceTest {
     @Before
     public void setUp() {
         userOne = new User();
+        userOne.setUsername("Jalannin");
+        userOne.setPassword("jjj");
+        Profile profileOne = new Profile();
+        profileOne.setEmail("jaa@.com");
+        profileOne.setImageUrl("hhh.com");
+        profileOne.setProfileAccess(true);
+        userOne.setProfile(profileOne);
+        userTwo = new User();
+        userTwo.setUsername("Joker");
+        userTwo.setPassword("bomb");
+        Profile profileTwo = new Profile();
+        profileTwo.setEmail("pencil@.com");
+        profileTwo.setImageUrl("haha.com");
+        profileTwo.setProfileAccess(false);
+        userTwo.setProfile(profileTwo);
+        userThree = new User();
+        userThree.setUsername("Batman");
+        userThree.setPassword("save");
+        Profile profileThree = new Profile();
+        profileThree.setEmail("rescue@.com");
+        profileThree.setImageUrl("bats.com");
+        profileThree.setProfileAccess(true);
+        userThree.setProfile(profileThree);
+
         entityManager = mock(EntityManager.class);
         userJPAService = new UserJPAService();
         entityTransaction = mock(EntityTransaction.class);
@@ -82,9 +114,9 @@ public class UserJPAServiceTest {
      */
     @Test
     public void testSearch() {
-        Query mockedQuery = mock(Query.class);
+        TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString())).thenReturn(mockedQuery);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenReturn(userOne);
         userJPAService.setEntityManager(entityManager);
         User newUser = userJPAService.search("ThisName");
@@ -96,9 +128,9 @@ public class UserJPAServiceTest {
      */
     @Test
     public void testGetUser() {
-        Query mockedQuery = mock(Query.class);
+        TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString())).thenReturn(mockedQuery);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenReturn(userOne);
         userJPAService.setEntityManager(entityManager);
         User newUser = userJPAService.getUser(99);
@@ -129,9 +161,88 @@ public class UserJPAServiceTest {
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(userOne);
+        when(mockedQuery.getSingleResult()).thenReturn(new User());
         userJPAService.setEntityManager(entityManager);
         User newUser = userJPAService.loginUser(userOne);
         assertNull(newUser);
     }
+
+    /**
+     * Tests the login functionality for a user interacting with the Database fails.
+     */
+    @Test
+    public void testLoginFailTwo() {
+        TypedQuery mockedQuery = mock(TypedQuery.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getSingleResult()).thenReturn(null);
+        userJPAService.setEntityManager(entityManager);
+        User newUser = userJPAService.loginUser(userOne);
+        assertNull(newUser);
+    }
+
+    /**
+     * A test to see if the user can get it's own followers.
+     */
+    @Test
+    public void testGetFollowers() {
+        List<User> listOfUsers = new ArrayList<User>();
+        listOfUsers.add(userTwo);
+        listOfUsers.add(userThree);
+        userOne.setFollowing(listOfUsers);
+        TypedQuery mockedQuery = mock(TypedQuery.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(listOfUsers);
+        userJPAService.setEntityManager(entityManager);
+        List<User> newUsers = userJPAService.getFollowers(userOne);
+        assertEquals(1, newUsers.size());
+    }
+
+    /**
+     * A test to see if the user can't get it's own followers.
+     */
+    @Test
+    public void testGetFollowersZero() {
+        TypedQuery mockedQuery = mock(TypedQuery.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(null);
+        userJPAService.setEntityManager(entityManager);
+        List<User> newUsers = userJPAService.getFollowers(userOne);
+        assertEquals(0, newUsers.size());
+    }
+
+    /**
+     * A test to ensure we can set a list of following.
+     */
+    @Test
+    public void testGetFollowee() {
+        List<User> listOfUsers = new ArrayList<User>();
+        listOfUsers.add(userTwo);
+        listOfUsers.add(userThree);
+        userOne.setFollowing(listOfUsers);
+        TypedQuery mockedQuery = mock(TypedQuery.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(listOfUsers);
+        userJPAService.setEntityManager(entityManager);
+        List<User> newUsers = userJPAService.getFollowees(userOne);
+        assertEquals(1, newUsers.size());
+    }
+
+    /**
+     * A test to see if we can get a list of followees.
+     */
+    @Test
+    public void testGetFolloweeZero() {
+        TypedQuery mockedQuery = mock(TypedQuery.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getResultList()).thenReturn(null);
+        userJPAService.setEntityManager(entityManager);
+        List<User> newUsers = userJPAService.getFollowees(userOne);
+        assertEquals(0, newUsers.size());
+    }
+
 }
