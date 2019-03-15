@@ -12,6 +12,7 @@ public class ConstantStrings {
     public static final String CONFIRM_EXIT_MESSAGE = "Confirm(Y/N)";
     public static final String DEFAULT_MENU = "0 - Go Back\n* - Exit";
     public static final String FAILURE_MENU = "1 - Retry\n" + DEFAULT_MENU;
+    public static final String FETCH_DATA_FAILED = "Unable to fetch data";
 
     //Network Related
     public static final String NETWORK_ERROR = "Network Error";
@@ -62,7 +63,8 @@ public class ConstantStrings {
     public static final String SEARCH_MESSAGE = "1 - Search Users\n"
             + "2 - Search Groups\n" + DEFAULT_MENU;
     public static final String SEARCH_QUERY = "Enter Search String: ";
-    public static final String SEARCH_COMPLETE = "1 - Search Again\n2 - Select Chat\n" + DEFAULT_MENU;
+    public static final String SEARCH_COMPLETE = "1 - Search Again\n" + DEFAULT_MENU;
+    public static final String SEARCH_EMPTY = "No results found";
 
     //Update Profile
     public static final String UPDATE_PROFILE =

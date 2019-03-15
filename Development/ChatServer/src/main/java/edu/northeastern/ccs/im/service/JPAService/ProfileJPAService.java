@@ -39,7 +39,6 @@ public class ProfileJPAService {
                     + p.getId());
         }
 
-        thisProfile.setProfileAccess(p.getProfileAccess());
         thisProfile.setImageUrl(p.getImageUrl());
         thisProfile.setEmail(p.getEmail());
 

@@ -27,7 +27,13 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
-    @OneToMany
+    @OneToMany(targetEntity=User.class)
+    @JoinTable
+    (
+        name="user_follower",
+        joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
+        inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
+    )
     private List<User> following = new ArrayList<>();
 
     /** The name. */
@@ -38,6 +44,9 @@ public class User implements IUser {
 
     /** The profile. */
     private Profile profile;
+
+    /** The profile access. */
+    private Boolean profileAccess;
 
     /**
      * Instantiates a new user.
@@ -158,7 +167,7 @@ public class User implements IUser {
      * Adds a user to the list of people we are following.
      * @param user the person we are following.
      */
-    public void addFollowee(User user) {
+    public void addFollowing(User user) {
         if (user != null) {
             this.following.add(user);
         }
@@ -202,5 +211,21 @@ public class User implements IUser {
     public void setPassword(String password) {
 
         this.password = password;
+    }
+
+    /**
+     * Gets the profile access
+     * @return the profile access
+     */
+    public Boolean getProfileAccess() {
+        return this.profileAccess;
+    }
+
+    /**
+     * Sets the user profile access
+     * @param access
+     */
+    public void setProfileAccess(boolean access) {
+        this.profileAccess = access;
     }
 }

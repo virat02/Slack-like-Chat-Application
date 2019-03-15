@@ -14,7 +14,6 @@ import edu.northeastern.ccs.im.view.UserConstants;
  * the Enum NetworkRequestType
  */
 public class NetworkRequestFactory {
-
     /***
      * Creates a NetworkRequest for creating a user.
      * @param userName The username set by the user
@@ -28,12 +27,6 @@ public class NetworkRequestFactory {
                     User user = new User();
                     user.setUsername(userName);
                     user.setPassword(password);
-
-//                    Profile profile = new Profile();
-//                    profile.setEmail(emailAddress);
-//                    profile.setImageUrl("");
-//
-//                    user.setProfile(profile);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
@@ -158,18 +151,15 @@ public class NetworkRequestFactory {
     }
 
     /***
-     * Creates a request for joining a group.
+     * Creates a request for creation of a new group.
+     * @param groupName
      * @return NetworkRequest
      */
-    public NetworkRequest createJoinGroup(String groupCode, int userid) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
+    public NetworkRequest createGroupRequest(String groupName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_GROUP,
                 () -> {
-                    Group group = new Group();
-                    group.setGroupCode(groupCode);
                     User user = new User();
-                    user.setId(userid);
-                    group.addUser(user);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
                 });
     }
 
@@ -205,5 +195,32 @@ public class NetworkRequestFactory {
                     return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
                 });
     }
-}
 
+    public NetworkRequest createGetUserFollowersList(String userName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWERS,
+                () -> {
+                    User user = new User();
+                    user.setUsername(userName);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
+
+    public NetworkRequest createGetUserFolloweesList(String userName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
+                () -> {
+                    User user = new User();
+                    user.setUsername(userName);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
+
+    public NetworkRequest createSetUserFolloweresList(String userName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
+                () -> {
+
+                    User user = UserConstants.getUserObj();
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                            "\n" + userName;
+                });
+    }
+}

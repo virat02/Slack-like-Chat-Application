@@ -1,30 +1,62 @@
 package edu.northeastern.ccs.im.service;
 
+import org.hibernate.ejb.EntityManagerImpl;
+
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
-import edu.northeastern.ccs.im.userGroup.*;
+import edu.northeastern.ccs.im.userGroup.User;
 
-import java.util.Date;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
+/**
+ * The class made to delegate tasks to the JPA service and send results back to Service.
+ */
 public final class UserService implements IService {
+
+    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
+
     private UserJPAService userJPAService;
+    /**
+     * Constructor for this class.
+     */
     public UserService() {
         userJPAService = new UserJPAService();
     }
 
+    /**
+     * A method to set the JPA Service for this class, makes the class more testable.
+     * @param userJPAService for this class.
+     */
+    public void setJPAService(UserJPAService userJPAService) {
+        if(userJPAService == null) {
+            this.userJPAService = new UserJPAService();
+        } else {
+            this.userJPAService = userJPAService;
+        }
+        this.userJPAService.setEntityManager(null);
+    }
 
-    public static User addUser(Object user) {
-        UserJPAService userJPAService = new UserJPAService();
-        userJPAService.createUser((User)user);
+    /**
+     * Add user will add a user to the database.
+     * @param user being added to the database.* @return the user which was added to the database.
+     */
+    public User addUser(Object user) {
+        userJPAService.setEntityManager(null);
+        int id = userJPAService.createUser((User)user);
+        if(id == 0) {
+            return null;
+        }
+        userJPAService.setEntityManager(null);
         return userJPAService.getUser(((User) user).getId());
     }
 
     /**
      * Searches for a particular user.
      * @param username the name of the user being searched
-     * @return the users with the name searched for
-     */
-    public static User search(String username) {
-        UserJPAService userJPAService = new UserJPAService();
+     * @return the users with the name searched for*/
+    public User search(String username) {
+        userJPAService.setEntityManager(null);
         return userJPAService.search(username);
     }
 
@@ -32,106 +64,88 @@ public final class UserService implements IService {
      * Follow a particular user given their username.
      * @param username of the user we want to follow.
      */
-    public static void follow(String username, User currentUser) {
-        currentUser.addFollowee(search(username));
+    public User follow(String username, User currentUser) {
+
+        User u = search(username);
+
+        if(currentUser != null && u != null){
+            currentUser.addFollowing(u);
+            userJPAService.setEntityManager(null);
+            userJPAService.updateUser(currentUser);
+            return currentUser;
+        }
+        else{
+            LOGGER.info("Could not successfully follow the user!");
+            throw new IllegalArgumentException("Could not successfully follow the user with username: "+username);
+        }
+
     }
 
-    public static User update(Object user) {
-        UserJPAService userJPAService = new UserJPAService();
+    /**
+     * Get a list of followers for this user
+     * @param username
+     * @return
+     */
+    public List<User> getFollowers(String username){
+        User u = search(username);
+
+        if(u != null) {
+            userJPAService.setEntityManager(null);
+            return userJPAService.getFollowers(u);
+        }
+        else{
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get a list of followees for this user
+     * @param username
+     * @return
+     */
+    public List<User> getFollowees(String username){
+        User u = search(username);
+
+        if(u != null) {
+            userJPAService.setEntityManager(null);
+            return userJPAService.getFollowees(u);
+        }
+        else{
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * The update method will update the user object.
+     * @param user being updated.
+     * @return the updated user.
+     */
+    public User update(Object user) {
+        userJPAService.setEntityManager(null);
         userJPAService.updateUser((User) user);
+        userJPAService.setEntityManager(null);
         return userJPAService.getUser(((User) user).getId());
     }
 
-    public static User delete(Object user) {
-        UserJPAService userJPAService = new UserJPAService();
+    /**
+     * The delete function to delete a user from the database.
+     * @param user being deleted from the database.
+     * @return the user which was deleted from the database.
+     */
+    public User delete(Object user) {
         userJPAService.deleteUser((User) user);
         return userJPAService.getUser(((User) user).getId());
     }
 
-    public static User loginUser(Object user) {
-        UserJPAService userJPAService = new UserJPAService();
+    /**
+     * A function to login the user.
+     * @param user trying to login to the server.
+     * @return User instance logging into the server.
+     */
+    public User loginUser(Object user) {
+        userJPAService.setEntityManager(null);
         return userJPAService.loginUser((User) user);
     }
 
-    /**
-     * Check for valid username
-     */
-
-    public void sendMessage(String messageText, int iGroupId) {
-        Message newMessage = new Message();
-        newMessage.setMessage(messageText);
-        newMessage.setDeleted(false);
-//        newMessage.setSender(this.user);
-        Date timeStamp = new Date();
-        timeStamp.setTime(timeStamp.getTime());
-        newMessage.setTimestamp(timeStamp);
-        newMessage.setId((int)timeStamp.getTime());
-//        for(IGroup group: this.groups) {
-//            if(group.getId() == iGroupId) {
-//                newMessage.setGroup(group);
-//            }
-//        }
-//        this.messages.add(newMessage);
-}
-
-    private boolean isValidUsername(String uname) {
-        return (uname != null && uname.matches("[A-Za-z0-9_]+"));
-    }
-
-
-    /**
-     * Updates an existing profile username if the respective input is valid
-     */
-    public boolean updateUsername(User user, String username) {
-        if (user.getUsername() != null && isValidUsername(username)) {
-            user.setUsername(username);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Updates an existing profile password if the user inputs the correct old password and a valid new password
-     */
-    public boolean updatePassword(User user, String oldPassword, String newPassword) {
-        if (user.getPassword() != null
-                //Authenticates user by allowing them to set the new password only if they know their current password
-                && user.getPassword().equals(oldPassword)
-                && isValidPassword(newPassword)) {
-            user.setPassword(newPassword);
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check for valid password
-     * Returns true if and only if password:
-     *         1. have at least eight characters.
-     *         2. consists of only letters and digits.
-     *         3. must contain at least two digits.
-     */
-    private static boolean isValidPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        } else {
-            char c;
-            int count = 1;
-            for (int i = 0; i < password.length() - 1; i++) {
-                c = password.charAt(i);
-                if (!Character.isLetterOrDigit(c)) {
-                    return false;
-                } else if (Character.isDigit(c)) {
-                    count++;
-                    if (count < 2)   {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
 }

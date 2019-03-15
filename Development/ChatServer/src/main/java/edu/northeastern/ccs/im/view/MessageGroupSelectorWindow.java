@@ -7,7 +7,6 @@ import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
 
     private TerminalWindow messageWindow;
-    private boolean isGroupChatSelected;
     private String chatName;
 
     public MessageGroupSelectorWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
@@ -18,6 +17,7 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
             put(3, ConstantStrings.INVALID_CHAT);
         }}, clientConnectionFactory);
     }
+
 
     public TerminalWindow getMessageWindow(String chatId) {
         if (messageWindow == null) {

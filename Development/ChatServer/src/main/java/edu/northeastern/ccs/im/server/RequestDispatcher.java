@@ -18,6 +18,7 @@ import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 import java.util.List;
 
 import static edu.northeastern.ccs.im.communication.NetworkRequest.NetworkRequestType;
@@ -78,6 +79,12 @@ public class RequestDispatcher {
             return handleCreateGroup(networkRequest);
         } else if (networkRequestType == NetworkRequestType.DELETE_GROUP) {
             return handleDeleteGroup(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.GET_FOLLOWERS) {
+            return handleGetFollowers(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.GET_FOLLOWEES) {
+            return handleGetFollowees(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.SET_FOLLOWERS) {
+            return handleSetFollowers(networkRequest);
         }
 
         return networkResponseFactory.createFailedResponse();
@@ -202,6 +209,42 @@ public class RequestDispatcher {
                 NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
                 return moderatorResponse;
             }
+            return response;
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleGetFollowers(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+            NetworkResponse response = (new UserController()).viewFollowers(user.getUsername());
+            return response;
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleGetFollowees(NetworkRequest networkRequest) {
+        try {
+            User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
+            NetworkResponse response = (new UserController()).viewFollowees(user.getUsername());
+            return response;
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleSetFollowers(NetworkRequest networkRequest) {
+        try {
+            String payloadString = networkRequest.payload().jsonString();
+            List<String> parsedString = Arrays.asList(payloadString.split("\n"));
+            if (parsedString.size() != 2) {
+                return networkResponseFactory.createFailedResponse();
+            }
+            User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
+            String userToFollow = parsedString.get(1);
+            NetworkResponse response = (new UserController()).followUser(userToFollow, currentUser);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();

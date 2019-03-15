@@ -60,5 +60,11 @@ public class GroupService implements IService{
 		groupJPA.updateGroup(retrievedGroup);
 		return groupJPA.getGroup(retrievedGroup.getId());
 	}
+	
+	public Group removeUserFromGroup(String groupCode, int userId) {
+		Group retrievedGroup = searchUsingCode(groupCode);
+		groupJPA.removeUserFromGroup(retrievedGroup, userId);
+		return groupJPA.getGroup(retrievedGroup.getId());
+	}
 
 }

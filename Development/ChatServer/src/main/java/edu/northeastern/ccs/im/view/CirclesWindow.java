@@ -1,8 +1,13 @@
 package edu.northeastern.ccs.im.view;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
+import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.userGroup.User;
 
 public class CirclesWindow extends AbstractTerminalWindow {
 
@@ -47,11 +52,11 @@ public class CirclesWindow extends AbstractTerminalWindow {
         printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
         printInConsoleForProcess(0);
       } else if (currentOperation == 4) {
-        followUser();
+        followUser(inputString);
         printMessageInConsole(ConstantStrings.FOLLOW_FAILED);
         printInConsoleForProcess(0);
       } else if (currentOperation == 5) {
-        followUser();
+        unfollowUser(inputString);
         printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
         printInConsoleForProcess(0);
       }
@@ -63,23 +68,58 @@ public class CirclesWindow extends AbstractTerminalWindow {
     }
   }
 
-  private void getUsersFollowed() {
-
+  private List<User> getUsersFollowed() {
+    NetworkResponse networkResponse;
+    try {
+      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createGetUserFollowersList(UserConstants.getUserName()));
+      return ResponseParser.parseFollowersList(networkResponse);
+    } catch (IOException | NetworkResponseFailureException e) {
+      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+      printInConsoleForProcess(0);
+    }
+    return null;
   }
 
-  private void getUserFollowees() {
-
+  private List<User> getUserFollowees() {
+    NetworkResponse networkResponse;
+    try {
+      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createGetUserFolloweesList(UserConstants.getUserName()));
+      return ResponseParser.parseFollowersList(networkResponse);
+    } catch (IOException | NetworkResponseFailureException e) {
+      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+      printInConsoleForProcess(0);
+    }
+    return null;
   }
 
   private void getUserFollowedByOtherUser() {
-
+//    NetworkResponse networkResponse;
+//    try {
+//      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+//              .createGetUserFollowersList(UserConstants.getUserName()));
+//      return ResponseParser.parseFollowersList(networkResponse);
+//    } catch (IOException | NetworkResponseFailureException e) {
+//      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+//      printInConsoleForProcess(0);
+//    }
+//    return null;
   }
 
-  private void followUser() {
-
+  private void followUser(String userName) {
+    NetworkResponse networkResponse;
+    try {
+      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createSetUserFolloweresList(userName));
+      ResponseParser.parseSetFollowersList(networkResponse);
+    } catch (IOException | NetworkResponseFailureException e) {
+      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+      printInConsoleForProcess(0);
+    }
   }
 
-  private void unfollowUser() {
+  private void unfollowUser(String userName) {
 
   }
 }
