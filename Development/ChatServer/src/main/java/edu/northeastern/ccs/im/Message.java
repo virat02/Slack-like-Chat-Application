@@ -237,4 +237,9 @@ public class Message {
                 && compareObj.msgType.equals(this.msgType)
                 && compareObj.msgText.equals(this.msgText);
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
 }

@@ -4,12 +4,11 @@ import edu.northeastern.ccs.im.ChatLogger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimerTask;
 
 /**
  * Class to manage all the message services
  */
-public class MessageManagerService extends TimerTask {
+public class MessageManagerService {
 
     //Maps the messageBroadcastService to the unique group identifier
     private Map<String, BroadCastService> hmap = new HashMap<>();
@@ -38,7 +37,7 @@ public class MessageManagerService extends TimerTask {
     /**
      * Gets a particular message service based on client request
      *
-     * @param groupUniqueKey
+     * @param groupUniqueKey The group unique code of the group
      * @return BroadCastService
      */
     public BroadCastService getService(String groupUniqueKey) throws IllegalAccessException {
@@ -69,8 +68,4 @@ public class MessageManagerService extends TimerTask {
         }
     }
 
-    @Override
-    public void run() {
-        //checkForInactivity(mess);
-    }
 }
