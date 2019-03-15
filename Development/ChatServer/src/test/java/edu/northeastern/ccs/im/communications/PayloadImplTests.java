@@ -5,8 +5,6 @@ import edu.northeastern.ccs.im.communication.Payload;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
-
 public class PayloadImplTests {
     @Test
     public void shouldSetThePayload() throws JsonProcessingException {

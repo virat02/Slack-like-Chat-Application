@@ -1,10 +1,13 @@
 package edu.northeastern.ccs.im.communications;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
+import edu.northeastern.ccs.im.userGroup.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,20 +15,32 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests for CommunicationUtils.
+ */
 public class CommunicationUtilsTest {
 
     private SocketChannel socketChannel;
     private Message message;
 
+    /**
+     * Sets up the class with mocks.
+     */
     @Before
     public void setup() {
         socketChannel = mock(SocketChannel.class);
         message = mock(Message.class);
     }
 
+    /**
+     * Tests multiple calls.
+     */
     @Test
     public void testMultipleCallsShouldReturnSameObjectMapperInstance() {
         ObjectMapper objectMapper1 = CommunicationUtils.getObjectMapper();
@@ -76,6 +91,10 @@ public class CommunicationUtilsTest {
         Assert.assertTrue(CommunicationUtils.writeToChannel(socketChannel, message));
     }
 
+    /**
+     * Tests for a proper NetwrokRequest.
+     * @throws IOException if there is a null response.
+     */
     @Test
     public void testNetworkRequestReadFromSocketShouldReturnCreateUserRequest() throws IOException {
         NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
@@ -85,6 +104,38 @@ public class CommunicationUtilsTest {
             return 100;
         }).when(socketChannel).read(any(ByteBuffer.class));
         NetworkRequest networkRequest = CommunicationUtils.networkRequestReadFromSocket(socketChannel);
-        Assert.assertEquals(NetworkRequest.NetworkRequestType.CREATE_USER, networkRequest.networkRequestType());
+        assertEquals(NetworkRequest.NetworkRequestType.CREATE_USER, networkRequest.networkRequestType());
     }
+
+    /**
+     * Tests the toJson
+     */
+    @Test
+    public void testToJson() throws JsonProcessingException {
+        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        User user = new User();
+        String expectedJSON = objWriter.writeValueAsString(user);
+        String json = CommunicationUtils.toJson(user);
+        assertEquals(expectedJSON, json);
+    }
+
+    /**
+     * Tests the toJsonArray
+     */
+    @Test
+    public void testToJsonArray() throws JsonProcessingException {
+        ObjectWriter objWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        User user = new User();
+        User userTwo = new User();
+        List<User> userList = new ArrayList<>();
+        userList.add(user);
+        userList.add(userTwo);
+        String expectedJSON = objWriter.writeValueAsString(userList);
+        String json = CommunicationUtils.toJsonArray(userList);
+        assertEquals(expectedJSON, json);
+    }
+
+
+
+
 }
