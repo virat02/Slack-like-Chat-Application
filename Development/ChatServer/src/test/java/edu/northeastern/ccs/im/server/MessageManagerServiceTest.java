@@ -21,7 +21,6 @@ public class MessageManagerServiceTest {
     public void testSingletonClass() {
         MessageManagerService messageManagerService1 = MessageManagerService.getInstance();
         MessageManagerService messageManagerService2 = MessageManagerService.getInstance();
-
         assertEquals(messageManagerService1.hashCode(), messageManagerService2.hashCode());
     }
 

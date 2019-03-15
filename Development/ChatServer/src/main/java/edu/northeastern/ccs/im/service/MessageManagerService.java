@@ -19,6 +19,9 @@ public class MessageManagerService extends TimerTask {
 
     private GroupService groupService = new GroupService();
 
+    public void setGroupService(GroupService groupService)  {
+        this.groupService = groupService;
+    }
     /**
      * Singleton class MessageManagerService
      *
@@ -36,7 +39,7 @@ public class MessageManagerService extends TimerTask {
      * Gets a particular message service based on client request
      *
      * @param groupUniqueKey
-     * @return
+     * @return BroadCastService
      */
     public BroadCastService getService(String groupUniqueKey) throws IllegalAccessException {
         //Check if the group with the given unique identifier exists
