@@ -39,7 +39,8 @@ public class CommunicationUtilsTest {
     }
 
     /**
-     * Tests multiple calls.
+     * Tests multiple calls to CommunicationUtils should
+     * return the same instance of object mapper.
      */
     @Test
     public void testMultipleCallsShouldReturnSameObjectMapperInstance() {
@@ -108,7 +109,7 @@ public class CommunicationUtilsTest {
     }
 
     /**
-     * Tests the toJson
+     * Tests the toJson method so that it returns the write string.
      */
     @Test
     public void testToJson() throws JsonProcessingException {
@@ -120,7 +121,7 @@ public class CommunicationUtilsTest {
     }
 
     /**
-     * Tests the toJsonArray
+     * Tests the toJsonArray so that it returns the correct to json array.
      */
     @Test
     public void testToJsonArray() throws JsonProcessingException {
@@ -134,8 +135,4 @@ public class CommunicationUtilsTest {
         String json = CommunicationUtils.toJsonArray(userList);
         assertEquals(expectedJSON, json);
     }
-
-
-
-
 }

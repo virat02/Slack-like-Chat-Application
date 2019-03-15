@@ -39,7 +39,6 @@ public class MessageBroadCastService implements BroadCastService {
 
     }
 
-
     /**
      * Instantiates a new Message broad cast service.
      *
