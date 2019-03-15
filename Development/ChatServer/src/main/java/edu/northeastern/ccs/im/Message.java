@@ -62,6 +62,9 @@ public class Message {
         this.groupCode = groupCode;
     }
 
+    /**
+     * Instantiates a new Message.
+     */
     public Message() {
 
     }
@@ -82,7 +85,8 @@ public class Message {
     /**
      * Create a new message to continue the logout process.
      *
-     * @param myName The name of the client that sent the quit message.
+     * @param myName    The name of the client that sent the quit message.
+     * @param groupCode the group code
      * @return Instance of Message that specifies the process is logging out.
      */
     public static Message makeQuitMessage(String myName, String groupCode) {
@@ -94,13 +98,18 @@ public class Message {
      *
      * @param myName    Name of the sender of this very important missive.
      * @param text      Text of the message that will be sent to all users
-     * @param groupCode
+     * @param groupCode the group code
      * @return Instance of Message that transmits text to all logged in users.
      */
     public static Message makeBroadcastMessage(String myName, String text, String groupCode) {
         return new Message(MessageType.BROADCAST, myName, text, groupCode);
     }
 
+    /**
+     * Gets msg type.
+     *
+     * @return the msg type
+     */
     public MessageType getMsgType() {
         return msgType;
     }
@@ -117,6 +126,11 @@ public class Message {
         return new Message(MessageType.HELLO, msgSender, groupCode);
     }
 
+    /**
+     * Group code string.
+     *
+     * @return the string
+     */
     public String groupCode() {
         return groupCode;
     }
@@ -125,11 +139,11 @@ public class Message {
      * Given a handle, name and text, return the appropriate message instance or an
      * instance from a subclass of message.
      *
-     * @param handle  Handle of the message to be generated.
-     * @param srcName Name of the originator of the message (may be null)
-     * @param text    Text sent in this message (may be null)
-     * @return Instance of Message (or its subclasses) representing the handle,
-     * name, & text.
+     * @param handle    Handle of the message to be generated.
+     * @param srcName   Name of the originator of the message (may be null)
+     * @param text      Text sent in this message (may be null)
+     * @param groupCode the group code
+     * @return Instance of Message (or its subclasses) representing the handle, name, & text.
      */
     public static Message makeMessage(String handle, String srcName, String text, String groupCode) {
         Message result = null;
@@ -148,7 +162,7 @@ public class Message {
      * the special stuff.
      *
      * @param myName    Name of the user who has just logged in.
-     * @param groupCode
+     * @param groupCode the group code
      * @return Instance of Message specifying a new friend has just logged in.
      */
     public static Message makeSimpleLoginMessage(String myName, String groupCode) {
@@ -236,5 +250,10 @@ public class Message {
                 && compareObj.groupCode.equals(this.groupCode)
                 && compareObj.msgType.equals(this.msgType)
                 && compareObj.msgText.equals(this.msgText);
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 }

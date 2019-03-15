@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * assignment at Northeastern University.
  *
  * @version 1.4
+ *
+ * Modified by sibendudey
  */
 public class NetworkConnection implements Iterable<Message> {
 
