@@ -43,7 +43,7 @@ public class UserJPAServiceTest {
         Profile profileOne = new Profile();
         profileOne.setEmail("jaa@.com");
         profileOne.setImageUrl("hhh.com");
-        profileOne.setProfileAccess(true);
+        userOne.setProfileAccess(true);
         userOne.setProfile(profileOne);
         userTwo = new User();
         userTwo.setUsername("Joker");
@@ -51,7 +51,7 @@ public class UserJPAServiceTest {
         Profile profileTwo = new Profile();
         profileTwo.setEmail("pencil@.com");
         profileTwo.setImageUrl("haha.com");
-        profileTwo.setProfileAccess(false);
+        userTwo.setProfileAccess(false);
         userTwo.setProfile(profileTwo);
         userThree = new User();
         userThree.setUsername("Batman");
@@ -59,7 +59,7 @@ public class UserJPAServiceTest {
         Profile profileThree = new Profile();
         profileThree.setEmail("rescue@.com");
         profileThree.setImageUrl("bats.com");
-        profileThree.setProfileAccess(true);
+        userThree.setProfileAccess(true);
         userThree.setProfile(profileThree);
 
         entityManager = mock(EntityManager.class);

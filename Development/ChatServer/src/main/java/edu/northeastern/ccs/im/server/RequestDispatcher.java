@@ -40,9 +40,16 @@ public class RequestDispatcher {
     }
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private IController userController = new UserController();
+    private UserController userController = new UserController();
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
     private MessageManagerService messageManagerService = MessageManagerService.getInstance();
+
+    public void setGroupController(GroupController groupController) {
+        this.groupController = groupController;
+    }
+
+    private GroupController groupController = new GroupController();
+    private ProfileController profileController = new ProfileController();
 
     /***
      * The purpose of this method is mocking the IController.
@@ -52,8 +59,12 @@ public class RequestDispatcher {
      * place to mock the controller
      * @param controller
      */
-    public void setUserController(IController controller) {
+    public void setUserController(UserController controller) {
         this.userController = controller;
+    }
+
+    public void setProfileController(ProfileController profileController) {
+        this.profileController = profileController;
     }
 
     public NetworkResponse handleNetworkRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
@@ -121,7 +132,7 @@ public class RequestDispatcher {
     private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).loginUser(user);
+            NetworkResponse response = userController.loginUser(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -131,7 +142,7 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUserRequest(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).addEntity(user);
+            NetworkResponse response = userController.addEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -141,7 +152,7 @@ public class RequestDispatcher {
     private NetworkResponse handleCreateUserProfile(NetworkRequest networkRequest) {
         try {
             Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
-            NetworkResponse response = (new ProfileController()).addEntity(profile);
+            NetworkResponse response = profileController.addEntity(profile);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -151,7 +162,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateProfileObj(NetworkRequest networkRequest) {
         try {
             Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
-            NetworkResponse response = (new ProfileController()).updateEntity(profile);
+            NetworkResponse response = profileController.updateEntity(profile);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -161,7 +172,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdateUserProfileObj(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).updateEntity(user);
+            NetworkResponse response = userController.updateEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -171,7 +182,7 @@ public class RequestDispatcher {
     private NetworkResponse handleUpdatePasswordChange(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).updateEntity(user);
+            NetworkResponse response = userController.updateEntity(user);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -191,7 +202,7 @@ public class RequestDispatcher {
     private NetworkResponse handleJoinGroup(NetworkRequest networkRequest) {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
-            NetworkResponse response = (new GroupController()).joinGroup(group);
+            NetworkResponse response = groupController.joinGroup(group);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -206,7 +217,7 @@ public class RequestDispatcher {
             NetworkResponse response = (new GroupController()).addEntity(group);
             if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                 group.setModerators(moderators);
-                NetworkResponse moderatorResponse = (new GroupController()).updateEntity(group);
+                NetworkResponse moderatorResponse = groupController.updateEntity(group);
                 return moderatorResponse;
             }
             return response;
@@ -218,7 +229,7 @@ public class RequestDispatcher {
     private NetworkResponse handleGetFollowers(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).viewFollowers(user.getUsername());
+            NetworkResponse response = userController.viewFollowers(user.getUsername());
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -228,7 +239,7 @@ public class RequestDispatcher {
     private NetworkResponse handleGetFollowees(NetworkRequest networkRequest) {
         try {
             User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-            NetworkResponse response = (new UserController()).viewFollowees(user.getUsername());
+            NetworkResponse response = userController.viewFollowees(user.getUsername());
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
@@ -244,7 +255,7 @@ public class RequestDispatcher {
             }
             User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
             String userToFollow = parsedString.get(1);
-            NetworkResponse response = (new UserController()).followUser(userToFollow, currentUser);
+            NetworkResponse response = userController.followUser(userToFollow, currentUser);
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();

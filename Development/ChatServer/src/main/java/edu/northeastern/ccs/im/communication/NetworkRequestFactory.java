@@ -18,10 +18,9 @@ public class NetworkRequestFactory {
      * Creates a NetworkRequest for creating a user.
      * @param userName The username set by the user
      * @param password The password set by the user
-     * @param emailAddress The emailaddress set by the user
      * @return NetworkRequest
      */
-    public NetworkRequest createUserRequest(String userName, String password, String emailAddress) {
+    public NetworkRequest createUserRequest(String userName, String password) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
                 () -> {
                     User user = new User();
@@ -148,6 +147,15 @@ public class NetworkRequestFactory {
                     message.setMessage(messageBody);
                     return CommunicationUtils.getObjectMapper().writeValueAsString(message);
                 });
+    }
+
+    /***
+     * Creates a request for joining a group.
+     * @return NetworkRequest
+     */
+    public NetworkRequest createJoinGroup(String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
+                () -> "{\"groupCode\":\"" + groupCode + "\"}");
     }
 
     /***

@@ -67,7 +67,7 @@ public class RequestDispatcherTests {
      */
     @Test
     public void whenHandleNetworkRequestIfCreateUserResponseSuccessful() {
-        networkRequest = networkRequestFactory.createUserRequest("123", "password", "emailaddress");
+        networkRequest = networkRequestFactory.createUserRequest("123", "password");
         RequestDispatcher requestDispatcher = RequestDispatcher.getInstance();
         requestDispatcher.setUserController(userController);
         when(userController.addEntity(any())).thenReturn(networkResponseFactory.createSuccessfulResponse());

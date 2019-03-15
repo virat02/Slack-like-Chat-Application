@@ -24,7 +24,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
     @Override
     public void runWindow() {
         messageClientConnection = (MessageClientConnection) clientConnectionFactory.createMessageClientConnection(hostName, port);
-        NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode, UserConstants.getUserId());
+        NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode);
         try {
             messageClientConnection.connect();
             messageClientConnection.sendRequest(networkRequest);
