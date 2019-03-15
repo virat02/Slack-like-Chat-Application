@@ -174,19 +174,6 @@ public class User implements IUser {
     }
 
     /**
-     * Adds a user to the list of people following this user.
-     * @param user the person following this user.
-     */
-    public void addFollowee(User user) {
-        if (user != null) {
-            this.followee.add(user);
-        }
-        else {
-            throw new NullPointerException("Cannot add a non-existing user");
-        }
-    }
-
-    /**
      * Gets the name.
      *
      * @return the name

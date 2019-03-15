@@ -1,15 +1,11 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
-import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
-import edu.northeastern.ccs.im.userGroup.User;
 
 public class LoginWindow extends AbstractTerminalWindow {
 
@@ -35,7 +31,7 @@ public class LoginWindow extends AbstractTerminalWindow {
 
   LoginWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
+      put(0, ConstantStrings.USER_NAME_STRING);
       put(1, ConstantStrings.PASSWORD_STRING);
       put(2, ConstantStrings.LOGIN_FAILED);
     }}, clientConnectionFactory);

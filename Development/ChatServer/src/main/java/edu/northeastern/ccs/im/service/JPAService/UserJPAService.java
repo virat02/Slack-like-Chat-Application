@@ -57,12 +57,10 @@ public class UserJPAService {
     }
 
     public User search(String username) {
-        StringBuilder thisString = new StringBuilder("SELECT u FROM User u,Profile p WHERE u.id = p.userId AND u.username = '");
-        thisString.append(username);
-        thisString.append("'");
+        String queryString = "SELECT u " + "FROM User u WHERE u.username = '" + username + "'";
         EntityManager entityManager = beginTransaction();
-        TypedQuery<User> query = entityManager.createQuery(thisString.toString(), User.class);
-        return query.getSingleResult();
+        Query query = entityManager.createQuery(queryString);
+        return (User) query.getSingleResult();
     }
 
     public User getUser(int id) {
@@ -97,7 +95,7 @@ public class UserJPAService {
      */
     public List<User> getFollowers(User user) {
         String queryString =
-                "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
+                "SELECT u FROM user_follower u WHERE u.user_id ='" + user.getId() + "'";
         EntityManager entityManager = beginTransaction();
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
@@ -115,7 +113,7 @@ public class UserJPAService {
      */
     public List<User> getFollowees(User user) {
         String queryString =
-                "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
+                "SELECT u FROM user_follower u WHERE u.follower_id ='" + user.getId() + "'";
         EntityManager entityManager = beginTransaction();
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);

@@ -38,6 +38,10 @@ public class ResponseParser {
     return null;
   }
 
+  static JsonNode parseSearchGroupNetworkResponse(NetworkResponse networkResponse) {
+    return null;
+  }
+
   static boolean parseAddGroupResponse(NetworkResponse networkResponse) {
     return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }

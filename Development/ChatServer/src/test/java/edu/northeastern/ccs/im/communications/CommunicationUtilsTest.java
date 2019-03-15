@@ -81,7 +81,7 @@ public class CommunicationUtilsTest {
         NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
         doAnswer(invocationOnMock -> {
             ByteBuffer byteBuffer = (ByteBuffer) invocationOnMock.getArguments()[0];
-            byteBuffer.put(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequestFactory.createUserRequest("", "", "")));
+            byteBuffer.put(CommunicationUtils.getObjectMapper().writeValueAsBytes(networkRequestFactory.createUserRequest("", "")));
             return 100;
         }).when(socketChannel).read(any(ByteBuffer.class));
         NetworkRequest networkRequest  = CommunicationUtils.networkRequestReadFromSocket(socketChannel);

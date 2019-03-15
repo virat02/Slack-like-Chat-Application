@@ -59,7 +59,9 @@ public class RequestDispatcher {
     } else if (networkRequestType == NetworkRequestType.LOGIN_USER) {
       return handleLoginRequest(networkRequest);
     } else if (networkRequestType == NetworkRequestType.SEARCH_USER) {
-      return searchQueryResults(networkRequest);
+      return searchUserQueryResults(networkRequest);
+    } else if (networkRequestType == NetworkRequestType.SEARCH_GROUP) {
+      return searchGroupQueryResults(networkRequest);
     } else if (networkRequestType == NetworkRequestType.JOIN_GROUP) {
       try {  
     	handleJoinGroup(networkRequest); 
@@ -100,7 +102,7 @@ public class RequestDispatcher {
     return message;
   }
 
-  private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
+  private NetworkResponse searchUserQueryResults(NetworkRequest networkRequest) {
     try {
       User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
       NetworkResponse response = (new UserController()).searchEntity(user.getUsername());
@@ -108,8 +110,16 @@ public class RequestDispatcher {
     } catch (IOException e) {
       return networkResponseFactory.createFailedResponse();
     }
-//    return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-//            () -> CommunicationUtils.getObjectMapper().writeValueAsString(new ArrayList<>(Arrays.asList("sibendu", "tarun", "sangeetha", "jerry", "virat"))));
+  }
+
+  private NetworkResponse searchGroupQueryResults(NetworkRequest networkRequest) {
+    try {
+      Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
+      NetworkResponse response = (new GroupController()).searchAllGroup(group.getName());
+      return response;
+    } catch (IOException e) {
+      return networkResponseFactory.createFailedResponse();
+    }
   }
 
   private NetworkResponse handleLoginRequest(NetworkRequest networkRequest) {

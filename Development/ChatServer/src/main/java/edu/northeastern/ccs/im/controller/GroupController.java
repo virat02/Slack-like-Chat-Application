@@ -63,7 +63,7 @@ public class GroupController implements IController<Group>{
 		try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
         }

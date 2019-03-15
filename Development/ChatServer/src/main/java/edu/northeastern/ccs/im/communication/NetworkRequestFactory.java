@@ -22,21 +22,15 @@ public class NetworkRequestFactory {
    * Creates a NetworkRequest for creating a user.
    * @param userName The username set by the user
    * @param password The password set by the user
-   * @param emailAddress The emailaddress set by the user
    * @return NetworkRequest
    */
-  public NetworkRequest createUserRequest(String userName, String password, String emailAddress) {
+  public NetworkRequest createUserRequest(String userName, String password) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_USER,
             () -> {
               User user = new User();
               user.setUsername(userName);
               user.setPassword(password);
 
-//                    Profile profile = new Profile();
-//                    profile.setEmail(emailAddress);
-//                    profile.setImageUrl("");
-//
-//                    user.setProfile(profile);
               return CommunicationUtils.getObjectMapper().writeValueAsString(user);
             });
   }
@@ -110,8 +104,9 @@ public class NetworkRequestFactory {
   public NetworkRequest createSearchGroupRequest(String searchString) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_GROUP,
             () -> {
-              User user = new User();
-              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+              Group group = new Group();
+              group.setName(searchString);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(group);
             });
   }
 

@@ -83,10 +83,10 @@ public class GroupJPAService{
     }
     
     public Group searchUsingCode(String groupCode) {
-        String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode+"'";
-        EntityManager entityManager = beginTransaction();
-        TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
-        return query.getSingleResult();
+				String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "'";
+				EntityManager entityManager = beginTransaction();
+				Query query = entityManager.createQuery(queryString);
+				return (Group) query.getSingleResult();
     }
 
 

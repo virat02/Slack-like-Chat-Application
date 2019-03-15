@@ -45,8 +45,6 @@ public final class UserService implements IService {
 
         if(currentUser != null && u != null){
             currentUser.addFollowing(u);
-            u.addFollowee(currentUser);
-
             return currentUser;
         }
         else{

@@ -1,11 +1,10 @@
 package edu.northeastern.ccs.im.view;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.*;
+import edu.northeastern.ccs.im.userGroup.Profile;
 
 public class SignUpWindow extends AbstractTerminalWindow {
 
@@ -72,8 +71,21 @@ public class SignUpWindow extends AbstractTerminalWindow {
   private int createUserAndFetchId() {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createUserRequest(userName, passwordString, emailAddress));
-      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+              .createUserRequest(userName, passwordString));
+      int userId = ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+      if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL) && userId != -1) {
+        networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+                .createUserProfile(emailAddress,""));
+        if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
+          Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);
+          networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+                  .createUpdateUserProfile(profile));
+          if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
+            UserConstants.getUserObj().setProfile(profile);
+            return userId;
+          }
+        }
+      }
     } catch (IOException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);

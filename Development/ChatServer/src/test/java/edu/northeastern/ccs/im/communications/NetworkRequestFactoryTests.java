@@ -15,8 +15,7 @@ public class NetworkRequestFactoryTests {
     public void whenCreateUserRequestIsCalledJsonPayloadShouldBeSame() throws JsonProcessingException {
         String name = "Sibendu";
         String email = "sibendu.dey@gmail.com";
-        String password = "sibendu.dey";
-        NetworkRequest networkRequest = networkRequestFactory.createUserRequest(name, email, password);
+        NetworkRequest networkRequest = networkRequestFactory.createUserRequest(name, email);
         User user = new User();
         //The below line gave an error
         //User user = new User(name, email);
