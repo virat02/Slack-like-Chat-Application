@@ -114,7 +114,7 @@ public class GroupJPAService{
      * @return a list of groups
      */
 	public List<Group> searchUsingName(String groupName) {
-		String queryString = "SELECT g FROM `Group` g WHERE g.name = '" + groupName+"'";
+		String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"'";
 
 		beginTransaction();
 		TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
@@ -127,7 +127,7 @@ public class GroupJPAService{
      * @return a group
      */
 	public Group searchUsingCode(String groupCode) {
-		String queryString = "SELECT g FROM `Group` g WHERE g.groupCode = '" + groupCode + "'";
+		String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "'";
 		beginTransaction();
 		Query query = entityManager.createQuery(queryString);
 		return (Group) query.getSingleResult();

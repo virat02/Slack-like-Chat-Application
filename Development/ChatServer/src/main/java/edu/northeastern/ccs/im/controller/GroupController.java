@@ -18,6 +18,12 @@ public class GroupController implements IController<Group>{
 		this.groupService = groupService;
 	}
 
+	/**
+	 * addEntity method creates a group object and further
+	 * calls service method to persist in db
+	 * @param group
+	 * @return Network response with a failure or success and a payload
+	 */
 	@Override
 	public NetworkResponse addEntity(Group group) {
 		try {
@@ -30,6 +36,11 @@ public class GroupController implements IController<Group>{
 
 	}
 
+	/**
+	 * getEntity method is called by the view to retrieve a group
+	 * @param groupCode
+	 * @return Network response with a failure or success and a payload
+	 */
 	public NetworkResponse getEntity(String groupCode) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
@@ -40,6 +51,11 @@ public class GroupController implements IController<Group>{
 		}
 	}
 
+	/**
+	 * updateEntity is called by the view to update a group with changed attributes
+	 * @param group
+	 * @return Network response with a failure or success and a payload
+	 */
 	@Override
 	public NetworkResponse updateEntity(Group group) {
 		try {
@@ -52,6 +68,11 @@ public class GroupController implements IController<Group>{
 
 	}
 
+	/**
+	 * deleteEntity is called by the view to delete a group
+	 * @param group
+	 * @return Network response with a failure or success and a payload
+	 */
 	@Override
 	public NetworkResponse deleteEntity(Group group) {
 		try {
@@ -64,6 +85,12 @@ public class GroupController implements IController<Group>{
 
 	}
 
+
+	/**
+	 * searchEntity returns a network response with the unique group based on groupCode
+	 * @param groupCode
+	 * @return Network response with a failure or success and a payload
+	 */
 	@Override
 	public NetworkResponse searchEntity(String groupCode) {
 		try {
@@ -75,7 +102,11 @@ public class GroupController implements IController<Group>{
 		}
 	}
 
-
+	/**
+	 * searchAllGroup returns a network response with the list of groups based on groupName
+	 * @param groupName
+	 * @return Network response with a failure or success and a payload
+	 */
 	public NetworkResponse searchAllGroup(String groupName) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
@@ -86,6 +117,11 @@ public class GroupController implements IController<Group>{
 		}
 	}
 
+	/**
+	 * joinGroup method is used to add a user to the group
+	 * @param group
+	 * @return Network response with a failure or success and a payload
+	 */
 	public NetworkResponse joinGroup(Group group) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
@@ -96,6 +132,12 @@ public class GroupController implements IController<Group>{
 		}
 	}
 
+	/**
+	 * removeUserFromGroup removes a user from a group by passing in the groupCode and userId
+	 * @param groupCode
+	 * @param userId
+	 * @return Network response with a failure or success and a payload
+	 */
 	public NetworkResponse removeUserFromGroup(String groupCode, int userId) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,

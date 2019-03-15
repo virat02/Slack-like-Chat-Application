@@ -25,6 +25,20 @@ public class GroupService implements IService {
     }
 
     /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param userJPA for this class.
+     */
+    public void setUserService(UserJPAService userJPA) {
+        if (userJPA == null) {
+            this.userJPA = new UserJPAService();
+        } else {
+            this.userJPA = userJPA;
+        }
+        this.groupJPA.setEntityManager(null);
+    }
+
+    /**
      * A method to set the JPA Service for this class, makes the class more testable.
      *
      * @param groupJPA for this class.
@@ -40,10 +54,12 @@ public class GroupService implements IService {
 
     public boolean createIfNotPresent(String groupCode) {
         try {
+            groupJPA.setEntityManager(null);
             groupJPA.searchUsingCode(groupCode);
         } catch (NoResultException noResultException) {
             Group group = new Group();
             group.setGroupCode(groupCode);
+            groupJPA.setEntityManager(null);
             groupJPA.createGroup(group);
         }
 

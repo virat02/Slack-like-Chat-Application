@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class MessageService implements IService{
 
-    private MessageJPAService messageJPAService;
-    private UserService userService;
-    private GroupService groupService;
+    private MessageJPAService messageJPAService = new MessageJPAService();
+    private UserService userService = new UserService();
+    private GroupService groupService = new GroupService();
 
     /**
      * Set a message JPA Service
@@ -46,6 +46,7 @@ public class MessageService implements IService{
      * @return
      */
     public boolean createMessage(Message message) {
+        messageJPAService.setEntityManager(null);
         int id = messageJPAService.createMessage(message);
         return id!= -1;
     }
@@ -58,6 +59,7 @@ public class MessageService implements IService{
      * @return
      */
     public Boolean createMessage(String messageBody, String userName, String groupCode) {
+
         Message message = new Message();
         User user = userService.search(userName);
         Group group = groupService.searchUsingCode(groupCode);
@@ -73,6 +75,7 @@ public class MessageService implements IService{
      * @return
      */
     public Message get(int id) {
+        messageJPAService.setEntityManager(null);
         return messageJPAService.getMessage(id);
     }
 
@@ -81,6 +84,7 @@ public class MessageService implements IService{
      * @param msg
      */
     public boolean updateMessage(Message msg) {
+        messageJPAService.setEntityManager(null);
         return messageJPAService.updateMessage(msg);
     }
 
@@ -98,6 +102,7 @@ public class MessageService implements IService{
      * @param groupUniqueKey
      */
     public List<Message> getTop15Messages(String groupUniqueKey) {
+        messageJPAService.setEntityManager(null);
         return messageJPAService.getTop15Messages(groupUniqueKey);
     }
 }
