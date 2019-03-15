@@ -69,15 +69,12 @@ public class MessageJPAService {
             thisMessage.setMessage(message.getMessage());
             thisMessage.setTimestamp(message.getTimestamp());
             thisMessage.setExpiration(message.getExpiration());
-
             endTransaction(entityManager);
-
             return true;
         } catch (Exception e) {
             LOGGER.info("Can't find Message for ID:" + message.getId());
             return false;
         }
-
     }
 
     /**

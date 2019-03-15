@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.server;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.IController;
@@ -10,10 +11,8 @@ import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.service.BroadCastService;
-import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.service.MessageManagerService;
-import edu.northeastern.ccs.im.userGroup.Message;
 import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 
@@ -90,17 +89,16 @@ public class RequestDispatcher {
             JsonNode jsonNode = CommunicationUtils
                     .getObjectMapper().readTree(networkRequest.payload().jsonString());
             String groupCode = jsonNode.get("groupCode").asText();
-
             BroadCastService messageService = messageManagerService.getService(groupCode);
+            List<Message> messages = messageService.getRecentMessages();
             messageService.addConnection(socketChannel);
+            return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
         } catch (IllegalAccessException e) {
             ChatLogger.error(e.getMessage());
-            return networkResponseFactory.createFailedResponse();
         } catch (IOException e) {
-            return networkResponseFactory.createFailedResponse();
+            ChatLogger.error(e.getMessage());
         }
-
-        return networkResponseFactory.createSuccessfulResponse();
+        return networkResponseFactory.createFailedResponse();
     }
 
     private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {
@@ -120,16 +118,6 @@ public class RequestDispatcher {
             return response;
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
-        }
-
-        private NetworkResponse handleCreateUserRequest (NetworkRequest networkRequest){
-            try {
-                User user = objectMapper.readValue(networkRequest.payload().jsonString(), User.class);
-                NetworkResponse response = userController.addEntity(user);
-                return response;
-            } catch (IOException e) {
-                return networkResponseFactory.createFailedResponse();
-            }
         }
     }
 
@@ -219,3 +207,4 @@ public class RequestDispatcher {
             return networkResponseFactory.createFailedResponse();
         }
     }
+}

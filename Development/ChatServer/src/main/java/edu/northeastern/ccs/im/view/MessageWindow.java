@@ -24,26 +24,32 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
     @Override
     public void runWindow() {
         messageClientConnection = (MessageClientConnection) clientConnectionFactory.createMessageClientConnection(hostName, port);
-        NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode);
+        NetworkRequest networkRequest = networkRequestFactory.createJoinGroup(groupCode, UserConstants.getUserId());
         try {
+            messageClientConnection.connect();
             messageClientConnection.sendRequest(networkRequest);
             NetworkResponse networkResponse = messageClientConnection.readResponse();
             if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
+                ResponseParser.readRecentMessagesAndPrintInScreen(networkResponse);
                 messageSocketListener = new MessageSocketListener(messageClientConnection);
                 Thread threadObject = new Thread((Runnable) messageSocketListener);
                 threadObject.start();
-                super.runWindow();
                 messageClientConnection.sendMessage(Message.makeSimpleLoginMessage(UserConstants.getUserName(), groupCode));
+                super.runWindow();
             }
+        } catch (NetworkResponseFailureException e) {
+            ChatLogger.error("Could not be joined due as network request was not successful");
         } catch (IOException e) {
             ChatLogger.error("Could not be joined to chat group due to an error");
-            goBack();
         }
+
+        goBack();
     }
+
 
     @Override
     void inputFetchedFromUser(String inputString) {
-        Message message = Message.makeBroadcastMessage(inputString, UserConstants.getUserName(), groupCode);
+        Message message = Message.makeBroadcastMessage(UserConstants.getUserName(), inputString, groupCode);
         messageClientConnection.sendMessage(message);
     }
 
@@ -65,7 +71,4 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
         return null;
     }
 
-    public static void main(String args[])  {
-        MessageWindow messageWindow = new MessageWindow(null, new ClientConnectionFactory(), "");
-    }
 }

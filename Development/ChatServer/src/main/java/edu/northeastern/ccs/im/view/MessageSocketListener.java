@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.MessageClientConnection;
+import edu.northeastern.ccs.im.userGroup.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +22,9 @@ public class MessageSocketListener implements Runnable, Listener {
         ViewConstants.getOutputStream().println("Entered");
         while (isRunning) {
             List<Message> messages = clientConnection.readMessages();
-            messages.forEach(ViewConstants.getOutputStream()::println);
+            messages.stream()
+                    .map(m -> messageFormatter().formatMessage(m))
+                    .forEach(ViewConstants.getOutputStream()::println);
         }
         ViewConstants.getOutputStream().println("Ended");
     }
@@ -36,4 +39,18 @@ public class MessageSocketListener implements Runnable, Listener {
         }
         isRunning = false;
     }
+
+    private static MessageFormatter messageFormatter() {
+        return m -> {
+            if (UserConstants.getUserName().equals(m.getName()))
+                return "";
+            return m.getName() + ":" + m.getText();
+        };
+    }
 }
+
+interface MessageFormatter {
+    String formatMessage(Message message);
+}
+
+

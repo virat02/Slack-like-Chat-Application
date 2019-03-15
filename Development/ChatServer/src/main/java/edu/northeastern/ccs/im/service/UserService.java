@@ -7,7 +7,7 @@ import java.util.Date;
 
 public final class UserService implements IService {
     private UserJPAService userJPAService;
-    private UserService() {
+    public UserService() {
         userJPAService = new UserJPAService();
     }
 

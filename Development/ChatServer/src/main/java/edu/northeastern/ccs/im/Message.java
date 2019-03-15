@@ -102,7 +102,7 @@ public class Message {
     }
 
     public MessageType getMsgType() {
-        return MessageType.BROADCAST;
+        return msgType;
     }
 
     /**
@@ -130,7 +130,7 @@ public class Message {
      * @return Instance of Message (or its subclasses) representing the handle,
      * name, & text.
      */
-    protected static Message makeMessage(String handle, String srcName, String text, String groupCode) {
+    public static Message makeMessage(String handle, String srcName, String text, String groupCode) {
         Message result = null;
         if (handle.compareTo(MessageType.QUIT.toString()) == 0) {
             result = makeQuitMessage(srcName, groupCode);

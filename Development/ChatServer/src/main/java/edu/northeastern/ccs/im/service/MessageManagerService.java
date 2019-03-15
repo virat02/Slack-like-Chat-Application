@@ -39,15 +39,13 @@ public class MessageManagerService extends TimerTask {
      * @return
      */
     public BroadCastService getService(String groupUniqueKey) throws IllegalAccessException {
-
         //Check if the group with the given unique identifier exists
-        if (groupService.searchUsingCode(groupUniqueKey) != null) {
+        if (groupService.createIfNotPresent(groupUniqueKey)) {
             if (!hmap.containsKey(groupUniqueKey)) {
-                hmap.put(groupUniqueKey, new MessageBroadCastService());
+                hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
             }
 
             return hmap.get(groupUniqueKey);
-
         } else {
             ChatLogger.info("Couldn't get a service since no such group with given unique identifier was found!");
             throw new IllegalAccessException("No such group found with unique identifier: " + groupUniqueKey);

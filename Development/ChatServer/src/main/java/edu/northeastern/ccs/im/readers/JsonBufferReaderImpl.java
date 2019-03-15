@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.MessageType;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
             String srcName = null;
             String text = null;
             String groupCode = null;
+            String msgHandle = null;
             while (!jsonParser.isClosed()) {
                 JsonToken jsonToken = jsonParser.nextToken();
                 if (jsonToken == null)
@@ -42,6 +44,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
                     srcName = "";
                     text = "";
                     groupCode = "";
+                    msgHandle = "";
                 } else if (jsonToken.equals(JsonToken.FIELD_NAME)) {
                     String fieldName = jsonParser.getCurrentName();
                     switch (fieldName) {
@@ -55,6 +58,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
                             break;
                         case "msgType":
                             jsonParser.nextToken();
+                            msgHandle = MessageType.valueOf(jsonParser.getText()).toString();
                             break;
                         case "groupCode":
                             jsonParser.nextToken();
@@ -64,12 +68,12 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
                             jsonParser.nextToken();
                     }
                 } else if (jsonToken.equals(JsonToken.END_OBJECT)) {
-                    Message message = Message.makeBroadcastMessage(srcName, text, groupCode);
+                    Message message = Message.makeMessage(msgHandle, srcName, text, groupCode);
                     messages.add(message);
                 }
             }
         } catch (IOException e) {
-            ChatLogger.error(e.getMessage());
+
         }
 
         for (Message m : messages)

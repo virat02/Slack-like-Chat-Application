@@ -5,6 +5,7 @@ import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.Group;
 import edu.northeastern.ccs.im.userGroup.User;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 public class GroupService implements IService{
@@ -33,6 +34,18 @@ public class GroupService implements IService{
 	
 	public Group searchUsingCode(String groupCode){
 		return groupJPA.searchUsingCode(groupCode);
+	}
+
+	public boolean createIfNotPresent(String groupCode)	{
+		try	{
+			groupJPA.searchUsingCode(groupCode);
+		} catch (NoResultException noResultException)	{
+			Group group = new Group();
+			group.setGroupCode(groupCode);
+			groupJPA.createGroup(group);
+		}
+
+		return true;
 	}
 	
 	public List<Group> searchUsingName(String groupName){
