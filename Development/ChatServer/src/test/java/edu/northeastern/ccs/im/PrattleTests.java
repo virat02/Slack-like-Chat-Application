@@ -9,12 +9,10 @@ import edu.northeastern.ccs.im.entity.MessageEntityTest;
 import edu.northeastern.ccs.im.entity.ProfileEntityTest;
 import edu.northeastern.ccs.im.entity.UserEntityTest;
 import edu.northeastern.ccs.im.readers.ReadersTest;
+import edu.northeastern.ccs.im.server.MessageManagerServiceTest;
 import edu.northeastern.ccs.im.server.RequestDispatcherTests;
 import edu.northeastern.ccs.im.server.RequestHandlerTests;
-import edu.northeastern.ccs.im.service.GroupServiceTest;
-import edu.northeastern.ccs.im.service.MessageServiceTest;
-import edu.northeastern.ccs.im.service.ProfileServiceTest;
-import edu.northeastern.ccs.im.service.UserServiceTest;
+import edu.northeastern.ccs.im.service.*;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAServiceTest;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAServiceTest;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAServiceTest;
@@ -36,7 +34,8 @@ import org.junit.runners.Suite;
         MessageTest.class,
         ClientRunnableTest.class,
         edu.northeastern.ccs.im.server.PrattleTests.class,
-        ClientConnectionImplTests.class,
+        MessageBroadCastServiceTests.class,
+        MessageManagerServiceTest.class,
         CommunicationUtilsTest.class,
         NetworkRequestFactoryTests.class,
         NetworkResponseFactoryTests.class,

@@ -7,7 +7,7 @@ import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

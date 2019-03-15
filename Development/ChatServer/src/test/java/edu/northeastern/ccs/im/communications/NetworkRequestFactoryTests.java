@@ -1,13 +1,13 @@
 package edu.northeastern.ccs.im.communications;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
-import edu.northeastern.ccs.im.userGroup.Group;
-import edu.northeastern.ccs.im.userGroup.Profile;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.user_group.Group;
+import edu.northeastern.ccs.im.user_group.Profile;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

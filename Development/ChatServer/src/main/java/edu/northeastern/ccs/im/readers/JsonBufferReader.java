@@ -15,7 +15,7 @@ public interface JsonBufferReader {
      * extracted from the buffer.
      * Returns 0 by default if this method is invoked
      * before messageList()
-     * @return the bytes rea
+     * @return the bytes read
      */
     long bytesRead();
 
