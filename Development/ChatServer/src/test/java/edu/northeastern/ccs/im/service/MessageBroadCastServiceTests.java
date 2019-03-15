@@ -2,7 +2,7 @@ package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.server.ClientRunnable;
-import edu.northeastern.ccs.im.userGroup.*;
+import edu.northeastern.ccs.im.user_group.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,7 +93,7 @@ public class MessageBroadCastServiceTests {
         String name1 = "sender name";
         String messageBody = "message body";
         String group1 = "group1";
-        edu.northeastern.ccs.im.userGroup.Message message1 = mock(edu.northeastern.ccs.im.userGroup.Message.class);
+        edu.northeastern.ccs.im.user_group.Message message1 = mock(edu.northeastern.ccs.im.user_group.Message.class);
         User user = mock(User.class);
         when(message1.getSender()).thenReturn(user);
         when(user.getUsername()).thenReturn(name1);
@@ -101,8 +101,7 @@ public class MessageBroadCastServiceTests {
         Group group = mock(Group.class);
         when(message1.getReceiver()).thenReturn(group);
         when(group.getGroupCode()).thenReturn(group1);
-        when(messageService.getTop15Messages(any()))
-                .thenReturn(Collections.singletonList(message1));
+        when(messageService.getTop15Messages(any())).thenReturn(Collections.singletonList(message1));
         List<Message> messageList = broadCastService.getRecentMessages();
         Assert.assertEquals(1, messageList.size());
         Message receivedMessage = messageList.get(0);

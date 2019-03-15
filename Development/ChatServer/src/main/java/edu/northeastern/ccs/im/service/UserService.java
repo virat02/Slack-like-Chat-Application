@@ -1,9 +1,7 @@
 package edu.northeastern.ccs.im.service;
 
-import org.hibernate.ejb.EntityManagerImpl;
-
-import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +12,10 @@ import java.util.logging.Logger;
  */
 public final class UserService implements IService {
 
-    private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     private UserJPAService userJPAService;
+
     /**
      * Constructor for this class.
      */
@@ -86,14 +85,14 @@ public final class UserService implements IService {
      * @param username
      * @return
      */
-    public List<User> getFollowers(String username){
+    public List<User> getFollowers(String username) {
         User u = search(username);
 
         if(u != null) {
             userJPAService.setEntityManager(null);
             return userJPAService.getFollowers(u);
         }
-        else{
+        else {
             return Collections.emptyList();
         }
     }
@@ -105,7 +104,6 @@ public final class UserService implements IService {
      */
     public List<User> getFollowees(String username){
         User u = search(username);
-
         if(u != null) {
             userJPAService.setEntityManager(null);
             return userJPAService.getFollowees(u);

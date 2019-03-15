@@ -5,7 +5,7 @@ import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.service.UserService;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.user_group.User;
 
 /**
  * Controller that calls the service class and loads the Network Response with the status and Payload.
@@ -27,13 +27,8 @@ public final class UserController implements IController {
      * @return Network response with the new Entity on the payload.
      */
     public NetworkResponse addEntity(Object object) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.addUser(object))));
-        }   catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(userService.addUser(object))));
     }
 
     /**
@@ -42,13 +37,8 @@ public final class UserController implements IController {
      * @return The Network Response with the new User instance loaded on the payload.
      */
     public NetworkResponse updateEntity(Object object) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.update(object))));
-        } catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(userService.update(object))));
     }
 
     /**
@@ -57,13 +47,8 @@ public final class UserController implements IController {
      * @return the Network Response with the User deleted loaded onto the payload.
      */
     public NetworkResponse deleteEntity(Object entity) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.delete(entity))));
-        } catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(userService.delete(entity))));
     }
 
     /**
@@ -72,13 +57,9 @@ public final class UserController implements IController {
      * @return the Network Response with the User loaded on it if the user was found in the database.
      */
     public NetworkResponse searchEntity(String username) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.search(username))));
-        } catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(userService.search(username))));
+
     }
 
     /**
@@ -88,18 +69,14 @@ public final class UserController implements IController {
      * succeeded.
      */
     public NetworkResponse loginUser(Object potentialUser) {
-        try {
-            User newUser = userService.loginUser(potentialUser);
-            if(newUser == null) {
-                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                        new PayloadImpl(null));
-            }
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(newUser)));
-        } catch (IllegalArgumentException e) {
+        User newUser = userService.loginUser(potentialUser);
+        if (newUser == null) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
         }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(newUser)));
+
     }
 
     /**
@@ -109,47 +86,34 @@ public final class UserController implements IController {
      * @return returns the new updated user object
      */
     public NetworkResponse followUser(String username, User currentUser) {
-        try {
-            User newUser = userService.follow(username, currentUser);
-            if(newUser == null) {
-                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                        new PayloadImpl(null));
-            }
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(newUser)));
-        } catch (IllegalArgumentException e) {
+        User newUser = userService.follow(username, currentUser);
+        if(newUser == null) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(null));
         }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(newUser)));
     }
 
     /**
      * Get the followers for this user
-     * @param username
-     * @return
+     * @param username of the follower.
+     * @return Network response with a status and a payload loaded with a List of Users.
      */
     public NetworkResponse viewFollowers(String username) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowers(username))));
-        } catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowers(username))));
+
     }
 
     /**
-     * Get the followees for this user
-     * @param username
-     * @return
+     * Get the followees for this user.
+     * @param username of the person doing the following.
+     * @return Network response with a status and a payload loaded with a List of Users.
      */
     public NetworkResponse viewFollowees(String username) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowees(username))));
-        } catch (IllegalArgumentException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(null));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowees(username))));
+
     }
 }

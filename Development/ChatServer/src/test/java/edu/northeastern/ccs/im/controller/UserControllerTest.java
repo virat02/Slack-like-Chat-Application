@@ -1,15 +1,13 @@
 package edu.northeastern.ccs.im.controller;
-
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.service.UserService;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,7 +18,6 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserControllerTest {
-
     private UserController userController;
     private UserService userService;
     private User userOne;
@@ -29,7 +26,7 @@ public class UserControllerTest {
      * Sets up the controllers variables and mocks the user service.
      */
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         userController = new UserController();
         userService = mock(UserService.class);
         userOne = new User();
@@ -60,7 +57,6 @@ public class UserControllerTest {
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
         verify(userService).update(any());
     }
-
     /**
      * Tests the successful deletion of a d to a database.
      */
@@ -114,7 +110,45 @@ public class UserControllerTest {
      */
     @Test
     public void testFollowEntity() {
+        when(userService.follow(anyString(), any())).thenReturn(userOne);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.followUser("Yas", userOne);
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(userService).follow(anyString(), any());
+    }
+
+    /**
+     * Tests the unsuccessful follow of a user to a database.
+     */
+    @Test
+    public void testFollowEntityFail() {
         userController.setUserService(userService);
         userController.followUser("Yas", userOne);
+    }
+
+    /**
+     * Tests the successful getting of followers.
+     */
+    @Test
+    public void testViewFollowers() {
+        List<User> users = new ArrayList<>();
+        when(userService.getFollowers(any())).thenReturn(users);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.viewFollowers("Us");
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(userService).getFollowers(any());
+    }
+
+    /**
+     * Tests the successful getting of followees.
+     */
+    @Test
+    public void testViewFollowees() {
+        List<User> users = new ArrayList<>();
+        when(userService.getFollowees(any())).thenReturn(users);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.viewFollowees("Us");
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(userService).getFollowees(any());
     }
 }

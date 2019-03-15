@@ -5,7 +5,7 @@ import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.service.MessageService;
-import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.user_group.Message;
 
 public class MessageController implements IController<Message>{
 

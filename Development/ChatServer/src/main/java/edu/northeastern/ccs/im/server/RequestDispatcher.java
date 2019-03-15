@@ -6,16 +6,12 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.GroupController;
-import edu.northeastern.ccs.im.controller.IController;
 import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.service.BroadCastService;
-import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.user_group.*;
 import edu.northeastern.ccs.im.service.MessageManagerService;
-import edu.northeastern.ccs.im.userGroup.Profile;
-import edu.northeastern.ccs.im.userGroup.User;
-
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;

@@ -1,12 +1,15 @@
 package edu.northeastern.ccs.im.service;
 
 
-import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,6 +17,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
+/**
+ * Class to test the User service methods
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
@@ -99,7 +105,7 @@ public class UserServiceTest {
      * Tests the update User functionality.
      */
     @Test
-    public void updateUser() {
+    public void testUpdateUser() {
         when(userJPAService.getUser(anyInt())).thenReturn(userOne);
         userService.setJPAService(userJPAService);
         User newUser = userService.update(userOne);
@@ -112,7 +118,7 @@ public class UserServiceTest {
      * Tests the delete User functionality.
      */
     @Test
-    public void delteUser() {
+    public void testDeleteUser() {
         when(userJPAService.getUser(anyInt())).thenReturn(userOne);
         userService.setJPAService(userJPAService);
         User newUser = userService.delete(userOne);
@@ -124,11 +130,71 @@ public class UserServiceTest {
      * Tests the login functionality.
      */
     @Test
-    public void followUser() {
+    public void testLoginUser() {
         when(userJPAService.loginUser(any())).thenReturn(userOne);
         userService.setJPAService(userJPAService);
         User newUser = userService.loginUser(userOne);
         assertEquals(userOne, newUser);
+    }
+
+    /**
+     * Tests to ensure follow is not working properly.
+     */
+    @Test (expected = IllegalArgumentException.class)
+    public void testFollowFail() {
+        when(userJPAService.search(any())).thenReturn(null);
+        userService.setJPAService(userJPAService);
+        userService.follow("Heya", userOne);
+    }
+
+    /**
+     * Tests the getFollowers method is not working when passed null.
+     */
+    @Test
+    public void testGetFollowersFail() {
+        when(userJPAService.search(any())).thenReturn(null);
+        userService.setJPAService(userJPAService);
+        userService.getFollowers("Heya");
+        assertEquals(0, userOne.getFollowing().size());
+    }
+
+    /**
+     * Tests to ensure follow is working properly.
+     */
+    @Test
+    public void testGetFollowers() {
+        List<User> following = new ArrayList<User>();
+        following.add(userOne);
+        userTwo.setFollowing(following);
+        when(userJPAService.search(anyString())).thenReturn(userTwo);
+        userService.setJPAService(userJPAService);
+        userService.getFollowers("Heya");
+        verify(userJPAService).search(anyString());
+    }
+
+    /**
+     * Tests the getFollowees is not working when passed null.
+     */
+    @Test
+    public void testGetFolloweesFail() {
+        when(userJPAService.search(any())).thenReturn(null);
+        userService.setJPAService(userJPAService);
+        userService.getFollowees("Heya");
+        assertEquals(0, userOne.getFollowing().size());
+    }
+
+    /**
+     * Tests to ensure getFollowee is working properly.
+     */
+    @Test
+    public void testGetFollowees() {
+        List<User> following = new ArrayList<User>();
+        following.add(userOne);
+        userTwo.setFollowing(following);
+        when(userJPAService.search(anyString())).thenReturn(userTwo);
+        userService.setJPAService(userJPAService);
+        userService.getFollowees("Heya");
+        verify(userJPAService).search(anyString());
     }
 
 }
