@@ -140,25 +140,23 @@ public class UserJPAService {
     }
 
     /**
-     * @param user
+     * Gets the followers from a particular user.
+     * @param user we are getting the followers of.
      * @return The list of follower's of the given user
      */
     public List<User> getFollowers(User user) {
         String queryString =
                 "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
         beginTransaction();
-        List<User> followerList = getUsers(queryString, entityManager);
-        if (followerList != null) return followerList;
-        return Collections.emptyList();
+        return getUsers(queryString);
     }
 
     /**
      * Gets the users who have a profile access
-     * @param queryString
-     * @param entityManager
+     * @param queryString the query we have made for the getUser.
      * @return
      */
-    private List<User> getUsers(String queryString, EntityManager entityManager) {
+    private List<User> getUsers(String queryString) {
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             List<User> followerList = query.getResultList();
@@ -186,8 +184,6 @@ public class UserJPAService {
         String queryString =
                 "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
         beginTransaction();
-        List<User> followeeList = getUsers(queryString, entityManager);
-        if (followeeList != null) return followeeList;
-        return Collections.emptyList();
+        return getUsers(queryString);
     }
 }
