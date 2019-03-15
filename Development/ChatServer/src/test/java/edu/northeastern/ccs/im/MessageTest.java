@@ -29,27 +29,27 @@ public class MessageTest {
     @Before
     public void setUp() {
         //Make a quit message for a user
-        quit = Message.makeQuitMessage("Virat");
+        quit = Message.makeQuitMessage("Virat", null);
 
         //Make a user send a hello message
-        helloMsg = Message.makeHelloMessage("virat02");
+        helloMsg = Message.makeHelloMessage("virat02", null);
 
         //Make a simple login message
-        loginMsg = Message.makeSimpleLoginMessage("Successfully logged in as Virat");
+        loginMsg = Message.makeSimpleLoginMessage("Successfully logged in as Virat", "");
 
         //Make a broadcast message
-        broadcastMsg = Message.makeBroadcastMessage("Sangeetha", "This is Sangeetha's broadcast message.");
+        broadcastMsg = Message.makeBroadcastMessage("Sangeetha", "This is Sangeetha's broadcast message.", "");
 
         //Broadcast a null message
-        broadcastEmptyMsg = Message.makeBroadcastMessage("Jerry", null);
+        broadcastEmptyMsg = Message.makeBroadcastMessage("Jerry", null, "");
 
         // Make Hello, Quit and Broadcast messages using the makeMessage method
-        simpleLoginMessage = Message.makeMessage("HLO", "Client1", "Hello Client1");
-        quitMessage = Message.makeMessage("BYE", "Client2", "Client2 quit.");
-        broadcastMessage = Message.makeMessage("BCT", "Client3", "Client3 made a broadcast message.");
+        simpleLoginMessage = Message.makeMessage("HLO", "Client1", "Hello Client1", "");
+        quitMessage = Message.makeMessage("BYE", "Client2", "Client2 quit.", "");
+        broadcastMessage = Message.makeMessage("BCT", "Client3", "Client3 made a broadcast message.", "");
 
         //Make an Invalid handle message using the makeMessage method
-        invalidHandleMessage = Message.makeMessage("ABC", "Client4", "Client4 has an invalid handle");
+        invalidHandleMessage = Message.makeMessage("ABC", "Client4", "Client4 has an invalid handle", "");
     }
 
     /**
@@ -60,7 +60,7 @@ public class MessageTest {
         assertEquals("Virat", quit.getName());
         assertEquals("Sangeetha", broadcastMsg.getName());
         assertEquals("Successfully logged in as Virat", loginMsg.getName());
-        assertNull(helloMsg.getName());
+        assertEquals("virat02", helloMsg.getName());
         assertEquals("Jerry", broadcastEmptyMsg.getName());
 
         assertEquals("Client1", simpleLoginMessage.getName());
@@ -75,7 +75,7 @@ public class MessageTest {
     public void getText() {
         assertNull(quit.getText());
         assertEquals("This is Sangeetha's broadcast message.", broadcastMsg.getText());
-        assertEquals("virat02", helloMsg.getText());
+        assertEquals("virat02", helloMsg.getName());
         assertNull(broadcastEmptyMsg.getText());
 
         assertNull(simpleLoginMessage.getText());
@@ -143,7 +143,7 @@ public class MessageTest {
         assertEquals("BYE 5 Virat 2 --", quit.toString());
         assertEquals("BCT 9 Sangeetha 38 This is Sangeetha's broadcast message.", broadcastMsg.toString());
         assertEquals("HLO 31 Successfully logged in as Virat 2 --", loginMsg.toString());
-        assertEquals("HLO 2 -- 7 virat02", helloMsg.toString());
+        assertEquals("HLO 7 virat02 2 --", helloMsg.toString());
         assertEquals("BCT 5 Jerry 2 --", broadcastEmptyMsg.toString());
 
         assertEquals("HLO 7 Client1 2 --", simpleLoginMessage.toString());

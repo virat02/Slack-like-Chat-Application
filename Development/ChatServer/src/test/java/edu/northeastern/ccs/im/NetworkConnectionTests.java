@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im;
 
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,7 +47,8 @@ public class NetworkConnectionTests {
     @Mock
     private Message message;
 
-    private String messageString = "7 sibendu 17 Hello How Are You";
+    private final static String senderName = "sibendu";
+    private final static String groupName = "group1";
 
     /**
      * Sets up every test, with a mock blocking configuration
@@ -69,17 +71,6 @@ public class NetworkConnectionTests {
     }
 
     /**
-     * Tests number of retries should be 100 when message is failing to be written to socket.
-     *
-     * @throws IOException as required by SocketChannel::write method
-     */
-    @Test
-    public void testMessageNumberOfRetriesShouldBe100WhenMessageIsFailingToBeWrittenToSocket() throws IOException {
-        networkConnection.sendMessage(message);
-        verify(socketChannel, times(100)).write(ByteBuffer.wrap(message.toString().getBytes()));
-    }
-
-    /**
      * Test sendMessage() should return false when message is failed to be written to socket.
      */
     @Test
@@ -96,15 +87,6 @@ public class NetworkConnectionTests {
         Assert.assertFalse(networkConnection.sendMessage(message));
     }
 
-
-    /**
-     * Test sendMessage() should return true when message is delivered to socket.
-     */
-    @Test
-    public void testMessageSendMessageShouldReturnTrueWhenMessageIsDeliveredToSocket() {
-        when(message.toString()).thenReturn("");
-        Assert.assertTrue(networkConnection.sendMessage(message));
-    }
 
     /**
      * If the socket or channel refuses to close,
@@ -183,9 +165,7 @@ public class NetworkConnectionTests {
      */
     @Test(expected = AssertionError.class)
     public void testIteratorWhenSelectorSelectNowThrowsIOException() throws IOException {
-        setUpIteratorTests(invocation -> {
-            return null;
-        });
+        setUpIteratorTests(invocation -> null);
 
         doThrow(IOException.class).when(selector).selectNow();
         networkConnection = new NetworkConnection(socketChannel);
@@ -216,12 +196,10 @@ public class NetworkConnectionTests {
      */
     @Test
     public void testIteratorHasNextShouldReturnTrueWhenASingleMessageIsBroadCast() throws IOException {
-        StringBuilder messages = new StringBuilder()
-                .append(MessageType.BROADCAST.toString()).append(" ")
-                .append(messageString);
+        byte[] bytes = CommunicationUtils.toJson(Message.makeBroadcastMessage(senderName, "hello", groupName)).getBytes();
         setUpIteratorTests(invocation -> {
             ByteBuffer buffer = (ByteBuffer) invocation.getArguments()[0];
-            buffer.put(messages.toString().getBytes());
+            buffer.put(bytes);
             return null;
         });
         networkConnection = new NetworkConnection(socketChannel);
@@ -237,14 +215,11 @@ public class NetworkConnectionTests {
      */
     @Test
     public void testIteratorHasNextShouldReturnTrueWhenTwoMessagesAreBroadCast() throws IOException {
-        StringBuilder messages = new StringBuilder()
-                .append(MessageType.BROADCAST.toString()).append(" ")
-                .append(messageString);
-
-        messages.append(messages);
+        byte[] bytes = CommunicationUtils.toJson(Message.makeBroadcastMessage(senderName, "hello", groupName)).getBytes();
         setUpIteratorTests(invocation -> {
             ByteBuffer buffer = (ByteBuffer) invocation.getArguments()[0];
-            buffer.put(messages.toString().getBytes());
+            buffer.put(bytes);
+            buffer.put(bytes);
             return null;
         });
         networkConnection = new NetworkConnection(socketChannel);
@@ -262,28 +237,29 @@ public class NetworkConnectionTests {
      */
     @Test
     public void testIteratorHasNextShouldReturnMessageWithProperType() throws IOException {
-        StringBuilder messages = new StringBuilder()
-                .append(MessageType.BROADCAST.toString()).append(" ")
-                .append(messageString);
 
-        messages.append(MessageType.BROADCAST.toString()).append(" ")
-                .append("3 dey 9 I am good");
+        Message message1 = Message.makeBroadcastMessage(senderName, "Hello How Are You", groupName);
+        Message message2 = Message.makeBroadcastMessage("dey", "I am good", groupName);
+
+        byte[] bytes1 = CommunicationUtils.toJson(message1).getBytes();
+        byte[] bytes2 = CommunicationUtils.toJson(message2).getBytes();
         setUpIteratorTests(invocation -> {
             ByteBuffer buffer = (ByteBuffer) invocation.getArguments()[0];
-            buffer.put(messages.toString().getBytes());
+            buffer.put(bytes1);
+            buffer.put(bytes2);
             return null;
         });
         networkConnection = new NetworkConnection(socketChannel);
         networkConnection.setSelector(selector);
         Iterator<Message> iterator = networkConnection.iterator();
         Assert.assertTrue(iterator.hasNext());
-        Message message1 = iterator.next();
-        Assert.assertEquals("sibendu", message1.getName());
-        Assert.assertEquals("Hello How Are You", message1.getText());
-        Assert.assertTrue(message1.isBroadcastMessage());
-        Message message2 = iterator.next();
-        Assert.assertEquals("dey", message2.getName());
-        Assert.assertEquals("I am good", message2.getText());
-        Assert.assertTrue(message2.isBroadcastMessage());
+        Message message1Read = iterator.next();
+        Assert.assertEquals(senderName, message1Read.getName());
+        Assert.assertEquals("Hello How Are You", message1Read.getText());
+        Assert.assertTrue(message1Read.isBroadcastMessage());
+        Message message2Read = iterator.next();
+        Assert.assertEquals("dey", message2Read.getName());
+        Assert.assertEquals("I am good", message2Read.getText());
+        Assert.assertTrue(message2Read.isBroadcastMessage());
     }
 }
