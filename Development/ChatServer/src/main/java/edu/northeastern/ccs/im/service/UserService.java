@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.service;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import edu.northeastern.ccs.im.service.JPAService.UserJPAService;
 import edu.northeastern.ccs.im.userGroup.*;
 
