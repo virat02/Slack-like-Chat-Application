@@ -1,62 +1,73 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.service.JPAService.MessageJPAService;
-import edu.northeastern.ccs.im.userGroup.IGroup;
-import edu.northeastern.ccs.im.userGroup.IUserGroup;
-import edu.northeastern.ccs.im.userGroup.Message;
+import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
+import edu.northeastern.ccs.im.user_group.Group;
+import edu.northeastern.ccs.im.user_group.Message;
+import edu.northeastern.ccs.im.user_group.User;
 
-import java.util.Date;
+import java.util.List;
 
+/**
+ * Class for all the Message service methods
+ */
 public class MessageService implements IService{
 
-    private Message m;
-    private MessageJPAService messageJPAService;
-    public MessageService(Message msg) {
-        this.m = msg;
-    }
-
-//    /**
-//     * Create a message object
-//     * @param message
-//     * @param timestamp
-//     */
-//    public Message createMessage(String message, Date timestamp, int expiration) {
-//        if(message.length() != 0) {
-//            Message message1 = new Message(m.getId(), message, timestamp, expiration);
-//            //messageJPAService.createMessage(message1);
-//            return message1;
-//        }
-//        else {
-//            throw new NullPointerException();
-//        }
+    private MessageJPAService messageJPAService = new MessageJPAService();
+    private UserService userService = new UserService();
+    private GroupService groupService = new GroupService();
 
     /**
-     * Create and send a message
-     * @param message
-     * @return
+     * Set a message JPA Service
+     * @param messageJPAService
      */
-    public Message createMessage(Message message) {
-
-        messageJPAService.createMessage(message);
-        return messageJPAService.getMessage(message.getId());
-
+    public void setMessageJPAService(MessageJPAService messageJPAService) {
+        if(messageJPAService == null) {
+            this.messageJPAService = new MessageJPAService();
+        }
+        else {
+            this.messageJPAService = messageJPAService;
+        }
+        this.messageJPAService.setEntityManager(null);
     }
 
-//    /**
-//     * Sends a message to a receiver
-//     * @param msg
-//     * @param sender
-//     * @param receiver
-//     * @param deleted
-//     * @return
-//     */
-//    public Message sendMessage(Message msg, IUserGroup sender, IGroup receiver, Boolean deleted) {
-//
-//        this.m = msg;
-//        Message message2 = new Message(msg.getId(), msg.getMessage(), msg.getTimestamp(), msg.getExpiration(), sender, receiver, deleted);
-//        //messageJPAService.createMessage(message2);
-//        return message2;
-//    }
+    /**
+     * set the userService and groupService
+     * @param userService
+     * @param groupService
+     */
+    public void setJPAServices(UserService userService, GroupService groupService) {
+        this.userService = userService;
+        this.groupService = groupService;
+    }
+
+    /**
+     * Helper method to send a message
+     * @param message the message object generated from the client input
+     * @return
+     */
+    public boolean createMessage(Message message) {
+        messageJPAService.setEntityManager(null);
+        int id = messageJPAService.createMessage(message);
+        return id!= -1;
+    }
+
+    /**
+     * Generates a message object from the client input and sends the message
+     * @param messageBody
+     * @param userName
+     * @param groupCode
+     * @return
+     */
+    public Boolean createMessage(String messageBody, String userName, String groupCode) {
+
+        Message message = new Message();
+        User user = userService.search(userName);
+        Group group = groupService.searchUsingCode(groupCode);
+        message.setMessage(messageBody);
+        message.setSender(user);
+        message.setReceiver(group);
+        return createMessage(message);
+    }
 
     /**
      * Get the message
@@ -64,6 +75,7 @@ public class MessageService implements IService{
      * @return
      */
     public Message get(int id) {
+        messageJPAService.setEntityManager(null);
         return messageJPAService.getMessage(id);
     }
 
@@ -71,28 +83,26 @@ public class MessageService implements IService{
      * Updates the message
      * @param msg
      */
-//    public void updateMessage(Message msg) {
-//        m.setMessage(msg.getMessage());
-//        m.setExpiration(msg.getExpiration());
-//        m.setTimestamp(msg.getTimestamp());
-//        m.setSender(msg.getSender());
-//        m.setReceiver(msg.getReceiver());
-//        m.setDeleted(msg.isDeleted());
-//
-//        //messageJPAService.updateMessage(msg);
-//
-//    }
-
-    public Message updateMessage(Message msg) {
-        messageJPAService.updateMessage(msg);
-        return messageJPAService.getMessage(msg.getId());
-
+    public boolean updateMessage(Message msg) {
+        messageJPAService.setEntityManager(null);
+        return messageJPAService.updateMessage(msg);
     }
 
     /**
      * Deletes a message
      */
-    public Message deleteMessage(Message msg) {
+    public Boolean deleteMessage(Message msg) {
+
+        msg.setDeleted(true);
         return updateMessage(msg);
+    }
+
+    /**
+     * Returns the recent-most 15 messages given a group unique key
+     * @param groupUniqueKey
+     */
+    public List<Message> getTop15Messages(String groupUniqueKey) {
+        messageJPAService.setEntityManager(null);
+        return messageJPAService.getTop15Messages(groupUniqueKey);
     }
 }

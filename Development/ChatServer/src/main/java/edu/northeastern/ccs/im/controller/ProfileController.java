@@ -1,38 +1,93 @@
 package edu.northeastern.ccs.im.controller;
 
+import edu.northeastern.ccs.im.communication.CommunicationUtils;
+import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
+import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.service.ProfileService;
-import edu.northeastern.ccs.im.userGroup.Profile;
+import edu.northeastern.ccs.im.user_group.Profile;
 
+/**
+ * Class for the profile controller
+ */
 public class ProfileController implements IController<Profile> {
 
-    private ProfileService profileService;
+    private ProfileService profileService = new ProfileService();
 
-    public Profile addEntity(Profile pf) {
+    /**
+     * Sets the user service for the controller.
+     * @param profileService the user service the controller will be using to load on the payload.
+     */
+    public void setProfileService(ProfileService profileService) {
+        this.profileService = profileService;
+    }
+
+    /**
+     * Controller to add a Profile
+     * @param pf
+     * @return
+     */
+    public NetworkResponse addEntity(Profile pf) {
         try {
-            return profileService.createProfile(pf);
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(profileService.createProfile(pf))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
         }
-        catch(IllegalArgumentException e) {
-            throw new IllegalArgumentException("Cannot create a new group");
+    }
+
+    /**
+     * Controller to get a profile
+     * @param id
+     * @return
+     */
+    public NetworkResponse getEntity(int id) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(profileService.get(id))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
         }
-
     }
 
-    public Profile getEntity(int id) {
-
-        return profileService.get(id);
+    /**
+     * Controller to update a profile
+     * @param pf
+     * @return
+     */
+    public NetworkResponse updateEntity(Profile pf) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(profileService.updateProfile(pf))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 
-    public Profile updateEntity(Profile pf) {
-        return profileService.updateProfile(pf);
-
+    /**
+     * Controller to delete a profile
+     * @param pf
+     * @return
+     */
+    public NetworkResponse deleteEntity(Profile pf) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(profileService.deleteProfile(pf))));
+        } catch (IllegalArgumentException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(null));
+        }
     }
 
-    public Profile deleteEntity(Profile pf) {
-        return profileService.deleteProfile(pf);
-
-    }
-
-    public Profile searchEntity(String usercode) {
+    /**
+     * Controller to search for a profile
+     * @param usercode
+     * @return
+     */
+    public NetworkResponse searchEntity(String usercode) {
         return null;
     }
 }
