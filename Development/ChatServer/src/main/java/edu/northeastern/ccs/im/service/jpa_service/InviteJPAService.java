@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.user_group.Invite;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 
 public class InviteJPAService {
@@ -63,7 +64,36 @@ public class InviteJPAService {
         beginTransaction();
         return entityManager.find(Invite.class, id);
     }
-    
 
+    /**
+     *  updateInvite method updates all the data related to a persisted invite object
+     * @param currentInvite
+     */
+    public void updateInvite(Invite currentInvite){
+        beginTransaction();
+        Invite invite = getInvite(currentInvite.getId());
+
+        if(invite == null){
+            throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
+        }
+
+        invite.setReceiver(currentInvite.getReceiver());
+        invite.setSender(currentInvite.getSender());
+        invite.setGroup(currentInvite.getGroup());
+        invite.setInvitationMessage(currentInvite.getInvitationMessage());
+        invite.setStatus(currentInvite.getStatus());
+        endTransaction();
+    }
+
+    /**
+     * delete Invite removes a persisted invite object from db
+     * @param currentInvite
+     */
+    public void deleteInvite(Invite currentInvite){
+        Invite invite = getInvite(currentInvite.getId());
+        beginTransaction();
+        entityManager.remove(invite);
+        endTransaction();
+    }
 
 }
