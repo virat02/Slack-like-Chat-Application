@@ -36,6 +36,9 @@ public class ConstantStrings {
     public static final String SIGN_OUT = "Sign out";
 
 
+    // Invite user to group
+    public static final String INVITE_GROUP_FAILED = "Request failed. Invitation was not successful.\n"
+            + "1 - Retry\n" + DEFAULT_MENU;
     //Forgot Password
     public static final String RECOVERY_EMAIL = "Enter Recovery Email Address: ";
     public static final String RECOVERY_INITIATED = "Recovery initiated. "
