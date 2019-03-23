@@ -6,8 +6,6 @@ import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.UserService;
-import edu.northeastern.ccs.im.service.jpa_service.Status;
-import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -183,20 +181,19 @@ public final class UserController implements IController<User> {
 
     /**
      * Sends an invite to the receiver from the sender for a specific group using the invite message
-     * @param group the invite is for
-     * @param sender the user sending the invite
-     * @param receiver the user receiving the invite
-     * @param inviteMessage message being sent to the receiver
+     * @param invite to be sent to a new user.
      * @return NetworkResponse with the status either SUCCESSFUL or FAILED with the invitation loaded on the payload.
      */
-    public NetworkResponse sendInvite(Group group, User sender, User receiver, String inviteMessage) {
+    public NetworkResponse sendInvite(Invite invite) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.sendInvite(group,
-                            sender, receiver, Status.NOUPDATE, inviteMessage))));
+                    new PayloadImpl(CommunicationUtils.toJson(userService.sendInvite(invite))));
         } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
+        } catch (InviteNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
     }
 

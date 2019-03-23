@@ -4,7 +4,6 @@ import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
-import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -154,23 +153,12 @@ public final class UserService implements IService {
 
     /**
      * The service for the invite system, it'll create the invite and send it to the JPA service.
-     * @param group the group the invite is for
-     * @param sender the user sending the invite
-     * @param receiver the user receiving the invite
-     * @param status the status of the invite
-     * @param inviteMessage the message within the invite
+     * @param invite the invite to be sent.
      * @return the invite itself back to the controller.
      */
-    public Invite sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage)
-            throws InviteNotAddedException {
-        Invite invite = new Invite();
-        invite.setGroup(group);
-        invite.setSender(sender);
-        invite.setReceiver(receiver);
-        invite.setStatus(status);
-        invite.setInvitationMessage(inviteMessage);
+    public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException {
         inviteJPAService.createInvite(invite);
-        return invite;
+        return inviteJPAService.getInvite(invite.getId());
     }
 
     /**
