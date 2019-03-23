@@ -7,15 +7,15 @@
         <class>edu.northeastern.ccs.im.user_group.Message</class>
         <class>edu.northeastern.ccs.im.user_group.Profile</class>
         <class>edu.northeastern.ccs.im.user_group.Group</class>
-        <class>edu.northeastern.ccs.im.user_group.Invite</class>
         <properties>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/prattle_server"/>
+                      value="jdbc:mysql://localhost:3306/prattle_server?useUnicode=true&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
+            "/>
             <property name="javax.persistence.jdbc.user" value="root"/>
-            <property name="javax.persistence.jdbc.password" value="root"/>
+            <property name="javax.persistence.jdbc.password" value="tinkudey"/>
         </properties>
     </persistence-unit>
 </persistence>

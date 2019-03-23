@@ -5,6 +5,9 @@ import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
+import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
@@ -43,37 +46,24 @@ public final class UserService implements IService {
     }
 
     /**
-     * A method to set the JPA Service for this class, makes the class more testable.
-     * @param inviteJPAService for this class.
-     */
-    public void setInviteJPAService(InviteJPAService inviteJPAService) {
-        if(inviteJPAService == null) {
-            this.inviteJPAService = new InviteJPAService();
-        } else {
-            this.inviteJPAService= inviteJPAService;
-        }
-        this.inviteJPAService.setEntityManager(null);
-    }
-
-    /**
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
      */
-    public User addUser(Object user) {
+    public User addUser(User user) throws UserNotFoundException, UserNotPersistedException {
         userJPAService.setEntityManager(null);
-        int id = userJPAService.createUser((User)user);
+        int id = userJPAService.createUser(user);
         if(id == 0) {
             return null;
         }
         userJPAService.setEntityManager(null);
-        return userJPAService.getUser(((User) user).getId());
+        return userJPAService.getUser(user.getId());
     }
 
     /**
      * Searches for a particular user.
      * @param username the name of the user being searched
      * @return the users with the name searched for*/
-    public User search(String username) {
+    public User search(String username) throws UserNotFoundException {
         userJPAService.setEntityManager(null);
         return userJPAService.search(username);
     }
@@ -82,7 +72,7 @@ public final class UserService implements IService {
      * Follow a particular user given their username.
      * @param username of the user we want to follow.
      */
-    public User follow(String username, User currentUser) {
+    public User follow(String username, User currentUser) throws UserNotFoundException {
 
         User u = search(username);
 
@@ -104,7 +94,7 @@ public final class UserService implements IService {
      * @param username
      * @return
      */
-    public List<User> getFollowers(String username) {
+    public List<User> getFollowers(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
 
         if(u != null) {
@@ -121,7 +111,7 @@ public final class UserService implements IService {
      * @param username
      * @return
      */
-    public List<User> getFollowees(String username){
+    public List<User> getFollowees(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
         if(u != null) {
             userJPAService.setEntityManager(null);
@@ -137,11 +127,11 @@ public final class UserService implements IService {
      * @param user being updated.
      * @return the updated user.
      */
-    public User update(Object user) {
+    public User update(User user) throws UserNotFoundException {
         userJPAService.setEntityManager(null);
-        userJPAService.updateUser((User) user);
+        userJPAService.updateUser(user);
         userJPAService.setEntityManager(null);
-        return userJPAService.getUser(((User) user).getId());
+        return userJPAService.getUser(user.getId());
     }
 
     /**
@@ -149,9 +139,9 @@ public final class UserService implements IService {
      * @param user being deleted from the database.
      * @return the user which was deleted from the database.
      */
-    public User delete(Object user) {
-        userJPAService.deleteUser((User) user);
-        return userJPAService.getUser(((User) user).getId());
+    public User delete(User user) throws UserNotFoundException {
+        userJPAService.deleteUser(user);
+        return userJPAService.getUser(user.getId());
     }
 
     /**
@@ -159,7 +149,7 @@ public final class UserService implements IService {
      * @param user trying to login to the server.
      * @return User instance logging into the server.
      */
-    public User loginUser(Object user) {
+    public User loginUser(Object user) throws UserNotFoundException {
         userJPAService.setEntityManager(null);
         return userJPAService.loginUser((User) user);
     }

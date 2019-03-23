@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
@@ -8,11 +9,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -21,6 +27,7 @@ public class GroupJPAServiceTest {
     /**
      * Initializing all the objects necessary for testing
      */
+
     private GroupJPAService groupJPAService;
     private GroupService groupService;
     private User userOne;

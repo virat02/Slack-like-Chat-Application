@@ -1,21 +1,23 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
+import static org.junit.Assert.*;
+
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
-import edu.northeastern.ccs.im.user_group.Group;
-import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
+import edu.northeastern.ccs.im.user_group.Group;
+import edu.northeastern.ccs.im.user_group.User;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.ArrayList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GroupServiceTest {
@@ -23,6 +25,7 @@ public class GroupServiceTest {
 	/**
 	 * Initializing all the objects necessary for testing
 	 */
+
 	private UserJPAService userJPAService;
 	private UserService userService;
 	private GroupJPAService groupJPAService;
@@ -130,6 +133,7 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testSearchUsingCode(){
+
 		when(groupJPAService.searchUsingCode(any())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.searchUsingCode(groupOne.getGroupCode());

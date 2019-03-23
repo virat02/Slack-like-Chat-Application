@@ -20,6 +20,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GroupControllerTest {
 
+    /**
+     * Initializing all the objects necessary for testing
+     */
     private GroupController groupController;
     private GroupService groupService;
     private Group groupOne;
@@ -201,7 +204,6 @@ public class GroupControllerTest {
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
         verify(groupService).delete(any());
     }
-
 
     /**
      * testing the search using name method with exception
