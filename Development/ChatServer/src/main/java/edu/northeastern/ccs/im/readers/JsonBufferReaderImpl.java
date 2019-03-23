@@ -86,6 +86,11 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
         }
     }
 
+    /***
+     * Returns an ascii encoded buffer representation of the characters.
+     * @param byteBuffer
+     * @return Returns an ascii encoded buffer representation of the characters.
+     */
     private ByteBuffer charDecoder(ByteBuffer byteBuffer) {
         Charset charset = Charset.forName(CHARSET_NAME);
         CharsetDecoder decoder = charset.newDecoder();
