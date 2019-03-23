@@ -26,7 +26,7 @@ public class ServerConstants {
 	protected static final int THREAD_POOL_SIZE = 20;
 
 	/** Delay between times the thread pool runs the client check. */
-	protected static final int CLIENT_CHECK_DELAY = 200;
+	public static final int CLIENT_CHECK_DELAY = 200;
 
 	/** Name of the private user who broadcasts interesting responses. */
 	protected static final String SERVER_NAME = "Prattle";

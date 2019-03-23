@@ -24,8 +24,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GroupJPAServiceTest {
 
-    private UserJPAService userJPAService;
-    private UserService userService;
+    /**
+     * Initializing all the objects necessary for testing
+     */
+
     private GroupJPAService groupJPAService;
     private GroupService groupService;
     private User userOne;
@@ -37,6 +39,9 @@ public class GroupJPAServiceTest {
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
 
+    /**
+     * Setting up the mock for testing groupService methods
+     */
     @Before
     public void setUp(){
         userOne = new User();
@@ -59,38 +64,53 @@ public class GroupJPAServiceTest {
 
     }
 
+    /**
+     * Testing the create group method
+     */
     @Test
-    public void test1(){
+    public void testCreateGroup(){
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         groupJPAService.setEntityManager(entityManager);
         groupJPAService.createGroup(groupOne);
     }
 
+    /**
+     * Testing the get group method
+     */
     @Test
-    public void test2(){
+    public void testGetGroup(){
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         groupJPAService.setEntityManager(entityManager);
         groupJPAService.getGroup(groupOne.getId());
     }
 
+    /**
+     * Testing the update group method
+     */
     @Test
-    public void test3(){
+    public void testUpdateGroup(){
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(any(), anyInt())).thenReturn(groupOne);
         groupJPAService.setEntityManager(entityManager);
         groupJPAService.updateGroup(groupOne);
     }
 
+    /**
+     * Testing the update group method with exception thrown
+     */
     @Test (expected = EntityNotFoundException.class)
-    public void test4() {
+    public void testUpdateGroupWithExcception() {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(any(), anyInt())).thenReturn(null);
         groupJPAService.setEntityManager(entityManager);
         groupJPAService.updateGroup(groupOne);
     }
 
+    /**
+     * Testing the delete group method
+     */
     @Test
-    public void test5() {
+    public void testDeleteGroup() {
         Query mockedQuery = mock(Query.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString())).thenReturn(mockedQuery);
@@ -101,16 +121,22 @@ public class GroupJPAServiceTest {
         groupJPAService.deleteGroup(groupOne);
     }
 
+    /**
+     * Testing the add user to a group method
+     */
     @Test
-    public void test6(){
+    public void testAddUserToGroup(){
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(any(), anyInt())).thenReturn(groupOne);
         groupJPAService.setEntityManager(entityManager);
         groupJPAService.addUserToGroup(groupOne.getId(),userOne);
     }
 
+    /**
+     * Testing the search group using name  method
+     */
     @Test
-    public void test7(){
+    public void testSearchUsingName(){
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
@@ -120,8 +146,11 @@ public class GroupJPAServiceTest {
         assertEquals(1,groupList.size());
     }
 
+    /**
+     * Testing the search group using code  method
+     */
     @Test
-    public void test8(){
+    public void testSearchUsingCode(){
         Query mockedQuery = mock(Query.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString())).thenReturn(mockedQuery);
@@ -131,8 +160,11 @@ public class GroupJPAServiceTest {
         assertEquals(newGroupList,groupOne);
     }
 
+    /**
+     * Testing the remove user from group method
+     */
     @Test
-    public void test9(){
+    public void testRemoveUserFromGroup(){
         Query mockedQuery = mock(Query.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createNativeQuery(anyString())).thenReturn(mockedQuery);
@@ -142,6 +174,10 @@ public class GroupJPAServiceTest {
         assertEquals(1,res);
 
     }
+
+    /**
+     * Testing the search group using name  method
+     */
     @Test
     public void test10() {
         Query mockedQuery = mock(Query.class);

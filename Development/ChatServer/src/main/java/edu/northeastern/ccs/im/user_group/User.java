@@ -119,9 +119,9 @@ public class User implements IUser {
     }
 
     /**
-     * Adds the userGroup.
+     * Adds the user_group.
      *
-     * @param group the userGroup
+     * @param group the user_group
      */
     public void addGroup(Group group) {
         this.groups.add(group);
@@ -223,7 +223,7 @@ public class User implements IUser {
 
     /**
      * Sets the user profile access
-     * @param access
+     * @param access The access level of the profile
      */
     public void setProfileAccess(boolean access) {
         this.profileAccess = access;

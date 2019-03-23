@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.im.service.BroadCastService;
 
 /**
  * Instances of this class handle all of the incoming communication from a
@@ -68,12 +69,15 @@ public class ClientRunnable implements Runnable {
 	/** Collection of messages queued up to be sent to this client. */
 	private Queue<Message> waitingList;
 
+	private BroadCastService broadCastService;
+
 	/**
 	 * Create a new thread with which we will communicate with this single client.
-	 * 
+	 *
 	 * @param network NetworkConnection used by this new client
+	 * @param messageBroadCastService It should update service if it wants to send any message.
 	 */
-	public ClientRunnable(NetworkConnection network) {
+	public ClientRunnable(NetworkConnection network, BroadCastService messageBroadCastService) {
 		// Create the class we will use to send and receive communication
 		connection = network;
 		// Mark that we are not initialized
@@ -85,6 +89,8 @@ public class ClientRunnable implements Runnable {
 		// Mark that the client is active now and start the timer until we
 		// terminate for inactivity.
 		timer = new ClientTimer();
+
+		broadCastService = messageBroadCastService;
 	}
 
 	/**
@@ -240,19 +246,19 @@ public class ClientRunnable implements Runnable {
 				// Stop sending the poor client message.
 				terminate = true;
 				// Reply with a quit message.
-				enqueueMessage(Message.makeQuitMessage(name));
+				enqueueMessage(Message.makeQuitMessage(name, null));
 			} else {
 				// Check if the message is legal formatted
 				if (messageChecks(msg)) {
 					// Check for our "special messages"
 					if (msg.isBroadcastMessage()) {
 						// Check for our "special messages"
-						Prattle.broadcastMessage(msg);
+						broadCastService.broadcastMessage(msg);
 					}
 				} else {
 					Message sendMsg;
 					sendMsg = Message.makeBroadcastMessage(ServerConstants.BOUNCER_ID,
-							"Last message was rejected because it specified an incorrect user name.");
+							"Last message was rejected because it specified an incorrect user name.", null);
 					enqueueMessage(sendMsg);
 				}
 			}
@@ -300,7 +306,7 @@ public class ClientRunnable implements Runnable {
 		// Once the communication is done, close this connection.
 		connection.close();
 		// Remove the client from our client listing.
-		Prattle.removeClient(this);
+		broadCastService.removeClient(this);
 		// And remove the client from our client pool.
 		runnableMe.cancel(false);
 	}

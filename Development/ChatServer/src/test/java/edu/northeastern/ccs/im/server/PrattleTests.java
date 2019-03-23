@@ -1,13 +1,9 @@
 package edu.northeastern.ccs.im.server;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -17,10 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.persistence.sessions.server.Server;
+import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.northeastern.ccs.im.Message;
@@ -70,15 +65,15 @@ public class PrattleTests {
      * The setUp Method that will setup the socket channel, network channel, client runnable, and queue.
      */
     @Before
-    public void setUp() throws IOException{
+    public void setUp() throws IOException {
         when(serverSocketChannel.configureBlocking(anyBoolean())).thenReturn(serverSocketChannel);
         scheduledExecutorService.scheduleAtFixedRate(clientRunnable, ServerConstants.CLIENT_CHECK_DELAY,
                 ServerConstants.CLIENT_CHECK_DELAY, TimeUnit.MILLISECONDS);
         socketChannel = SocketChannel.open();
         networkConnection = new NetworkConnection(socketChannel);
         clientRunnables = new ConcurrentLinkedQueue<>();
-        clientRunnable = new ClientRunnable(networkConnection);
-        clientRunnable2 = new ClientRunnable(networkConnection);
+        clientRunnable = new ClientRunnable(networkConnection, new MessageBroadCastService());
+        clientRunnable2 = new ClientRunnable(networkConnection, new MessageBroadCastService());
     }
 
 
@@ -98,13 +93,6 @@ public class PrattleTests {
         }
     }
 
-    @Test
-    public void testCreateThread() throws IOException{
-        when(serverSocketChannel.accept()).thenReturn(socketChannel);
-        Prattle.createClientThread(serverSocketChannel, scheduledExecutorService);
-    }
-
-
     /**
      * A test to see whether or not we can stop the server.
      */
@@ -112,88 +100,4 @@ public class PrattleTests {
     public void testStop() {
         Prattle.stopServer();
     }
-
-    /**
-     *
-     *
-     * @throws IllegalAccessException if we can't access the field
-     * @throws NoSuchFieldException If there are no such fields
-     */
-    @Test
-    public void testBroadcast() throws IllegalAccessException,
-            NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("Jerry",
-                "Hello World"));
-
-    }
-
-    /**
-     *
-     *
-     * @throws IllegalAccessException if we can't access the field
-     * @throws NoSuchFieldException If there are no such fields
-     */
-    @Test
-    public void testBroadcastFail() throws IllegalAccessException,
-            NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-
-        Prattle.broadcastMessage(Message.makeBroadcastMessage("Jerry",
-                ""));
-
-    }
-
-
-
-    /**
-     * What happens when we give it someone who doesn't exist? it should throw an error
-     *
-     * @throws IllegalAccessException access to field is denied
-     * @throws NoSuchFieldException no such field exists
-     */
-    @Test
-    public void testFakeClient() throws IllegalAccessException, NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-
-        Object returned = thisField.get(null);
-        Prattle.removeClient(clientRunnable);
-        assertEquals("[]", returned.toString());
-
-        Prattle.removeClient(clientRunnable);
-        Prattle.removeClient(clientRunnable2);
-        Prattle.removeClient(clientRunnable2);
-        Prattle.stopServer();
-    }
-
-    /**
-     * If there are no clients in the clientRunnables queue, then the string should be empty.
-     *
-     * @throws IllegalAccessException the illegal access exception
-     * @throws NoSuchFieldException the no such field exception
-     */
-    @Test
-    public void testRemove() throws IllegalAccessException, NoSuchFieldException {
-        clientRunnables.add(clientRunnable);
-        Field thisField = Prattle.class.getDeclaredField(ACTIVE);
-        thisField.setAccessible(true);
-        thisField.set(null, clientRunnables);
-        Object returned = thisField.get(null);
-        Prattle.removeClient(clientRunnable);
-        assertEquals("[]", returned.toString());
-    }
-
-
-
-
-
 }
