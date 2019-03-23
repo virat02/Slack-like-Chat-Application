@@ -174,5 +174,25 @@ public final class UserService implements IService {
         return invite;
     }
 
+    /**
+     * Sets the status of the invite to deleted and sends the invite to the JPA service and gets the invite
+     * from the database after the status has been set.
+     * @param invite to be deleted.
+     * @return invite that was deleted.
+     */
+    public Invite deleteInvite(Invite invite) {
+        invite.setStatus(Status.DELETED);
+        inviteJPAService.deleteInvite(invite);
+        return inviteJPAService.getInvite(invite.getId());
+    }
 
+    /**
+     * Updates the invite in the JPA service then gets the invite to send back to the controller.
+     * @param invite to be updated in the database.
+     * @return the invite that was updated in the database.
+     */
+    public Invite updateInvite(Invite invite) {
+        inviteJPAService.updateInvite(invite);
+        return inviteJPAService.getInvite(invite.getId());
+    }
 }
