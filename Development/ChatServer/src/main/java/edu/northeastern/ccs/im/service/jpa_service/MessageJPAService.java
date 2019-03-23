@@ -17,7 +17,11 @@ public class MessageJPAService {
 
     private EntityManager entityManager;
 
+<<<<<<< HEAD
     private GroupService groupService = new GroupService();
+=======
+    private GroupService groupService;
+>>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 
     /**
      * Set a group service
@@ -126,7 +130,10 @@ public class MessageJPAService {
      */
     public List<Message> getTop15Messages(String groupUniqueKey) {
         try {
+<<<<<<< HEAD
 
+=======
+>>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
             //Get the group based on the group unique key
             Group g = groupService.searchUsingCode(groupUniqueKey);
             if (g != null) {

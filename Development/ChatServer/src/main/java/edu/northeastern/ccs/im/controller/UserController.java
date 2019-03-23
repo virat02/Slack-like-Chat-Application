@@ -5,6 +5,8 @@ import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.service.UserService;
+import edu.northeastern.ccs.im.service.jpa_service.Status;
+import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
 /**
@@ -114,6 +116,19 @@ public final class UserController implements IController {
     public NetworkResponse viewFollowees(String username) {
         return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                 new PayloadImpl(CommunicationUtils.toJsonArray(userService.getFollowees(username))));
+
+    }
+
+    /**
+     * Sends an invite to the receiver from the sender for a specific group using the invite message
+     * @param group the invite is for
+     * @param sender the user sending the invite
+     * @param receiver the user receiving the invite
+     * @param status the status of the invite
+     * @param inviteMessage message being sent to the receiver
+     * @return NetworkResponse with the status either SUCCESSFUL or FAILED with the invitation loaded on the payload.
+     */
+    public NetworkResponse sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage) {
 
     }
 }
