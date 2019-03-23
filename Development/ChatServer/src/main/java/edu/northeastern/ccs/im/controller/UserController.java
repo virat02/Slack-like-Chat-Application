@@ -4,9 +4,7 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
-import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
-import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -21,6 +19,12 @@ public final class UserController implements IController<User> {
     private static final String USER_NOT_PERSISTED_JSON = "{\"exceptionMessage\" : \"Jpa could not persist the user!\"}";
     private static final String USER_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the user!\"}";
     private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the list of users!\"}";
+    private static final String INVITE_NOT_UPDATED = "\"exceptionMessage\" : Invite not updated!";
+    private static final String INVITE_NOT_DELETED = "\"exceptionMessage\" : Invite not deleted!";
+    private static final String INVITE_NOT_FOUND = "\"exceptionMessage\" : Invite not found!";
+    private static final String INVITE_NOT_ADDED =  "\"exceptionMessage\" : Invite not added!";
+
+
 
     private UserService userService = new UserService();
 
@@ -190,9 +194,9 @@ public final class UserController implements IController<User> {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(userService.sendInvite(group,
                             sender, receiver, Status.NOUPDATE, inviteMessage))));
-        } catch (IllegalArgumentException e) {
+        } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(null)));
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
         }
     }
 
@@ -205,9 +209,12 @@ public final class UserController implements IController<User> {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(userService.deleteInvite(invite))));
-        } catch (IllegalArgumentException e) {
+        } catch (InviteNotDeletedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(null)));
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_DELETED)));
+        } catch (InviteNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
     }
 
@@ -221,9 +228,12 @@ public final class UserController implements IController<User> {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(userService.updateInvite(invite))));
-        } catch (IllegalArgumentException e) {
+        } catch (InviteNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(null)));
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
+        } catch (InviteNotUpdatedException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_UPDATED)));
         }
     }
 }

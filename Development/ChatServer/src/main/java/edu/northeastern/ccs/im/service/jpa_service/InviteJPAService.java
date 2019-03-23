@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.customexceptions.InviteNotAddedException;
+import edu.northeastern.ccs.im.customexceptions.InviteNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.InviteNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.InviteNotUpdatedException;
 import edu.northeastern.ccs.im.user_group.Invite;
 
 import javax.persistence.EntityManager;
@@ -8,6 +12,8 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 
 public class InviteJPAService {
+
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(UserJPAService.class.getName());
 
     /** The emfactory. */
     //The entity manager for this class.
@@ -46,13 +52,18 @@ public class InviteJPAService {
      * @param invite
      * @return id of the invite that is persisted in the db
      */
-    public int createInvite(Invite invite){
-        beginTransaction();
-        entityManager.persist(invite);
-        entityManager.flush();
-        int id = invite.getId();
-        endTransaction();
-        return id;
+    public int createInvite(Invite invite) throws InviteNotAddedException{
+        try {
+            beginTransaction();
+            entityManager.persist(invite);
+            entityManager.flush();
+            int id = invite.getId();
+            endTransaction();
+            return id;
+        } catch (Exception e) {
+            LOGGER.info("Could not create the invite!");
+            throw new InviteNotAddedException("Could not create the invite!");
+        }
     }
 
     /**
@@ -60,39 +71,54 @@ public class InviteJPAService {
      * @param id
      * @return Invite
      */
-    public Invite getInvite(int id){
-        beginTransaction();
-        return entityManager.find(Invite.class, id);
+    public Invite getInvite(int id) throws InviteNotFoundException {
+        try {
+            beginTransaction();
+            return entityManager.find(Invite.class, id);
+        } catch (Exception e) {
+            LOGGER.info("Could not get the invite!");
+            throw new InviteNotFoundException("Could not get the invite!");
+        }
     }
 
     /**
      *  updateInvite method updates all the data related to a persisted invite object
      * @param currentInvite
      */
-    public void updateInvite(Invite currentInvite){
-        beginTransaction();
-        Invite invite = getInvite(currentInvite.getId());
+    public void updateInvite(Invite currentInvite) throws InviteNotUpdatedException{
+        try {
+            beginTransaction();
+            Invite invite = getInvite(currentInvite.getId());
 
-        if(invite == null){
-            throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
+            if (invite == null) {
+                throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
+            }
+            invite.setReceiver(currentInvite.getReceiver());
+            invite.setSender(currentInvite.getSender());
+            invite.setGroup(currentInvite.getGroup());
+            invite.setInvitationMessage(currentInvite.getInvitationMessage());
+            invite.setStatus(currentInvite.getStatus());
+            endTransaction();
+        } catch (Exception e) {
+            LOGGER.info("Could not update the invite!");
+            throw new InviteNotUpdatedException("Could not update the invite!");
         }
-        invite.setReceiver(currentInvite.getReceiver());
-        invite.setSender(currentInvite.getSender());
-        invite.setGroup(currentInvite.getGroup());
-        invite.setInvitationMessage(currentInvite.getInvitationMessage());
-        invite.setStatus(currentInvite.getStatus());
-        endTransaction();
     }
 
     /**
      * delete Invite removes a persisted invite object from db
      * @param currentInvite
      */
-    public void deleteInvite(Invite currentInvite){
-        Invite invite = getInvite(currentInvite.getId());
-        beginTransaction();
-        entityManager.remove(invite);
-        endTransaction();
+    public void deleteInvite(Invite currentInvite) throws InviteNotDeletedException{
+        try {
+            Invite invite = getInvite(currentInvite.getId());
+            beginTransaction();
+            entityManager.remove(invite);
+            endTransaction();
+        } catch (Exception e) {
+            LOGGER.info("Could not delete the invite!");
+            throw new InviteNotDeletedException("Could not delete the invite!");
+        }
     }
 
 }

@@ -1,13 +1,11 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
-import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
-import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
@@ -163,7 +161,8 @@ public final class UserService implements IService {
      * @param inviteMessage the message within the invite
      * @return the invite itself back to the controller.
      */
-    public Invite sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage) {
+    public Invite sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage)
+            throws InviteNotAddedException {
         Invite invite = new Invite();
         invite.setGroup(group);
         invite.setSender(sender);
@@ -180,7 +179,7 @@ public final class UserService implements IService {
      * @param invite to be deleted.
      * @return invite that was deleted.
      */
-    public Invite deleteInvite(Invite invite) {
+    public Invite deleteInvite(Invite invite) throws InviteNotDeletedException, InviteNotFoundException {
         invite.setStatus(Status.DELETED);
         inviteJPAService.deleteInvite(invite);
         return inviteJPAService.getInvite(invite.getId());
@@ -191,7 +190,7 @@ public final class UserService implements IService {
      * @param invite to be updated in the database.
      * @return the invite that was updated in the database.
      */
-    public Invite updateInvite(Invite invite) {
+    public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException{
         inviteJPAService.updateInvite(invite);
         return inviteJPAService.getInvite(invite.getId());
     }
