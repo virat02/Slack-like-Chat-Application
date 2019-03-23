@@ -11,21 +11,35 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Readers test.
+ */
 public class ReadersTest {
     private JsonBufferReader jsonBufferReader;
     private Message message1;
     private Message message2;
 
+    /**
+     * Setup the tests
+     */
     @Before
     public void setup() {
         jsonBufferReader = new JsonBufferReaderImpl();
     }
 
+    /**
+     * Test number of bytes read when message list has not been called.
+     */
     @Test
     public void testBytesReadWhenMessageListHasNotBeenCalled() {
         Assert.assertEquals(0, jsonBufferReader.bytesRead());
     }
 
+    /**
+     * When a single message is written to buffer, it should return the a single message
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void whenASingleMessageIsWrittenToBuffer() throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
@@ -38,6 +52,11 @@ public class ReadersTest {
         Assert.assertEquals(message1, message);
     }
 
+    /**
+     * When two messages are written to buffer, it should return the list of messages
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void whenTwoMessagesAreWrittenToBuffer() throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
@@ -53,6 +72,11 @@ public class ReadersTest {
         Assert.assertEquals(actualMessage2, message1);
     }
 
+    /**
+     * When two different messages are written to buffer, it should be able to read the messages.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void whenTwoDifferentMessagesAreWrittenToBuffer() throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
@@ -69,6 +93,12 @@ public class ReadersTest {
         Assert.assertEquals(actualMessage2, message2);
     }
 
+    /**
+     * When two and a partial message are written to buffer, it should return a list containing
+     * those two messages.
+     *
+     * @throws IOException the io exception
+     */
     @Test
     public void whenTwoAndAPartialMessageAreWrittenToBuffer() throws IOException {
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
