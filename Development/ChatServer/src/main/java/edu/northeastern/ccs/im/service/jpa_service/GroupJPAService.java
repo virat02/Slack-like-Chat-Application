@@ -1,15 +1,10 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import java.util.List;
-<<<<<<< HEAD
-=======
-import java.util.logging.Logger;
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
-
-import javax.persistence.*;
-
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
+
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * GroupJPAService is the class that contains methods to interact with the db
@@ -118,11 +113,7 @@ public class GroupJPAService{
      * @return a list of groups
      */
 	public List<Group> searchUsingName(String groupName) {
-<<<<<<< HEAD
 		String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"'";
-=======
-		String queryString = "SELECT g FROM `Group` g WHERE g.name = '" + groupName+"'";
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 
 		beginTransaction();
 		TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
@@ -135,11 +126,7 @@ public class GroupJPAService{
      * @return a group
      */
 	public Group searchUsingCode(String groupCode) {
-<<<<<<< HEAD
 		String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "'";
-=======
-		String queryString = "SELECT g FROM `Group` g WHERE g.groupCode = '" + groupCode + "'";
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		beginTransaction();
 		Query query = entityManager.createQuery(queryString);
 		return (Group) query.getSingleResult();

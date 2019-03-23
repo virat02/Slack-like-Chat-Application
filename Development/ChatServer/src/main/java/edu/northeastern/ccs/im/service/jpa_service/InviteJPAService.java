@@ -76,7 +76,6 @@ public class InviteJPAService {
         if(invite == null){
             throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
         }
-
         invite.setReceiver(currentInvite.getReceiver());
         invite.setSender(currentInvite.getSender());
         invite.setGroup(currentInvite.getGroup());

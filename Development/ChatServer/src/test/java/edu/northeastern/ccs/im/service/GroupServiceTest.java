@@ -1,34 +1,28 @@
 package edu.northeastern.ccs.im.service;
 
-import static org.junit.Assert.*;
-
+import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.user_group.Group;
+import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
-import edu.northeastern.ccs.im.user_group.Group;
-import edu.northeastern.ccs.im.user_group.User;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
-import java.util.ArrayList;
-
 @RunWith(MockitoJUnitRunner.class)
 public class GroupServiceTest {
 
-<<<<<<< HEAD
 	/**
 	 * Initializing all the objects necessary for testing
 	 */
-
-=======
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 	private UserJPAService userJPAService;
 	private UserService userService;
 	private GroupJPAService groupJPAService;
@@ -39,14 +33,10 @@ public class GroupServiceTest {
 	private Group groupTwo;
 	private List<Group> groupList = new ArrayList<>();
 	private List<User> userList = new ArrayList<>();
-<<<<<<< HEAD
 
 	/**
 	 * Setting up the mock for testing groupService methods
 	 */
-=======
-	
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 	@Before
 	public void setUp() {
 		groupOne = new Group();
@@ -78,7 +68,6 @@ public class GroupServiceTest {
 		userService = new UserService();
 		userJPAService = mock(UserJPAService.class);
 	}
-<<<<<<< HEAD
 
 
 	/**
@@ -86,13 +75,6 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testCreateGroup() {
-=======
-	
-	
-	
-	@Test
-	public void test() {
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.createGroup(any())).thenReturn(1);
         when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
         groupService.setJPAService(groupJPAService);
@@ -104,16 +86,11 @@ public class GroupServiceTest {
 
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Testing the update group method
 	 */
 	@Test
 	public void testUpdateGroup() {
-=======
-	@Test
-	public void test2() {
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.update(groupOne);
@@ -122,16 +99,11 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Testing the delete group method
 	 */
 	@Test
 	public void testDeleteGroup(){
-=======
-	@Test
-	public void test3(){
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.delete(groupOne);
@@ -140,16 +112,11 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Testing the get group method
 	 */
 	@Test
 	public void testGetGroup(){
-=======
-	@Test
-	public void test4(){
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.get(groupOne.getId());
@@ -158,17 +125,11 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Testing the searching using groupCode
 	 */
 	@Test
 	public void testSearchUsingCode(){
-=======
-	@Test
-	public void test5(){
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
-
 		when(groupJPAService.searchUsingCode(any())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.searchUsingCode(groupOne.getGroupCode());
@@ -177,16 +138,11 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Testing the remove user from group
 	 */
 	@Test
 	public void testremoveUserFromGroup(){
-=======
-	@Test
-	public void test6(){
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.searchUsingCode(any())).thenReturn(groupOne);
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 		when(groupJPAService.removeUserFromGroup(any(),anyInt())).thenReturn(1);
@@ -196,7 +152,6 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * testing join Group method
 	 */
@@ -219,24 +174,6 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testSearchUsingName(){
-=======
-//	@Test
-//	public void test7(){
-//		when(groupJPAService.searchUsingCode(any())).thenReturn(groupOne);
-//		when(groupOne.getUsers()).thenReturn(userList);
-//		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
-//		when(userJPAService.getUser(anyInt())).thenReturn(userOne);
-//		groupService.setJPAService(groupJPAService);
-//		userService.setJPAService(userJPAService);
-//		Group newGroup = groupService.joinGroup(groupOne);
-//		verify(groupJPAService).searchUsingCode(any());
-//		assertEquals(groupOne,newGroup);
-//		verify(groupJPAService).getGroup(anyInt());
-//	}
-
-	@Test
-	public void test8(){
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 		when(groupJPAService.searchUsingName(any())).thenReturn(groupList);
 		groupService.setJPAService(groupJPAService);
 		List<Group> newGroup = groupService.searchUsingName(groupOne.getName());
@@ -245,7 +182,6 @@ public class GroupServiceTest {
 
 	}
 
-<<<<<<< HEAD
 	/**
 	 * Test create if not present method
 	 */
@@ -260,6 +196,4 @@ public class GroupServiceTest {
 		assertEquals(1, groupService.createIfNotPresent("ABC"));
 
 	}
-=======
->>>>>>> cd5e8a874b3c49e1ecd457c6c34f396f4d01e570
 }

@@ -1,6 +1,10 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.user_group.Group;
+import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
@@ -15,12 +19,14 @@ public final class UserService implements IService {
     private static final Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     private UserJPAService userJPAService;
+    private InviteJPAService inviteJPAService;
 
     /**
      * Constructor for this class.
      */
     public UserService() {
         userJPAService = new UserJPAService();
+        inviteJPAService = new InviteJPAService();
     }
 
     /**
@@ -34,6 +40,19 @@ public final class UserService implements IService {
             this.userJPAService = userJPAService;
         }
         this.userJPAService.setEntityManager(null);
+    }
+
+    /**
+     * A method to set the JPA Service for this class, makes the class more testable.
+     * @param inviteJPAService for this class.
+     */
+    public void setInviteJPAService(InviteJPAService inviteJPAService) {
+        if(inviteJPAService == null) {
+            this.inviteJPAService = new InviteJPAService();
+        } else {
+            this.inviteJPAService= inviteJPAService;
+        }
+        this.inviteJPAService.setEntityManager(null);
     }
 
     /**
@@ -143,6 +162,26 @@ public final class UserService implements IService {
     public User loginUser(Object user) {
         userJPAService.setEntityManager(null);
         return userJPAService.loginUser((User) user);
+    }
+
+    /**
+     * The service for the invite system, it'll create the invite and send it to the JPA service.
+     * @param group the group the invite is for
+     * @param sender the user sending the invite
+     * @param receiver the user receiving the invite
+     * @param status the status of the invite
+     * @param inviteMessage the message within the invite
+     * @return the invite itself back to the controller.
+     */
+    public Invite sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage) {
+        Invite invite = new Invite();
+        invite.setGroup(group);
+        invite.setSender(sender);
+        invite.setReceiver(receiver);
+        invite.setStatus(status);
+        invite.setInvitationMessage(inviteMessage);
+        inviteJPAService.createInvite(invite);
+        return invite;
     }
 
 

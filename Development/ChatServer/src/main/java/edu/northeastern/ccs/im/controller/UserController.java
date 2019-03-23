@@ -129,6 +129,8 @@ public final class UserController implements IController {
      * @return NetworkResponse with the status either SUCCESSFUL or FAILED with the invitation loaded on the payload.
      */
     public NetworkResponse sendInvite(Group group, User sender, User receiver, Status status, String inviteMessage) {
-
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(userService.sendInvite(group, sender, receiver, status,
+                        inviteMessage))));
     }
 }
