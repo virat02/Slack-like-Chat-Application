@@ -167,8 +167,9 @@ public final class UserService implements IService {
      */
     public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException {
         inviteJPAService.setEntityManager(null);
-        inviteJPAService.createInvite(invite);
-        return inviteJPAService.getInvite(invite.getId());
+        int id =inviteJPAService.createInvite(invite);
+        inviteJPAService.setEntityManager(null);
+        return inviteJPAService.getInvite(id);
     }
 
     /**
@@ -180,8 +181,7 @@ public final class UserService implements IService {
     public Invite deleteInvite(Invite invite) throws InviteNotDeletedException, InviteNotFoundException {
         invite.setStatus(Status.DELETED);
         inviteJPAService.setEntityManager(null);
-        inviteJPAService.deleteInvite(invite);
-        return inviteJPAService.getInvite(invite.getId());
+        return inviteJPAService.deleteInvite(invite);
     }
 
     /**
@@ -192,6 +192,7 @@ public final class UserService implements IService {
     public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException{
         inviteJPAService.setEntityManager(null);
         inviteJPAService.updateInvite(invite);
+        inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(invite.getId());
     }
 }

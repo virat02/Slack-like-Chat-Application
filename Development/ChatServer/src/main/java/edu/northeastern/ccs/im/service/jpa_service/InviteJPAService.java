@@ -109,12 +109,13 @@ public class InviteJPAService {
      * delete Invite removes a persisted invite object from db
      * @param currentInvite
      */
-    public void deleteInvite(Invite currentInvite) throws InviteNotDeletedException{
+    public Invite deleteInvite(Invite currentInvite) throws InviteNotDeletedException{
         try {
             Invite invite = getInvite(currentInvite.getId());
             beginTransaction();
             entityManager.remove(invite);
             endTransaction();
+            return invite;
         } catch (Exception e) {
             LOGGER.info("Could not delete the invite!");
             throw new InviteNotDeletedException("Could not delete the invite!");
