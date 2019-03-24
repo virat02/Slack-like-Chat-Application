@@ -132,6 +132,19 @@ public class RequestDispatcher {
             return handleGetFollowees(networkRequest);
         } else if (networkRequestType == NetworkRequestType.SET_FOLLOWERS) {
             return handleSetFollowers(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.INVITE_USER)    {
+            return handleInvitationRequest(networkRequest);
+        }
+
+        return networkResponseFactory.createFailedResponse();
+    }
+
+    private NetworkResponse handleInvitationRequest(NetworkRequest networkRequest) {
+        try {
+            Invite invite = CommunicationUtils.getObjectMapper().readValue(networkRequest.payload().jsonString(), Invite.class);
+            return userController.sendInvite(invite);
+        } catch (IOException e) {
+            ChatLogger.error("Error processing group invitation request");
         }
 
         return networkResponseFactory.createFailedResponse();

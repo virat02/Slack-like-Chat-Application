@@ -1,9 +1,11 @@
 package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
+import edu.northeastern.ccs.im.communication.NetworkRequest;
 import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,17 +46,15 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
     }
 
     private void sendGroupInvite(String userName, String groupCode) {
-        // TODO
-        // Perform network connection, show response,
-        // I am not sure what if it fails, or success, what should be the next flow.
-//        try {
-//            NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory.createGroupInviteRequest(userName, groupCode));
-//            printInConsoleForNextProcess(networkResponse.payload().jsonString());
-//        } catch (IOException e) {
-//            // TODO ask Tarun about the control flow.
-//        }
-//        goBack();
-        printInConsoleForProcess(2);
+        NetworkRequest inviteGroupRequest = networkRequestFactory.createGroupInviteRequest(userName, UserConstants.getUserName(), groupCode);
+        try {
+            NetworkResponse networkResponse = sendNetworkConnection(inviteGroupRequest);
+            ResponseParser.parseNetworkResponse(networkResponse);
+        }catch (IOException | NetworkResponseFailureException exception)  {
+            printInConsoleForProcess(2);
+        }
+
+        goBack();
     }
 
     public static void main(String args[]) {

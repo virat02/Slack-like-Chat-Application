@@ -7,10 +7,8 @@ package edu.northeastern.ccs.im.communication;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.northeastern.ccs.im.userGroup.Group;
-import edu.northeastern.ccs.im.userGroup.Message;
-import edu.northeastern.ccs.im.userGroup.Profile;
-import edu.northeastern.ccs.im.userGroup.User;
+import com.sun.tools.doclint.Messages;
+import edu.northeastern.ccs.im.userGroup.*;
 
 /***
  * A NetworkRequestFactory which returns instance of Network Request depending upon
@@ -272,21 +270,30 @@ public class NetworkRequestFactory {
 
     public NetworkRequest createSetUserFolloweresList(String userName, User user) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
-                () -> {
-
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                            "\n" + userName;
-                });
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                        "\n" + userName);
     }
 
     /***
-     * Creates a group invite request
-     * @param userName
-     * @param groupCode
-     * @return
+     * Creates a group invite request.
+     * @param invitee -> The user whom has been invited to join the group
+     * @param inviter -> The user whom invites another user to join the group
+     * @param groupCode -> The group code of the group under consideration
+     * @return An instance of Network Request representing the transaction.
      */
-    public NetworkRequest createGroupInviteRequest(String invitee, String groupCode) {
+    public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
-                () -> "");
+                () -> {
+                        Invite invite = new Invite();
+                        User inviterUser = new User();
+                        inviterUser.setUsername(inviter);
+                        User inviteeUser = new User();
+                        inviteeUser.setUsername(invitee);
+                        Group group = new Group();
+                        group.setGroupCode(groupCode);
+                        invite.setSender(inviterUser);
+                        invite.setReceiver(inviterUser);
+                        return CommunicationUtils.toJson(invite);
+                });
     }
 }
