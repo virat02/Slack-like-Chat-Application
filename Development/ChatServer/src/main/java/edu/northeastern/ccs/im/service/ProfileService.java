@@ -13,6 +13,10 @@ public class ProfileService {
 
     private ProfileJPAService profileJPAService;
 
+    public ProfileService(){
+        profileJPAService = new ProfileJPAService();
+    }
+
     /**
      * Set a profile JPA Service
      * @param profileJPAService
@@ -30,8 +34,9 @@ public class ProfileService {
     /**
      * Creates a profile if the respective inputs are valid
      */
-    public Boolean createProfile(Profile pf) throws ProfileNotPersistedException {
-        return profileJPAService.createProfile(pf) != -1;
+    public int createProfile(Profile pf) throws ProfileNotPersistedException {
+        profileJPAService.setEntityManager(null);
+        return profileJPAService.createProfile(pf);
     }
 
     /**
@@ -40,6 +45,7 @@ public class ProfileService {
      * @return
      */
     public Profile get(int id) throws ProfileNotFoundException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.getProfile(id);
     }
 
@@ -47,6 +53,7 @@ public class ProfileService {
      * Updates an existing profile if the respective inputs are valid
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.updateProfile(pf);
     }
 
@@ -54,6 +61,7 @@ public class ProfileService {
      * Deletes a profile
      */
     public Boolean deleteProfile(Profile pf) throws ProfileNotDeletedException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.deleteProfile(pf) != -1;
     }
 }

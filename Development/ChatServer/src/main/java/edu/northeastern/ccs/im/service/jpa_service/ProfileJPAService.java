@@ -58,9 +58,11 @@ public class ProfileJPAService {
         try {
             beginTransaction();
             entityManager.persist(p);
+            entityManager.flush();
+            int profileId = p.getId();
             endTransaction();
-            LOGGER.info("Created profile : "+p.getId());
-            return p.getId();
+            LOGGER.info("Created profile : "+profileId);
+            return profileId;
         }
         catch (Exception e) {
             LOGGER.info("JPA Could not persist the profile!");
