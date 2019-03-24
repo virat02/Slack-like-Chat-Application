@@ -9,7 +9,6 @@ import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
-import edu.northeastern.ccs.im.service.UserService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -20,7 +19,7 @@ public class GroupJPAService{
 
 	private static final Logger LOGGER = Logger.getLogger(GroupJPAService.class.getName());
 
-	private UserService userService = new UserService();
+	private UserJPAService userJPA = new UserJPAService();
 
 	//The entity manager for this class.
 	private EntityManager entityManager;
@@ -209,7 +208,7 @@ public class GroupJPAService{
 	public int removeUserFromGroup(Group currentGroup, String username) throws GroupNotFoundException, UserNotFoundException{
 		beginTransaction();
 		searchUsingCode(currentGroup.getGroupCode());
-		User u = userService.search(username);
+		User u = userJPA.search(username);
 
 		int userId = u.getId();
 		int result = entityManager.createNativeQuery("DELETE FROM basegroup_user WHERE user_id="+ userId+
