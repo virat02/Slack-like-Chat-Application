@@ -1,19 +1,17 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import edu.northeastern.ccs.im.customexceptions.InviteNotAddedException;
-import edu.northeastern.ccs.im.customexceptions.InviteNotDeletedException;
-import edu.northeastern.ccs.im.customexceptions.InviteNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.InviteNotUpdatedException;
+import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
+import edu.northeastern.ccs.im.user_group.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import java.util.List;
 
 public class InviteJPAService {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(UserJPAService.class.getName());
+    private GroupJPAService groupJPA = new GroupJPAService();
 
     /** The emfactory. */
     //The entity manager for this class.
@@ -118,6 +116,33 @@ public class InviteJPAService {
         } catch (Exception e) {
             LOGGER.info("Could not delete the invite!");
             throw new InviteNotDeletedException("Could not delete the invite!");
+        }
+    }
+
+    /**
+     *  search a list of invites based on groupCode
+     * @param groupCode
+     * @return
+     * @throws GroupNotFoundException
+     * @throws InviteNotFoundException
+     */
+    public List<Invite> searchInviteByGroupCode(String groupCode) throws GroupNotFoundException, InviteNotFoundException {
+        try {
+            groupJPA.setEntityManager(null);
+            Group group = groupJPA.searchUsingCode(groupCode);
+            String queryString =
+                    "SELECT i FROM Invite i WHERE i.group.id ='" + group.getId() + "'";
+            TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+            List<Invite> inviteList = query.getResultList();
+            return  inviteList;
+        }
+        catch (GroupNotFoundException e) {
+            LOGGER.info("Can't find Group with code: " + groupCode);
+            throw new GroupNotFoundException("Can't find Group with code: " + groupCode);
+        }
+        catch (Exception e) {
+            LOGGER.info("Could not get the invite!");
+            throw new InviteNotFoundException("Could not get the invite!");
         }
     }
 

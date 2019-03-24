@@ -42,6 +42,15 @@ public final class UserService implements IService {
         this.userJPAService.setEntityManager(null);
     }
 
+    public void setInviteJPAService(InviteJPAService inviteJPAService){
+        if(inviteJPAService == null) {
+            this.inviteJPAService = new InviteJPAService();
+        } else {
+            this.inviteJPAService = inviteJPAService;
+        }
+        this.inviteJPAService.setEntityManager(null);
+    }
+
     /**
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
@@ -157,6 +166,7 @@ public final class UserService implements IService {
      * @return the invite itself back to the controller.
      */
     public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException {
+        inviteJPAService.setEntityManager(null);
         inviteJPAService.createInvite(invite);
         return inviteJPAService.getInvite(invite.getId());
     }
@@ -169,6 +179,7 @@ public final class UserService implements IService {
      */
     public Invite deleteInvite(Invite invite) throws InviteNotDeletedException, InviteNotFoundException {
         invite.setStatus(Status.DELETED);
+        inviteJPAService.setEntityManager(null);
         inviteJPAService.deleteInvite(invite);
         return inviteJPAService.getInvite(invite.getId());
     }
@@ -179,6 +190,7 @@ public final class UserService implements IService {
      * @return the invite that was updated in the database.
      */
     public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException{
+        inviteJPAService.setEntityManager(null);
         inviteJPAService.updateInvite(invite);
         return inviteJPAService.getInvite(invite.getId());
     }

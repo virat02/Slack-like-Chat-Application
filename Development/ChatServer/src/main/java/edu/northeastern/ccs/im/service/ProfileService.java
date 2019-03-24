@@ -34,7 +34,7 @@ public class ProfileService {
     /**
      * Creates a profile if the respective inputs are valid
      */
-    public int createProfile(Profile pf) throws ProfileNotPersistedException {
+    public Profile createProfile(Profile pf) throws ProfileNotPersistedException {
         profileJPAService.setEntityManager(null);
         return profileJPAService.createProfile(pf);
     }

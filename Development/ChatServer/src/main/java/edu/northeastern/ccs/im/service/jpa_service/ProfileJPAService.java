@@ -54,7 +54,7 @@ public class ProfileJPAService {
      * Creates a profile in the database
      * @param p
      */
-    public int createProfile(Profile p) throws ProfileNotPersistedException {
+    public Profile createProfile(Profile p) throws ProfileNotPersistedException {
         try {
             beginTransaction();
             entityManager.persist(p);
@@ -62,7 +62,7 @@ public class ProfileJPAService {
             int profileId = p.getId();
             endTransaction();
             LOGGER.info("Created profile : "+profileId);
-            return profileId;
+            return p;
         }
         catch (Exception e) {
             LOGGER.info("JPA Could not persist the profile!");
