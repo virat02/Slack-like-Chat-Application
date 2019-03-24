@@ -72,7 +72,9 @@ public class InviteJPAService {
     public Invite getInvite(int id) throws InviteNotFoundException {
         try {
             beginTransaction();
-            return entityManager.find(Invite.class, id);
+            Invite invite = entityManager.find(Invite.class, id);
+            endTransaction();
+            return invite;
         } catch (Exception e) {
             LOGGER.info("Could not get the invite!");
             throw new InviteNotFoundException("Could not get the invite!");
@@ -86,7 +88,7 @@ public class InviteJPAService {
     public void updateInvite(Invite currentInvite) throws InviteNotUpdatedException{
         try {
             beginTransaction();
-            Invite invite = getInvite(currentInvite.getId());
+            Invite invite = entityManager.find(Invite.class, currentInvite.getId());
 
             if (invite == null) {
                 throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
