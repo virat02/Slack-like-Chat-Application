@@ -328,4 +328,66 @@ public class UserControllerTest {
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
         verify(userService).sendInvite(any());
     }
+
+    /**
+     * Tests to ensure the send invite works properly.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws InviteNotAddedException if we can't add invite to DB
+     */
+    @Test
+    public void testSendInvite() throws InviteNotFoundException, InviteNotAddedException {
+        Invite invite = new Invite();
+        when(userService.sendInvite(any())).thenReturn(invite);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.sendInvite(invite);
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(userService).sendInvite(any());
+    }
+
+    /**
+     * Tests to ensure the send invite works properly when an exception is thrown.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws InviteNotDeletedException if we can't add invite to DB
+     */
+    @Test
+    public void testDeleteInviteFail() throws InviteNotFoundException, InviteNotDeletedException {
+        Invite invite = new Invite();
+        when(userService.deleteInvite(any())).thenThrow(InviteNotFoundException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.deleteInvite(invite);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).deleteInvite(any());
+    }
+
+    /**
+     * Tests to ensure the send invite works properly when an exception is thrown.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws InviteNotDeletedException if we can't add invite to DB
+     */
+    @Test
+    public void testDeleteInviteFailNotAdded() throws InviteNotFoundException, InviteNotDeletedException {
+        Invite invite = new Invite();
+        when(userService.deleteInvite(any())).thenThrow(InviteNotDeletedException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.deleteInvite(invite);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).deleteInvite(any());
+    }
+
+    /**
+     * Tests to ensure the send invite works properly.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws InviteNotAddedException if we can't add invite to DB
+     */
+    @Test
+    public void testDeleteInvite() throws InviteNotFoundException, InviteNotDeletedException {
+        Invite invite = new Invite();
+        when(userService.deleteInvite(any())).thenReturn(invite);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.deleteInvite(invite);
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(userService).deleteInvite(any());
+    }
+
+
 }
