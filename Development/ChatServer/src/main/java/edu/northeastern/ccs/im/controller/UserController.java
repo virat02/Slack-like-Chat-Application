@@ -21,6 +21,10 @@ public final class UserController implements IController<User> {
     private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"";
     private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"";
     private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"";
+    private static final String GROUP_NOT_FOUND_JSON = "{\"message : \"Invalid Group\"";
+
+
+
 
 
 
@@ -250,6 +254,25 @@ public final class UserController implements IController<User> {
         } catch (InviteNotUpdatedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_UPDATED)));
+        }
+    }
+
+    /**
+     * Method to lead the Network Response with a Payload filled with a JSON object and a status of either
+     * SUCCESSFUL or FAILED dependent on a successful of failed operation
+     * @param groupCode of the group we are trying to find the invites for
+     * @return NetworkResponse with the invite JSON loaded on.
+     */
+    public NetworkResponse searchInviteByGroupCode(String groupCode) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.searchInviteByGroupCode(groupCode))));
+        } catch (GroupNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(GROUP_NOT_FOUND_JSON));
+        } catch (InviteNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(INVITE_NOT_FOUND));
         }
     }
 }
