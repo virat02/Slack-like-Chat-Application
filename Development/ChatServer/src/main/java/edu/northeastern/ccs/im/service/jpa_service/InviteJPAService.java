@@ -136,7 +136,13 @@ public class InviteJPAService {
             groupJPA.setEntityManager(null);
             Group group = groupJPA.searchUsingCode(groupCode);
             List<User> moderators = group.getModerators();
-            boolean isModerator = moderators.contains(moderator);
+            boolean isModerator = false;
+            for(User u : moderators){
+                if(u.getId() == moderator.getId()) {
+                    isModerator = true;
+                    break;
+                }
+            }
 
             if(isModerator) {
                 String queryString =
