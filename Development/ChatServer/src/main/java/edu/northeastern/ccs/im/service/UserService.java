@@ -224,8 +224,12 @@ public final class UserService implements IService {
      * @throws GroupNotFoundException if the group is not found
      * @throws InviteNotFoundException if the invite is not found
      */
-    public List<Invite> searchInviteByGroupCode(String groupCode) throws GroupNotFoundException, InviteNotFoundException {
+    public List<Invite> searchInviteByGroupCode(String groupCode, String username) throws GroupNotFoundException,
+            InviteNotFoundException, UserNotFoundException, IllegalAccessException {
+        userJPAService.setEntityManager(null);
+        User retrievedUser = userJPAService.search(username);
+
         inviteJPAService.setEntityManager(null);
-        return inviteJPAService.searchInviteByGroupCode(groupCode);
+        return inviteJPAService.searchInviteByGroupCode(groupCode , retrievedUser);
     }
 }

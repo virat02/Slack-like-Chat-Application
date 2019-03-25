@@ -14,14 +14,15 @@ import edu.northeastern.ccs.im.user_group.User;
  */
 public final class UserController implements IController<User> {
 
-    private static final String USER_NOT_PERSISTED_JSON = "{\"message : \"Username already taken\"";
-    private static final String USER_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"";
-    private static final String INVITE_NOT_UPDATED = "{\"message : \"Invite not updated\"";
-    private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"";
-    private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"";
-    private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"";
-    private static final String GROUP_NOT_FOUND_JSON = "{\"message : \"Invalid Group\"";
+    private static final String USER_NOT_PERSISTED_JSON = "{\"message : \"Username already taken\"}";
+    private static final String USER_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
+    private static final String INVITE_NOT_UPDATED = "{\"message : \"Invite not updated\"}";
+    private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"}";
+    private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"}";
+    private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"}";
+    private static final String GROUP_NOT_FOUND_JSON = "{\"message : \"Invalid Group\"}";
+    private static final String USER_NOT_MODERATOR_JSON = "{\"message : \"User is not the moderator of the group\"}";
 
 
 
@@ -263,16 +264,24 @@ public final class UserController implements IController<User> {
      * @param groupCode of the group we are trying to find the invites for
      * @return NetworkResponse with the invite JSON loaded on.
      */
-    public NetworkResponse searchInviteByGroupCode(String groupCode) {
+    public NetworkResponse searchInviteByGroupCode(String groupCode, String username) {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.searchInviteByGroupCode(groupCode))));
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.searchInviteByGroupCode(groupCode,username))));
         } catch (GroupNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(GROUP_NOT_FOUND_JSON));
         } catch (InviteNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(INVITE_NOT_FOUND));
+        }
+        catch (IllegalAccessException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_MODERATOR_JSON));
+        }
+        catch (UserNotFoundException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
         }
     }
 }

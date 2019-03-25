@@ -1,8 +1,11 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
+import edu.northeastern.ccs.im.user_group.User;
+import org.eclipse.persistence.internal.helper.InvalidObject;
 
 import javax.persistence.*;
 import java.util.List;
@@ -128,15 +131,24 @@ public class InviteJPAService {
      * @throws GroupNotFoundException
      * @throws InviteNotFoundException
      */
-    public List<Invite> searchInviteByGroupCode(String groupCode) throws GroupNotFoundException, InviteNotFoundException {
+    public List<Invite> searchInviteByGroupCode(String groupCode , User moderator) throws GroupNotFoundException, InviteNotFoundException {
         try {
             groupJPA.setEntityManager(null);
             Group group = groupJPA.searchUsingCode(groupCode);
-            String queryString =
-                    "SELECT i FROM Invite i WHERE i.group.id ='" + group.getId() + "'";
-            TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
-            List<Invite> inviteList = query.getResultList();
-            return  inviteList;
+            List<User> moderators = group.getModerators();
+            boolean isModerator = moderators.contains(moderator);
+
+            if(isModerator) {
+                String queryString =
+                        "SELECT i FROM Invite i WHERE i.group.id ='" + group.getId() + "'";
+                TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+                List<Invite> inviteList = query.getResultList();
+                return inviteList;
+            }
+            else {
+                LOGGER.info("User is not the moderator of the group with code: " + groupCode);
+                throw new IllegalAccessException("User is not the moderator of the group with code: " + groupCode);
+            }
         }
         catch (GroupNotFoundException e) {
             LOGGER.info("Can't find Group with code: " + groupCode);
