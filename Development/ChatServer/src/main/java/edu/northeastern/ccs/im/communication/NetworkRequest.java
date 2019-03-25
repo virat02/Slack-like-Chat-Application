@@ -43,5 +43,6 @@ public interface NetworkRequest {
         GET_FOLLOWEES,
         GET_FOLLOWERS,
         SET_FOLLOWERS,
+        SET_UNFOLLOWERS,
     }
 }
