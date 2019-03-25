@@ -40,7 +40,7 @@ public class ClientConnectionImpl implements ClientConnection {
 
     @Override
     public NetworkResponse readResponse() throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(2048);
         socketChannel.read(byteBuffer);
         return CommunicationUtils.getObjectMapper().readValue(byteBuffer.array(), NetworkResponseImpl.class);
     }

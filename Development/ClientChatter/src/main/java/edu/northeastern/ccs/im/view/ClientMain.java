@@ -30,7 +30,8 @@ public abstract class ClientMain {
       rootWindow.runWindow();
     }
     catch (Exception e) {
-
+      System.out.println("Oops. Something went wrong");
+      System.out.println(e.getMessage());
     }
   }
 }
