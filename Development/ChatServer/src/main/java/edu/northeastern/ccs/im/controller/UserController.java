@@ -14,13 +14,13 @@ import edu.northeastern.ccs.im.user_group.User;
  */
 public final class UserController implements IController<User> {
 
-    private static final String USER_NOT_PERSISTED_JSON = "{\"exceptionMessage\" : \"Jpa could not persist the user!\"}";
-    private static final String USER_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the user!\"}";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the list of users!\"}";
-    private static final String INVITE_NOT_UPDATED = "\"exceptionMessage\" : Invite not updated!";
-    private static final String INVITE_NOT_DELETED = "\"exceptionMessage\" : Invite not deleted!";
-    private static final String INVITE_NOT_FOUND = "\"exceptionMessage\" : Invite not found!";
-    private static final String INVITE_NOT_ADDED =  "\"exceptionMessage\" : Invite not added!";
+    private static final String USER_NOT_PERSISTED_JSON = "Username already taken";
+    private static final String USER_NOT_FOUND_JSON = "Invalid Username";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "Invalid Username";
+    private static final String INVITE_NOT_UPDATED = "Invite not updated";
+    private static final String INVITE_NOT_DELETED = "Invite could not be deleted";
+    private static final String INVITE_NOT_FOUND = "Invalid Invite";
+    private static final String INVITE_NOT_ADDED =  "Unable to make invite!";
 
 
 

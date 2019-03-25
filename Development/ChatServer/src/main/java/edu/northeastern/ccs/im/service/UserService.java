@@ -189,7 +189,7 @@ public final class UserService implements IService {
      * @param invite to be updated in the database.
      * @return the invite that was updated in the database.
      */
-    public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException{
+    public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException {
         inviteJPAService.setEntityManager(null);
         inviteJPAService.updateInvite(invite);
         inviteJPAService.setEntityManager(null);

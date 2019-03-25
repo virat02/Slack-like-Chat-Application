@@ -3,7 +3,6 @@ package edu.northeastern.ccs.im.service.jpa_service;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
-import edu.northeastern.ccs.im.user_group.User;
 
 import javax.persistence.*;
 import java.util.List;
@@ -47,7 +46,7 @@ public class InviteJPAService {
 
     /**
      * Create an invite and persists invite
-     * @param invite
+     * @param invite that is being created
      * @return id of the invite that is persisted in the db
      */
     public int createInvite(Invite invite) throws InviteNotAddedException{
@@ -66,8 +65,8 @@ public class InviteJPAService {
 
     /**
      * getInvite method returns the invite from the database fetched using id
-     * @param id
-     * @return Invite
+     * @param id of the invite
+     * @return Invite that has been retrieved by the JPA service
      */
     public Invite getInvite(int id) throws InviteNotFoundException {
         try {
@@ -83,7 +82,7 @@ public class InviteJPAService {
 
     /**
      *  updateInvite method updates all the data related to a persisted invite object
-     * @param currentInvite
+     * @param currentInvite that we are looking to update
      */
     public void updateInvite(Invite currentInvite) throws InviteNotUpdatedException{
         try {
@@ -107,7 +106,7 @@ public class InviteJPAService {
 
     /**
      * delete Invite removes a persisted invite object from db
-     * @param currentInvite
+     * @param currentInvite we are looking to mark as delete
      */
     public Invite deleteInvite(Invite currentInvite) throws InviteNotDeletedException{
         try {
