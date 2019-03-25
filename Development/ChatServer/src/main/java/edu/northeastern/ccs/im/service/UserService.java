@@ -216,4 +216,16 @@ public final class UserService implements IService {
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(invite.getId());
     }
+
+    /**
+     * Searches for the invite by the group code retrieving the list of invites from the JPA service.
+     * @param groupCode the code for the group with the invites.
+     * @return List of invites for the group
+     * @throws GroupNotFoundException if the group is not found
+     * @throws InviteNotFoundException if the invite is not found
+     */
+    public List<Invite> searchInviteByGroupCode(String groupCode) throws GroupNotFoundException, InviteNotFoundException {
+        inviteJPAService.setEntityManager(null);
+        return inviteJPAService.searchInviteByGroupCode(groupCode);
+    }
 }
