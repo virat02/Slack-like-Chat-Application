@@ -96,6 +96,27 @@ public final class UserService implements IService {
     }
 
     /**
+     * Unfollow a particular user given their username.
+     * @param username of the user we want to unfollow.
+     */
+    public User unfollow(String username, User currentUser) throws UserNotFoundException {
+
+        User u = search(username);
+
+        if(currentUser != null && u != null){
+            currentUser.removeFollowing(u);
+            userJPAService.setEntityManager(null);
+            userJPAService.updateUser(currentUser);
+            return currentUser;
+        }
+        else{
+            LOGGER.info("Could not successfully follow the user!");
+            throw new IllegalArgumentException("Could not successfully follow the user with username: "+username);
+        }
+
+    }
+
+    /**
      * Get a list of followers for this user
      * @param username
      * @return

@@ -132,6 +132,8 @@ public class RequestDispatcher {
             return handleGetFollowees(networkRequest);
         } else if (networkRequestType == NetworkRequestType.SET_FOLLOWERS) {
             return handleSetFollowers(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.SET_UNFOLLOWERS) {
+            return handleSetUnFollowers(networkRequest);
         }
 
         return networkResponseFactory.createFailedResponse();
@@ -269,6 +271,21 @@ public class RequestDispatcher {
             User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
             String userToFollow = parsedString.get(1);
             return userController.followUser(userToFollow, currentUser);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleSetUnFollowers(NetworkRequest networkRequest) {
+        try {
+            String payloadString = networkRequest.payload().jsonString();
+            List<String> parsedString = Arrays.asList(payloadString.split("\n"));
+            if (parsedString.size() != 2) {
+                return networkResponseFactory.createFailedResponse();
+            }
+            User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
+            String userToFollow = parsedString.get(1);
+            return userController.unfollowUser(userToFollow, currentUser);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }

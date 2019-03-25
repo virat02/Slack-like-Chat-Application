@@ -140,6 +140,25 @@ public final class UserController implements IController<User> {
     }
 
     /**
+     * A unfollowUser method made where the current user is trying to unfollow the user with said
+     * Username.
+     * @param username of the user being followed.
+     * @param currentUser the user trying to follow a new user.
+     * @return returns the new updated user object
+     */
+    public NetworkResponse unfollowUser(String username, User currentUser) {
+        try {
+            User newUser = userService.unfollow(username, currentUser);
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(newUser)));
+        }
+        catch(UserNotFoundException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
+        }
+    }
+
+    /**
      * Get the followers for this user
      * @param username of the follower.
      * @return Network response with a status and a payload loaded with a List of Users.
