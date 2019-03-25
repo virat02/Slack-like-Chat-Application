@@ -14,13 +14,13 @@ import edu.northeastern.ccs.im.user_group.User;
  */
 public final class UserController implements IController<User> {
 
-    private static final String USER_NOT_PERSISTED_JSON = "Username already taken";
-    private static final String USER_NOT_FOUND_JSON = "Invalid Username";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "Invalid Username";
-    private static final String INVITE_NOT_UPDATED = "Invite not updated";
-    private static final String INVITE_NOT_DELETED = "Invite could not be deleted";
-    private static final String INVITE_NOT_FOUND = "Invalid Invite";
-    private static final String INVITE_NOT_ADDED =  "Unable to make invite!";
+    private static final String USER_NOT_PERSISTED_JSON = "{\"message : \"Username already taken\"";
+    private static final String USER_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"";
+    private static final String INVITE_NOT_UPDATED = "{\"message : \"Invite not updated\"";
+    private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"";
+    private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"";
+    private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"";
 
 
 
