@@ -52,8 +52,8 @@ public class CreateGroupWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createGroupRequest(groupName,groupCode, UserConstants.getUserObj()));
 
-      return ResponseParser.parseAddGroupResponse(networkResponse);
-    } catch (IOException exception) {
+      return ResponseParser.parseAddGroupResponse(networkResponse) != null;
+    } catch (IOException | NetworkResponseFailureException exception) {
       // TODO Provide some good custom message
       printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       return false;

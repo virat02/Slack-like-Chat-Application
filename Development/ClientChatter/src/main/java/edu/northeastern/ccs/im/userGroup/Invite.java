@@ -141,5 +141,17 @@ public class Invite {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        return sb.append("ID: ").append(getId())
+                .append(" ")
+                .append("Sender username: " + sender.getUsername())
+                .append(" ")
+                .append("Receiver username: " + receiver.getUsername())
+                .append(" ")
+                .append("Status: ").append(status)
+                .toString();
+    }
 }
 

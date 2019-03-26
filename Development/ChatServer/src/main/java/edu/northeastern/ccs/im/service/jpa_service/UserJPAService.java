@@ -113,9 +113,12 @@ public class UserJPAService {
             String thisString = "SELECT u " + "FROM User u WHERE u.username ='" + username + "'";
             beginTransaction();
             TypedQuery<User> query = entityManager.createQuery(thisString, User.class);
-            return query.getSingleResult();
+            User result = query.getSingleResult();
+            endTransaction();
+            return result;
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new UserNotFoundException("User with username: "+username+ " not found! ");
         }
 

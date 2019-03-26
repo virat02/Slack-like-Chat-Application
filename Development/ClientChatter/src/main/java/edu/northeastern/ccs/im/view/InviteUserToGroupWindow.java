@@ -2,10 +2,8 @@ package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
 import edu.northeastern.ccs.im.communication.NetworkRequest;
-import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
-import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +11,6 @@ import java.util.stream.Stream;
 
 public class InviteUserToGroupWindow extends AbstractTerminalWindow {
 
-    private NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory();
     private String userName = "";
 
     public InviteUserToGroupWindow(TerminalWindow terminalWindow, ClientConnectionFactory clientConnectionFactory) {
@@ -50,7 +47,7 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(inviteGroupRequest);
             ResponseParser.parseNetworkResponse(networkResponse);
-        }catch (IOException | NetworkResponseFailureException exception)  {
+        } catch (IOException | NetworkResponseFailureException exception)  {
             printInConsoleForProcess(2);
         }
 

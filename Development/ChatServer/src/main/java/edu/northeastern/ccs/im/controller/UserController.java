@@ -14,13 +14,18 @@ import edu.northeastern.ccs.im.user_group.User;
  */
 public final class UserController implements IController<User> {
 
-    private static final String USER_NOT_PERSISTED_JSON = "{\"exceptionMessage\" : \"Jpa could not persist the user!\"}";
-    private static final String USER_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the user!\"}";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the list of users!\"}";
-    private static final String INVITE_NOT_UPDATED = "\"exceptionMessage\" : Invite not updated!";
-    private static final String INVITE_NOT_DELETED = "\"exceptionMessage\" : Invite not deleted!";
-    private static final String INVITE_NOT_FOUND = "\"exceptionMessage\" : Invite not found!";
-    private static final String INVITE_NOT_ADDED =  "\"exceptionMessage\" : Invite not added!";
+    private static final String USER_NOT_PERSISTED_JSON = "{\"message : \"Username already taken\"}";
+    private static final String USER_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
+    private static final String INVITE_NOT_UPDATED = "{\"message : \"Invite not updated\"}";
+    private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"}";
+    private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"}";
+    private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"}";
+    private static final String GROUP_NOT_FOUND_JSON = "{\"message : \"Invalid Group\"}";
+    private static final String USER_NOT_MODERATOR_JSON = "{\"message : \"User is not the moderator of the group\"}";
+
+
+
 
 
 
@@ -140,6 +145,25 @@ public final class UserController implements IController<User> {
     }
 
     /**
+     * A unfollowUser method made where the current user is trying to unfollow the user with said
+     * Username.
+     * @param username of the user being followed.
+     * @param currentUser the user trying to follow a new user.
+     * @return returns the new updated user object
+     */
+    public NetworkResponse unfollowUser(String username, User currentUser) {
+        try {
+            User newUser = userService.unfollow(username, currentUser);
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(newUser)));
+        }
+        catch(UserNotFoundException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
+        }
+    }
+
+    /**
      * Get the followers for this user
      * @param username of the follower.
      * @return Network response with a status and a payload loaded with a List of Users.
@@ -186,12 +210,16 @@ public final class UserController implements IController<User> {
      */
     public NetworkResponse sendInvite(Invite invite) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.sendInvite(invite))));
+            userService.sendInvite(invite);
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL, () -> "{\"message\": \"Invitation succesfully created\"}");
         } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
-        } catch (InviteNotFoundException e) {
+        } catch (InviteNotFoundException | UserNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
+        } catch (GroupNotFoundException e) {
+            e.printStackTrace();
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
@@ -209,9 +237,6 @@ public final class UserController implements IController<User> {
         } catch (InviteNotDeletedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_DELETED)));
-        } catch (InviteNotFoundException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
     }
 
@@ -231,6 +256,33 @@ public final class UserController implements IController<User> {
         } catch (InviteNotUpdatedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_UPDATED)));
+        }
+    }
+
+    /**
+     * Method to lead the Network Response with a Payload filled with a JSON object and a status of either
+     * SUCCESSFUL or FAILED dependent on a successful of failed operation
+     * @param groupCode of the group we are trying to find the invites for
+     * @return NetworkResponse with the invite JSON loaded on.
+     */
+    public NetworkResponse searchInviteByGroupCode(String groupCode, String username) {
+        try {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJsonArray(userService.searchInviteByGroupCode(groupCode,username))));
+        } catch (GroupNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(GROUP_NOT_FOUND_JSON));
+        } catch (InviteNotFoundException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(INVITE_NOT_FOUND));
+        }
+        catch (IllegalAccessException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_MODERATOR_JSON));
+        }
+        catch (UserNotFoundException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
         }
     }
 }

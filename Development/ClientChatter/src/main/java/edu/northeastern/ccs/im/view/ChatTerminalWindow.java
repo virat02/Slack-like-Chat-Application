@@ -17,7 +17,7 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
 
     @Override
     void inputFetchedFromUser(String inputString) {
-        if (inputString.length() == 1) {
+        if (inputString.length() <= 2) {
             if (inputString.equals("1")) {
                 MessageGroupSelectorWindow selectorWindow = (MessageGroupSelectorWindow) mapper.computeIfAbsent(1,
                         e -> new MessageGroupSelectorWindow(this, clientConnectionFactory));
@@ -58,6 +58,9 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
                 circlesWindow.runWindow();
             } else if (inputString.equals("9")) {
                 signOutApp();
+            } else if (inputString.equals("10"))   {
+                ViewInvitationsWindow viewInvitationsWindow = new ViewInvitationsWindow(this, clientConnectionFactory);
+                viewInvitationsWindow.runWindow();
             } else if (inputString.equals("*")) {
                 exitWindow();
             } else {

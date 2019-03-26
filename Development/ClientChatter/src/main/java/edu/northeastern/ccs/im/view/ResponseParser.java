@@ -11,6 +11,7 @@ import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.userGroup.Group;
+import edu.northeastern.ccs.im.userGroup.Invite;
 import edu.northeastern.ccs.im.userGroup.Profile;
 import edu.northeastern.ccs.im.userGroup.User;
 
@@ -32,8 +33,14 @@ public class ResponseParser {
     static User parseLoginNetworkResponse(NetworkResponse networkResponse) throws IOException,
             NetworkResponseFailureException {
         throwErrorIfResponseFailed(networkResponse);
+        if (networkResponse.payload() == null || networkResponse.payload().jsonString().equals("")) {
+            throw new NetworkResponseFailureException("");
+        }
         User parsedUserObj = CommunicationUtils
                 .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+        if (parsedUserObj == null) {
+            throw new NetworkResponseFailureException("");
+        }
         UserConstants.setUserObj(parsedUserObj);
         return parsedUserObj;
     }
@@ -71,8 +78,12 @@ public class ResponseParser {
         return parsedObjects;
     }
 
-    static boolean parseAddGroupResponse(NetworkResponse networkResponse) {
-        return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
+    static Group parseAddGroupResponse(NetworkResponse networkResponse) throws IOException,
+            NetworkResponseFailureException {
+        throwErrorIfResponseFailed(networkResponse);
+        Group parsedUserObj = CommunicationUtils
+                .getObjectMapper().readValue(networkResponse.payload().jsonString(), Group.class);
+        return parsedUserObj;
     }
 
     static boolean parseDeleteGroupResponse(NetworkResponse networkResponse) {
@@ -133,6 +144,17 @@ public class ResponseParser {
         if (networkResponse.status() == NetworkResponse.STATUS.FAILED)
             throwErrorIfResponseFailed(networkResponse);
 
-        // TODO May be display successful message
+        JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkResponse.payload().jsonString());
+        if (jsonNode.has("message")) {
+            ViewConstants.getOutputStream().println(jsonNode.get("message").asText());
+        }
+    }
+
+    public static List<Invite> parseInvitationsList(NetworkResponse networkResponse) throws IOException, NetworkResponseFailureException {
+        if (networkResponse.status() == NetworkResponse.STATUS.FAILED)
+            throwErrorIfResponseFailed(networkResponse);
+
+        return CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(), new TypeReference<ArrayList<Invite>>() {
+        });
     }
 }

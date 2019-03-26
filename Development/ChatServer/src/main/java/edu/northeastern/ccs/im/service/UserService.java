@@ -1,9 +1,11 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -20,6 +22,7 @@ public final class UserService implements IService {
 
     private UserJPAService userJPAService;
     private InviteJPAService inviteJPAService;
+    private GroupJPAService groupJPAService;
 
     /**
      * Constructor for this class.
@@ -27,6 +30,7 @@ public final class UserService implements IService {
     public UserService() {
         userJPAService = new UserJPAService();
         inviteJPAService = new InviteJPAService();
+        groupJPAService = new GroupJPAService();
     }
 
     /**
@@ -84,6 +88,27 @@ public final class UserService implements IService {
 
         if(currentUser != null && u != null){
             currentUser.addFollowing(u);
+            userJPAService.setEntityManager(null);
+            userJPAService.updateUser(currentUser);
+            return currentUser;
+        }
+        else{
+            LOGGER.info("Could not successfully follow the user!");
+            throw new IllegalArgumentException("Could not successfully follow the user with username: "+username);
+        }
+
+    }
+
+    /**
+     * Unfollow a particular user given their username.
+     * @param username of the user we want to unfollow.
+     */
+    public User unfollow(String username, User currentUser) throws UserNotFoundException {
+
+        User u = search(username);
+
+        if(currentUser != null && u != null){
+            currentUser.removeFollowing(u);
             userJPAService.setEntityManager(null);
             userJPAService.updateUser(currentUser);
             return currentUser;
@@ -165,9 +190,20 @@ public final class UserService implements IService {
      * @param invite the invite to be sent.
      * @return the invite itself back to the controller.
      */
-    public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException {
+    public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException, UserNotFoundException, GroupNotFoundException {
         inviteJPAService.setEntityManager(null);
-        int id =inviteJPAService.createInvite(invite);
+        userJPAService.setEntityManager(null);
+        groupJPAService.setEntityManager(null);
+        User sender = userJPAService.search(invite.getSender().getUsername());
+        userJPAService.setEntityManager(null);
+        User reciever = userJPAService.search(invite.getReceiver().getUsername());
+        Group group = groupJPAService.searchUsingCode(invite.getGroup().getGroupCode());
+        Invite persistInvite = new Invite();
+        persistInvite.setGroup(group);
+        persistInvite.setSender(sender);
+        persistInvite.setReceiver(reciever);
+        persistInvite.setStatus(Status.NOUPDATE);
+        int id = inviteJPAService.createInvite(persistInvite);
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(id);
     }
@@ -178,7 +214,7 @@ public final class UserService implements IService {
      * @param invite to be deleted.
      * @return invite that was deleted.
      */
-    public Invite deleteInvite(Invite invite) throws InviteNotDeletedException, InviteNotFoundException {
+    public Invite deleteInvite(Invite invite) throws InviteNotDeletedException {
         invite.setStatus(Status.DELETED);
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.deleteInvite(invite);
@@ -189,10 +225,26 @@ public final class UserService implements IService {
      * @param invite to be updated in the database.
      * @return the invite that was updated in the database.
      */
-    public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException{
+    public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException {
         inviteJPAService.setEntityManager(null);
         inviteJPAService.updateInvite(invite);
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(invite.getId());
+    }
+
+    /**
+     * Searches for the invite by the group code retrieving the list of invites from the JPA service.
+     * @param groupCode the code for the group with the invites.
+     * @return List of invites for the group
+     * @throws GroupNotFoundException if the group is not found
+     * @throws InviteNotFoundException if the invite is not found
+     */
+    public List<Invite> searchInviteByGroupCode(String groupCode, String username) throws GroupNotFoundException,
+            InviteNotFoundException, UserNotFoundException, IllegalAccessException {
+        userJPAService.setEntityManager(null);
+        User retrievedUser = userJPAService.search(username);
+
+        inviteJPAService.setEntityManager(null);
+        return inviteJPAService.searchInviteByGroupCode(groupCode , retrievedUser);
     }
 }

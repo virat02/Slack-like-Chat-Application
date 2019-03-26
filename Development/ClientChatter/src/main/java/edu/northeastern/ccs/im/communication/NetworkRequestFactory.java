@@ -1,13 +1,8 @@
 package edu.northeastern.ccs.im.communication;
 
-//import edu.northeastern.ccs.jpa.Message;
-//import edu.northeastern.ccs.jpa.Profile;
-//import edu.northeastern.ccs.jpa.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.tools.doclint.Messages;
 import edu.northeastern.ccs.im.userGroup.*;
 
 /***
@@ -268,12 +263,17 @@ public class NetworkRequestFactory {
                 });
     }
 
-    public NetworkRequest createSetUserFolloweresList(String userName, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
-                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                        "\n" + userName);
-    }
+  public NetworkRequest createSetUserFolloweresList(String userName, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
+            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                    "\n" + userName);
+  }
 
+  public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
+            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                    "\n" + userName);
+  }
     /***
      * Creates a group invite request.
      * @param invitee -> The user whom has been invited to join the group
@@ -284,16 +284,52 @@ public class NetworkRequestFactory {
     public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
                 () -> {
-                        Invite invite = new Invite();
-                        User inviterUser = new User();
-                        inviterUser.setUsername(inviter);
-                        User inviteeUser = new User();
-                        inviteeUser.setUsername(invitee);
-                        Group group = new Group();
-                        group.setGroupCode(groupCode);
-                        invite.setSender(inviterUser);
-                        invite.setReceiver(inviterUser);
-                        return CommunicationUtils.toJson(invite);
+                    Invite invite = new Invite();
+                    User inviterUser = new User();
+                    inviterUser.setUsername(inviter);
+                    User inviteeUser = new User();
+                    inviteeUser.setUsername(invitee);
+                    Group group = new Group();
+                    group.setGroupCode(groupCode);
+                    invite.setSender(inviterUser);
+                    invite.setReceiver(inviteeUser);
+                    invite.setGroup(group);
+                    return CommunicationUtils.toJson(invite);
                 });
+    }
+
+    /***
+     * Creates a invite update request
+     * @param invitationId -> The id of the invitations
+     * @param status -> The updated status of the invitation
+     * @return an instance of this network request representing the transaction
+     */
+    public NetworkRequest createUpdateGroupInvite(String invitationId, Status status) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_INVITE,
+                () -> {
+                    Invite invite = new Invite();
+                    invite.setId(Integer.parseInt(invitationId));
+                    invite.setStatus(status);
+                    return CommunicationUtils.toJson(invite);
+                });
+    }
+
+
+    public NetworkRequest fetchInvitationRequest(String userName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.FETCH_INVITE, () -> new StringBuilder()
+                .append("{")
+                .append("\"userName\"")
+                .append(":")
+                .append("\"")
+                .append(userName)
+                .append("\"")
+                .append(",")
+                .append("\"groupCode\"")
+                .append(":")
+                .append("\"")
+                .append(groupCode)
+                .append("\"")
+                .append("}")
+                .toString());
     }
 }
