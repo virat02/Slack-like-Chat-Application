@@ -1,6 +1,8 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,24 +42,29 @@ public class MessageManagerService {
      * @param groupUniqueKey The group unique code of the group
      * @return BroadCastService
      */
-    public BroadCastService getService(String groupUniqueKey) throws IllegalAccessException {
+    public BroadCastService getService(String groupUniqueKey) throws IllegalAccessException  {
         //Check if the group with the given unique identifier exists
-        if (groupService.createIfNotPresent(groupUniqueKey)) {
-            if (!hmap.containsKey(groupUniqueKey)) {
-                hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
-            }
+        try {
+            if (groupService.createIfNotPresent(groupUniqueKey)) {
+                if (!hmap.containsKey(groupUniqueKey)) {
+                    hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
+                }
 
-            return hmap.get(groupUniqueKey);
-        } else {
-            ChatLogger.info("Couldn't get a service since no such group with given unique identifier was found!");
-            throw new IllegalAccessException("No such group found with unique identifier: " + groupUniqueKey);
+                return hmap.get(groupUniqueKey);
+            } else {
+                ChatLogger.info("Couldn't get a service since no such group with given unique identifier was found!");
+                throw new IllegalAccessException("No such group found with unique identifier: " + groupUniqueKey);
+            }
+        } catch (GroupNotPersistedException e) {
+            return null;
+        } catch (GroupNotFoundException e) {
+            return null;
         }
     }
 
     /**
      * Creates a broadcast service iff at-least one client is present
      */
-
     public void checkForInactivity(MessageBroadCastService messageBroadCastService){
         if (!messageBroadCastService.isClientActive()) {
             for (Map.Entry<String, BroadCastService> entry : hmap.entrySet()) {

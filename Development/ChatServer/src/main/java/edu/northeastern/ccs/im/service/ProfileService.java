@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
@@ -9,6 +12,10 @@ import edu.northeastern.ccs.im.user_group.Profile;
 public class ProfileService {
 
     private ProfileJPAService profileJPAService;
+
+    public ProfileService(){
+        profileJPAService = new ProfileJPAService();
+    }
 
     /**
      * Set a profile JPA Service
@@ -27,8 +34,9 @@ public class ProfileService {
     /**
      * Creates a profile if the respective inputs are valid
      */
-    public Boolean createProfile(Profile pf) {
-        return profileJPAService.createProfile(pf) != -1;
+    public Profile createProfile(Profile pf) throws ProfileNotPersistedException {
+        profileJPAService.setEntityManager(null);
+        return profileJPAService.createProfile(pf);
     }
 
     /**
@@ -36,21 +44,24 @@ public class ProfileService {
      * @param id
      * @return
      */
-    public Profile get(int id) {
+    public Profile get(int id) throws ProfileNotFoundException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.getProfile(id);
     }
 
     /**
      * Updates an existing profile if the respective inputs are valid
      */
-    public Boolean updateProfile(Profile pf) {
+    public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.updateProfile(pf);
     }
 
     /**
      * Deletes a profile
      */
-    public Boolean deleteProfile(Profile pf) {
+    public Boolean deleteProfile(Profile pf) throws ProfileNotDeletedException {
+        profileJPAService.setEntityManager(null);
         return profileJPAService.deleteProfile(pf) != -1;
     }
 }

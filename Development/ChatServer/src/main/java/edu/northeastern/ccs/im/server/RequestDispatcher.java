@@ -132,6 +132,47 @@ public class RequestDispatcher {
             return handleGetFollowees(networkRequest);
         } else if (networkRequestType == NetworkRequestType.SET_FOLLOWERS) {
             return handleSetFollowers(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.SET_UNFOLLOWERS) {
+            return handleSetUnFollowers(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.INVITE_USER)    {
+            return handleInvitationRequest(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.FETCH_INVITE)   {
+            return handleFetchInvitationsRequest(networkRequest);
+        } else if (networkRequestType == NetworkRequestType.UPDATE_INVITE)  {
+            return handleUpdateInviteRequest(networkRequest);
+        }
+
+        return networkResponseFactory.createFailedResponse();
+    }
+
+    private NetworkResponse handleUpdateInviteRequest(NetworkRequest networkRequest) {
+        try {
+            Invite invite = CommunicationUtils.getObjectMapper().readValue(networkRequest.payload().jsonString(), Invite.class);
+            return userController.updateInvite(invite);
+        } catch (IOException e) {
+            ChatLogger.error("Error processing group invitation request");
+        }
+
+        return networkResponseFactory.createFailedResponse();
+    }
+
+    private NetworkResponse handleFetchInvitationsRequest(NetworkRequest networkRequest) {
+        try {
+            JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
+            String userName = jsonNode.get("userName").asText();
+            String groupCode = jsonNode.get("groupCode").asText();
+            return userController.searchInviteByGroupCode(groupCode, userName);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleInvitationRequest(NetworkRequest networkRequest) {
+        try {
+            Invite invite = CommunicationUtils.getObjectMapper().readValue(networkRequest.payload().jsonString(), Invite.class);
+            return userController.sendInvite(invite);
+        } catch (IOException e) {
+            ChatLogger.error("Error processing group invitation request");
         }
 
         return networkResponseFactory.createFailedResponse();
@@ -269,6 +310,21 @@ public class RequestDispatcher {
             User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
             String userToFollow = parsedString.get(1);
             return userController.followUser(userToFollow, currentUser);
+        } catch (IOException e) {
+            return networkResponseFactory.createFailedResponse();
+        }
+    }
+
+    private NetworkResponse handleSetUnFollowers(NetworkRequest networkRequest) {
+        try {
+            String payloadString = networkRequest.payload().jsonString();
+            List<String> parsedString = Arrays.asList(payloadString.split("\n"));
+            if (parsedString.size() != 2) {
+                return networkResponseFactory.createFailedResponse();
+            }
+            User currentUser = objectMapper.readValue(parsedString.get(0), User.class);
+            String userToFollow = parsedString.get(1);
+            return userController.unfollowUser(userToFollow, currentUser);
         } catch (IOException e) {
             return networkResponseFactory.createFailedResponse();
         }
