@@ -13,10 +13,10 @@ import edu.northeastern.ccs.im.user_group.Group;
 
 public class GroupController implements IController<Group>{
 
-	private static final String GROUP_NOT_PERSISTED_JSON = "{\"exceptionMessage\" : \"Jpa could not persist the group!\"}";
-	private static final String GROUP_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the group!\"}";
-	private static final String USER_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the user!\"}";
-	private static final String GROUP_NOT_DELETED_JSON = "{\"exceptionMessage\" : \"Jpa could not delete the group!\"}";
+	private static final String GROUP_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create the group!\"}";
+	private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"The group you are trying to find does not exist!\"}";
+	private static final String USER_NOT_FOUND_JSON = "{\"message\" : \"The user you are trying to find does not exist!\"}";
+	private static final String GROUP_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the group!\"}";
 
 
 	private GroupService groupService = new GroupService();

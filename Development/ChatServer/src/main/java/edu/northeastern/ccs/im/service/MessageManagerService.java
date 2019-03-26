@@ -57,8 +57,6 @@ public class MessageManagerService {
             }
         } catch (GroupNotPersistedException e) {
             return null;
-        } catch (GroupNotFoundException e) {
-            return null;
         }
     }
 

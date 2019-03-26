@@ -72,7 +72,7 @@ public class MessageJPAService {
             entityManager.persist(message);
             entityManager.flush();
             endTransaction();
-            LOGGER.info("Created message : "+message.getId());
+            LOGGER.info("Created message with message id : "+message.getId());
             return message.getId();
         } catch (Exception e) {
             LOGGER.info("JPA Could not persist the message!");
@@ -102,11 +102,11 @@ public class MessageJPAService {
         endTransaction();
 
         if(thisMessage.toString().equals(message.toString())){
-            LOGGER.info("Updated message : "+message.getId());
+            LOGGER.info("Updated message with message id : "+message.getId());
             return true;
         }
         else {
-            LOGGER.info("Could not update message : "+message.getId());
+            LOGGER.info("Could not update message with message id : "+message.getId());
             return false;
         }
 
@@ -139,23 +139,19 @@ public class MessageJPAService {
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
 
-        if (g == null){
-            throw new GroupNotFoundException("Group with group unique key: "+groupUniqueKey+" not found!");
-        }
-        else {
-            String queryString = "SELECT m FROM Message m, Group g WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
-            beginTransaction();
-            TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
-            List<Message> msgList = query.setMaxResults(15).getResultList();
+        String queryString = "SELECT m FROM Message m, Group g WHERE m.receiver.id = "
+                + g.getId() + " ORDER BY m.timestamp DESC";
+        beginTransaction();
+        TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
+        List<Message> msgList = query.setMaxResults(15).getResultList();
 
-            if(msgList != null){
-                LOGGER.info("Top 15 messages for a group: "+groupUniqueKey+" retrieved!");
-                return msgList;
-            }
-            else{
-                LOGGER.info("No messages could be retrieved for the given group unique key: "+ groupUniqueKey);
-                throw new NoResultException("No messages could be retrieved for the given group unique key: "+groupUniqueKey);
-            }
+        if(msgList != null){
+            LOGGER.info("Top 15 messages for a group: "+groupUniqueKey+" retrieved!");
+            return msgList;
+        }
+        else{
+            LOGGER.info("No messages could be retrieved for the given group unique key: "+ groupUniqueKey);
+            throw new NoResultException("No messages could be retrieved for the given group unique key: "+groupUniqueKey);
         }
     }
 }

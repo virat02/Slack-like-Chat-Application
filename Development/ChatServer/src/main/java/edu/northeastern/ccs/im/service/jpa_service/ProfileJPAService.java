@@ -61,12 +61,12 @@ public class ProfileJPAService {
             entityManager.flush();
             int profileId = p.getId();
             endTransaction();
-            LOGGER.info("Created profile : "+profileId);
+            LOGGER.info("Created profile with profile id : "+profileId);
             return p;
         }
         catch (Exception e) {
-            LOGGER.info("JPA Could not persist the profile!");
-            throw new ProfileNotPersistedException("JPA Could not persist the profile!");
+            LOGGER.info("JPA Could not persist the profile with profile id : " + p.getId());
+            throw new ProfileNotPersistedException("JPA Could not persist the profile with profile id : " + p.getId());
         }
     }
 
@@ -83,8 +83,8 @@ public class ProfileJPAService {
             return p.getId();
         }
         catch(Exception e){
-            LOGGER.info("This profile could not be deleted!");
-            throw new ProfileNotDeletedException("JPA could not delete this profile!");
+            LOGGER.info("Profile with profile id: "+ p.getId()+", could not be deleted!");
+            throw new ProfileNotDeletedException("Profile with profile id: "+ p.getId()+", could not be deleted!");
         }
 
     }
@@ -104,8 +104,15 @@ public class ProfileJPAService {
         thisProfile.setImageUrl(p.getImageUrl());
         thisProfile.setEmail(p.getEmail());
         endTransaction();
-        LOGGER.info("Profile : "+p.getId()+" updated!");
-        return true;
+
+        if(thisProfile.toString().equals(p.toString())){
+            LOGGER.info("Updated profile with profile id : "+p.getId());
+            return true;
+        }
+        else {
+            LOGGER.info("Could not update profile with profile id : "+p.getId());
+            return false;
+        }
     }
 
     /**
@@ -119,10 +126,9 @@ public class ProfileJPAService {
             queryString.append(id);
             beginTransaction();
             TypedQuery<Profile> query = entityManager.createQuery(queryString.toString(), Profile.class);
-            LOGGER.info("Fetched profile!");
             return query.getSingleResult();
         } catch (Exception e) {
-            LOGGER.info("Could not get any profile with id: " + id);
+            LOGGER.info("Could not get any profile with id : " + id);
             throw new ProfileNotFoundException("No profile found with id: " + id);
         }
     }
