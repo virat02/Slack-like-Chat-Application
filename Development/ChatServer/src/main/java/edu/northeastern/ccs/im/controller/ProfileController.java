@@ -17,9 +17,9 @@ public class ProfileController implements IController<Profile> {
 
     private ProfileService profileService = new ProfileService();
 
-    private static final String PROFILE_NOT_PERSISTED_JSON = "{\"exceptionMessage\" : \"Jpa could not persist the profile!\"}";
-    private static final String PROFILE_NOT_FOUND_JSON = "{\"exceptionMessage\" : \"Jpa could not find the profile!\"}";
-    private static final String PROFILE_NOT_DELETED_JSON = "{\"exceptionMessage\" : \"Jpa could not delete the profile!\"}";
+    private static final String PROFILE_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create your profile! Please try again.\"}";
+    private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist\"}";
+    private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile! Please try again.\"}";
 
     /**
      * Sets the user service for the controller.

@@ -56,11 +56,17 @@ public class GroupService implements IService {
         this.groupJPA.setEntityManager(null);
     }
 
-    public boolean createIfNotPresent(String groupCode) throws GroupNotFoundException, GroupNotPersistedException{
+    /**
+     * Create a group iff the group does not already exist
+     * @param groupCode
+     * @return
+     * @throws GroupNotPersistedException
+     */
+    public boolean createIfNotPresent(String groupCode) throws GroupNotPersistedException{
         try {
             groupJPA.setEntityManager(null);
             groupJPA.searchUsingCode(groupCode);
-        } catch (NoResultException noResultException) {
+        } catch (GroupNotFoundException e) {
             Group group = new Group();
             group.setGroupCode(groupCode);
             groupJPA.setEntityManager(null);

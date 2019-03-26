@@ -37,6 +37,14 @@ public class GroupJPAService{
 		}
 	}
 
+	/**
+	 * Set the userJPAService
+	 * @param userJPA
+	 */
+	public void setUserJPAService(UserJPAService userJPA) {
+		this.userJPA = userJPA;
+	}
+
     /**
      * A method to begin the transaction.
      */
@@ -67,8 +75,8 @@ public class GroupJPAService{
 			return group.getId();
 		}
 		catch (Exception e) {
-			LOGGER.info("Could not create the group with unique key: "+group.getGroupCode());
-			throw new GroupNotPersistedException("Could not create the group with unique key: "+group.getGroupCode());
+			LOGGER.info("Could not create the group!");
+			throw new GroupNotPersistedException("Could not create the group");
 		}
 
 	}
@@ -85,7 +93,7 @@ public class GroupJPAService{
 		}
 		catch (Exception e) {
 			LOGGER.info("Could not find a Group with group id: "+id);
-			throw new GroupNotFoundException("Could not find aa Group with group id: "+id);
+			throw new GroupNotFoundException("Could not find a Group with group id: "+id);
 		}
 	}
 
@@ -98,6 +106,7 @@ public class GroupJPAService{
 		Group group = entityManager.find(Group.class, currentGroup.getId());
 
 		if (group == null) {
+			LOGGER.info("Could not update group since group not found");
 			throw new GroupNotFoundException("Can't find Group for ID: " + currentGroup.getId());
 		}
 
@@ -190,6 +199,7 @@ public class GroupJPAService{
 			beginTransaction();
 			Group group = entityManager.find(Group.class, retrievedGroup.getId());
 			entityManager.remove(group);
+			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
 			endTransaction();
 		}
 		catch(Exception e) {
@@ -205,9 +215,8 @@ public class GroupJPAService{
      * @param username
      * @return 1 for success , 0 for failure
      */
-	public int removeUserFromGroup(Group currentGroup, String username) throws GroupNotFoundException, UserNotFoundException{
+	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
 		beginTransaction();
-		searchUsingCode(currentGroup.getGroupCode());
 		User u = userJPA.search(username);
 
 		int userId = u.getId();
@@ -216,6 +225,7 @@ public class GroupJPAService{
 		int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id="+ userId+
 				" AND groups_id="+currentGroup.getId()).executeUpdate();
 		endTransaction();
+
 		if(result==1 && result2==1) {
 			LOGGER.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
 			return 1;
