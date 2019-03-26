@@ -134,20 +134,6 @@ public class MessageServiceTest {
         assertTrue(messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE));
     }
 
-//    /**
-//     * Test the create message method from client for throwing MessageNotPersistedException
-//     */
-//    @Test(expected = MessageNotPersistedException.class)
-//    public void testCreateMessageBodyForMessageNotPersistedException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
-//
-//        when(userService.search(anyString())).thenReturn(u);
-//        when(groupService.searchUsingCode(anyString())).thenReturn(g);
-//        when(messageJPAService.createMessage(any(Message.class))).thenThrow(new MessageNotPersistedException("Could not persist message!"));
-//        messageService.setMessageJPAService(messageJPAService);
-//
-//        messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE);
-//    }
-
     /**
      * Test the create message method from client for throwing UserNotFound Exception
      */
