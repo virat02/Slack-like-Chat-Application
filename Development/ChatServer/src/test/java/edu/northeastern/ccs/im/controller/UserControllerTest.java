@@ -305,7 +305,7 @@ public class UserControllerTest {
      * @throws InviteNotAddedException if we can't add invite to DB
      */
     @Test
-    public void testSendInviteFail() throws InviteNotFoundException, InviteNotAddedException {
+    public void testSendInviteFail() throws InviteNotFoundException, GroupNotFoundException, UserNotFoundException, InviteNotAddedException {
         Invite invite = new Invite();
         when(userService.sendInvite(any())).thenThrow(InviteNotFoundException.class);
         userController.setUserService(userService);
@@ -315,12 +315,30 @@ public class UserControllerTest {
     }
 
     /**
+     * Tests to ensure the send invite will throw the proper exception.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws GroupNotFoundException if the group is not found
+     * @throws UserNotFoundException if the user is not found
+     * @throws InviteNotAddedException if the invite is not found
+     */
+    @Test
+    public void testSendInviteFailGroupNotFound() throws InviteNotFoundException, GroupNotFoundException, UserNotFoundException, InviteNotAddedException {
+        Invite invite = new Invite();
+        when(userService.sendInvite(any())).thenThrow(GroupNotFoundException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.sendInvite(invite);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).sendInvite(any());
+    }
+
+
+    /**
      * Tests to ensure the send invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws InviteNotAddedException if we can't add invite to DB
      */
     @Test
-    public void testSendInviteFailNotAdded() throws InviteNotFoundException, InviteNotAddedException {
+    public void testSendInviteFailNotAdded() throws InviteNotFoundException, InviteNotAddedException, UserNotFoundException, GroupNotFoundException {
         Invite invite = new Invite();
         when(userService.sendInvite(any())).thenThrow(InviteNotAddedException.class);
         userController.setUserService(userService);
@@ -335,28 +353,13 @@ public class UserControllerTest {
      * @throws InviteNotAddedException if we can't add invite to DB
      */
     @Test
-    public void testSendInvite() throws InviteNotFoundException, InviteNotAddedException {
+    public void testSendInvite() throws InviteNotFoundException, InviteNotAddedException, UserNotFoundException, GroupNotFoundException {
         Invite invite = new Invite();
         when(userService.sendInvite(any())).thenReturn(invite);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.sendInvite(invite);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
         verify(userService).sendInvite(any());
-    }
-
-    /**
-     * Tests to ensure the send invite works properly when an exception is thrown.
-     * @throws InviteNotFoundException if invite is not found
-     * @throws InviteNotDeletedException if we can't delete invite to DB
-     */
-    @Test
-    public void testDeleteInviteFail() throws InviteNotFoundException, InviteNotDeletedException {
-        Invite invite = new Invite();
-        when(userService.deleteInvite(any())).thenThrow(InviteNotFoundException.class);
-        userController.setUserService(userService);
-        NetworkResponse networkResponse = userController.deleteInvite(invite);
-        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(userService).deleteInvite(any());
     }
 
     /**
@@ -438,46 +441,96 @@ public class UserControllerTest {
      * Tests to ensure the search invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
+     * @throws UserNotFoundException if we can't find the user in the DB.
+     * @throws IllegalAccessException if we can't access the object.
      */
     @Test
-    public void testSearchInviteFail() throws InviteNotFoundException, GroupNotFoundException{
+    public void testSearchInviteFail() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
+            UserNotFoundException{
         String groupCode = "Group";
-        when(userService.searchInviteByGroupCode(anyString())).thenThrow(GroupNotFoundException.class);
+        String username = "Username";
+        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(GroupNotFoundException.class);
         userController.setUserService(userService);
-        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode);
+        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(userService).searchInviteByGroupCode(any());
+        verify(userService).searchInviteByGroupCode(any(), anyString());
     }
 
     /**
      * Tests to ensure the search invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
+     * @throws IllegalAccessException if we can't access the object.
+     * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testSearchFailNotAdded() throws InviteNotFoundException, GroupNotFoundException {
+    public void testSearchInviteFailUserNotFound() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
+            UserNotFoundException{
         String groupCode = "Group";
-        when(userService.searchInviteByGroupCode(any())).thenThrow(InviteNotFoundException.class);
+        String username = "Username";
+        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(UserNotFoundException.class);
         userController.setUserService(userService);
-        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode);
+        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(userService).searchInviteByGroupCode(any());
+        verify(userService).searchInviteByGroupCode(any(), anyString());
+    }
+
+    /**
+     * Tests to ensure the search invite works properly when an exception is thrown.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws GroupNotFoundException if we can't find the group in the DB.
+     * @throws IllegalAccessException if we can't access the object.
+     * @throws UserNotFoundException if we can't find the user in the DB.
+     */
+    @Test
+    public void testSearchInviteFailGroupNotFound() throws
+            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
+        String groupCode = "Group";
+        String username = "Username";
+        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(IllegalAccessException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).searchInviteByGroupCode(any(), anyString());
+    }
+
+    /**
+     * Tests to ensure the search invite works properly when an exception is thrown.
+     * @throws InviteNotFoundException if invite is not found
+     * @throws GroupNotFoundException if we can't find the group in the DB.
+     * @throws IllegalAccessException if we can't access the object.
+     * @throws UserNotFoundException if we can't find the user in the DB.
+     */
+    @Test
+    public void testSearchInviteFailInviteNotFound() throws
+            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
+        String groupCode = "Group";
+        String username = "Username";
+        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(InviteNotFoundException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).searchInviteByGroupCode(any(), anyString());
     }
 
     /**
      * Tests to ensure the search invite works properly.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
+     * @throws IllegalAccessException if we can't access the object.
+     * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testSearchInvite() throws InviteNotFoundException, GroupNotFoundException {
+    public void testSearchInvite() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
+            UserNotFoundException{
         String groupCode = "Group";
+        String username = "Username";
         List<Invite> invites = new ArrayList<>();
-        when(userService.searchInviteByGroupCode(any())).thenReturn(invites);
+        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenReturn(invites);
         userController.setUserService(userService);
-        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode);
+        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
-        verify(userService).searchInviteByGroupCode(any());
+        verify(userService).searchInviteByGroupCode(anyString(), anyString());
     }
 
     /**
