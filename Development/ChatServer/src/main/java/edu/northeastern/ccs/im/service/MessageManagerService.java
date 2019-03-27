@@ -24,7 +24,6 @@ public class MessageManagerService {
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
     }
-
     /**
      * Singleton class MessageManagerService
      *

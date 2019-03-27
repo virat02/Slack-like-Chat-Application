@@ -166,7 +166,7 @@ public class GroupService implements IService {
      * @param id int
      * @return a Group with the id retrieved from the database
      */
-    public Group get(int id) throws GroupNotFoundException {
+    public Group get(int id) throws GroupNotFoundException{
         groupJPA.setEntityManager(null);
         return groupJPA.getGroup(id);
     }
@@ -177,7 +177,7 @@ public class GroupService implements IService {
      * @param group object
      * @return Group retrieved from database after persisting the update
      */
-    public Group update(Group group) throws GroupNotFoundException {
+    public Group update(Group group) throws GroupNotFoundException{
         groupJPA.setEntityManager(null);
         groupJPA.updateGroup(group);
         groupJPA.setEntityManager(null);
@@ -190,7 +190,7 @@ public class GroupService implements IService {
      * @param group object
      * @return Group that was deleted
      */
-    public Group delete(Group group) throws GroupNotFoundException, GroupNotDeletedException {
+    public Group delete(Group group) throws GroupNotFoundException, GroupNotDeletedException{
         groupJPA.setEntityManager(null);
         groupJPA.deleteGroup(group);
         groupJPA.setEntityManager(null);
@@ -244,7 +244,7 @@ public class GroupService implements IService {
      * @param username
      * @return the updated group after the user has been removed from it
      */
-    public Group removeUserFromGroup(String groupCode, String username) throws GroupNotFoundException, UserNotFoundException {
+    public Group removeUserFromGroup(String groupCode, String username) throws GroupNotFoundException, UserNotFoundException{
         Group retrievedGroup = searchUsingCode(groupCode);
         groupJPA.setEntityManager(null);
         groupJPA.removeUserFromGroup(retrievedGroup, username);
