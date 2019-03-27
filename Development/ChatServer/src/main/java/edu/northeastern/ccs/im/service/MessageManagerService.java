@@ -1,9 +1,8 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
-import edu.northeastern.ccs.im.customexceptions.UserAlreadyPresentInGroupException;
+import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class MessageManagerService {
      * @return BroadCastService
      */
     public BroadCastService getService(String groupUniqueKey, String username, Boolean flag)
-            throws GroupNotFoundException, UserNotFoundException, UserAlreadyPresentInGroupException, GroupNotPersistedException {
+            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
 
         //Check if the group with the given unique identifier exists
         if (groupService.createIfNotPresent(groupUniqueKey, username, flag)
