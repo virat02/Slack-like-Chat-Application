@@ -53,11 +53,20 @@ public class InviteJPAService {
     public int createInvite(Invite invite) throws InviteNotAddedException{
         try {
             beginTransaction();
-            entityManager.persist(invite);
-            entityManager.flush();
-            int id = invite.getId();
-            endTransaction();
-            return id;
+            if(!isUserInGroup(invite) ) {
+                if(!isUserInvitedToGroup(invite)) {
+                    entityManager.persist(invite);
+                    entityManager.flush();
+                    int id = invite.getId();
+                    endTransaction();
+                    return id;
+                }
+                else {
+                    throw new InviteNotAddedException("User has already been invited to group!");
+                }
+            }else {
+                throw new InviteNotAddedException("User is already in group!");
+            }
         } catch (Exception e) {
             LOGGER.info("Could not create the invite!");
             throw new InviteNotAddedException("Could not create the invite!");
@@ -94,8 +103,11 @@ public class InviteJPAService {
                 throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
             }
 
-
             invite.setStatus(currentInvite.getStatus());
+            if(invite.getStatus() == Status.ACCEPTED){
+                groupJPA.setEntityManager(null);
+                groupJPA.addUserToGroup(invite.getGroup().getId(), invite.getReceiver());
+            }
             endTransaction();
         } catch (Exception e) {
             LOGGER.info("Could not update the invite!");
@@ -160,6 +172,30 @@ public class InviteJPAService {
             LOGGER.info("Could not get the invite!");
             throw new InviteNotFoundException("Could not get the invite!");
         }
+    }
+
+    private boolean isUserInGroup(Invite invite){
+        Group group =invite.getGroup();
+        User receiver = invite.getReceiver();
+        List<User> usersOfGroup = group.getUsers();
+        for(User u : usersOfGroup){
+            if(u.getId()==receiver.getId()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUserInvitedToGroup(Invite invite){
+        Group group =invite.getGroup();
+        User receiver = invite.getReceiver();
+        String queryString =
+                "SELECT i FROM Invite i WHERE i.group.id =" + group.getId() + " AND i.receiver.id = "+receiver.getId();
+        TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+        List<Invite> inviteList = query.getResultList();
+        if(!inviteList.isEmpty())
+            return true;
+        return false;
     }
 
 }
