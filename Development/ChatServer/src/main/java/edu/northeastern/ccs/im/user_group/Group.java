@@ -230,9 +230,9 @@ public class Group implements IGroup {
 	}
 
 	public void addModerator(User moderator) {
-		if(moderator instanceof User) {
-			this.addModerator(moderator);
-		}
+        this.moderators.add(moderator);
+        if(!this.users.contains(moderator))
+            this.addUser(moderator);
 	}
 	
 	public String getGroupCode() {

@@ -25,6 +25,7 @@ public class GroupService implements IService {
      */
     public GroupService() {
         groupJPA = new GroupJPAService();
+        userJPA = new UserJPAService();
     }
 
     /**
@@ -38,7 +39,7 @@ public class GroupService implements IService {
         } else {
             this.userJPA = userJPA;
         }
-        this.groupJPA.setEntityManager(null);
+        this.userJPA.setEntityManager(null);
     }
 
     /**
@@ -84,15 +85,16 @@ public class GroupService implements IService {
      * @throws GroupNotFoundException
      */
     private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
-            throws GroupNotPersistedException {
+            throws GroupNotPersistedException, GroupNotFoundException {
 
         try {
             searchUsingCode(groupUniqueKey);
+            LOGGER.info("Private group already exists!");
         } catch (GroupNotFoundException e) {
 
             try {
                 //Check if the user is already a participant of the group
-                String[] users = username.split("_");
+                String[] users = groupUniqueKey.split("_");
                 String userToSearch;
 
                 //Fetch the user to be searched if already present in the group
@@ -104,16 +106,23 @@ public class GroupService implements IService {
                 }
 
                 userJPA.setEntityManager(null);
-                userJPA.search(userToSearch);
+                User u1 = userJPA.search(userToSearch);
+
+                userJPA.setEntityManager(null);
+                User u2 = userJPA.search(username);
 
                 Group group = new Group();
                 group.setGroupCode(groupUniqueKey);
                 groupJPA.setEntityManager(null);
                 groupJPA.createGroup(group);
 
-                //TODO
-                //Make "username" the moderator of this group
-                //Add "userToSearch" to this group
+                //Make both users : "username" and "userToSearch" the moderator of this group
+                group.addModerator(u1);
+                group.addModerator(u2);
+
+                //Update the database
+                groupJPA.setEntityManager(null);
+                groupJPA.updateGroup(group);
             }
             catch (UserNotFoundException e1){
                 LOGGER.info("Cannot find the user you are trying to communicate with!");
