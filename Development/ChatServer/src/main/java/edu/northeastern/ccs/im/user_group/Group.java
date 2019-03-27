@@ -227,12 +227,16 @@
 
     public void setModerators(List<User> moderators) {
         this.moderators = moderators;
+        for(User u : moderators){
+            if(!this.users.contains(u))
+                this.addUser(u);
+        }
     }
 
     public void addModerator(User moderator) {
-        if(moderator instanceof User) {
-            this.addModerator(moderator);
-        }
+            this.moderators.add(moderator);
+            if(!this.users.contains(moderator))
+                this.addUser(moderator);
     }
 
     public String getGroupCode() {

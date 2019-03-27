@@ -274,9 +274,6 @@ public class RequestDispatcher {
             NetworkResponse response = groupController.addEntity(group);
             if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                 group.setModerators(moderators);
-                for(User u : moderators){
-                    group.addUser(u);
-                }
                 return groupController.updateEntity(group);
             }
             return response;
