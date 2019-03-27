@@ -32,46 +32,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
         List<Message> messages = new ArrayList<>();
         ByteBuffer byteBuffer = charDecoder(buffer);
         try (JsonParser jsonParser = CommunicationUtils.getObjectMapper().getFactory().createParser(byteBuffer.array())) {
-            String srcName = null;
-            String text = null;
-            String groupCode = null;
-            String msgHandle = null;
-            while (!jsonParser.isClosed()) {
-                JsonToken jsonToken = jsonParser.nextToken();
-                if (jsonToken == null)
-                    continue;
-                if (jsonToken.equals(JsonToken.START_OBJECT)) {
-                    srcName = "";
-                    text = "";
-                    groupCode = "";
-                    msgHandle = "";
-                } else if (jsonToken.equals(JsonToken.FIELD_NAME)) {
-                    String fieldName = jsonParser.getCurrentName();
-                    switch (fieldName) {
-                        case "name":
-                            jsonParser.nextToken();
-                            srcName = jsonParser.getText();
-                            break;
-                        case "text":
-                            jsonParser.nextToken();
-                            text = jsonParser.getText();
-                            break;
-                        case "msgType":
-                            jsonParser.nextToken();
-                            msgHandle = MessageType.valueOf(jsonParser.getText()).toString();
-                            break;
-                        case "groupCode":
-                            jsonParser.nextToken();
-                            groupCode = jsonParser.getText();
-                            break;
-                        default:
-                            jsonParser.nextToken();
-                    }
-                } else if (jsonToken.equals(JsonToken.END_OBJECT)) {
-                    Message message = Message.makeMessage(msgHandle, srcName, text, groupCode);
-                    messages.add(message);
-                }
-            }
+            readFromJsonParser(jsonParser, messages);
         } catch (IOException e) {
             ChatLogger.info(e.getMessage());
         }
@@ -82,6 +43,54 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
         return Collections.unmodifiableList(messages);
     }
 
+    /***
+     * Reads the messages from json string using json parser on per token basis.
+     * @param jsonParser
+     * @param messages
+     * @throws IOException
+     */
+    private void readFromJsonParser(JsonParser jsonParser, List<Message> messages) throws IOException {
+        String srcName = null;
+        String text = null;
+        String groupCode = null;
+        String msgHandle = null;
+        while (!jsonParser.isClosed()) {
+            JsonToken jsonToken = jsonParser.nextToken();
+            if (jsonToken == null)
+                continue;
+            if (jsonToken.equals(JsonToken.START_OBJECT)) {
+                srcName = text = groupCode = msgHandle = "";
+            } else if (jsonToken.equals(JsonToken.FIELD_NAME)) {
+                String fieldName = jsonParser.getCurrentName();
+                jsonParser.nextToken();
+                switch (fieldName) {
+                    case "name":
+                        srcName = jsonParser.getText();
+                        break;
+                    case "text":
+                        text = jsonParser.getText();
+                        break;
+                    case "msgType":
+                        msgHandle = MessageType.valueOf(jsonParser.getText()).toString();
+                        break;
+                    case "groupCode":
+                        groupCode = jsonParser.getText();
+                        break;
+                    default:
+                        ChatLogger.warning("Illegal property name found");
+                }
+            } else if (jsonToken.equals(JsonToken.END_OBJECT)) {
+                Message message = Message.makeMessage(msgHandle, srcName, text, groupCode);
+                messages.add(message);
+            }
+        }
+    }
+
+    /***
+     * Returns an ascii encoded buffer representation of the characters.
+     * @param byteBuffer
+     * @return Returns an ascii encoded buffer representation of the characters.
+     */
     private ByteBuffer charDecoder(ByteBuffer byteBuffer) {
         Charset charset = Charset.forName(CHARSET_NAME);
         CharsetDecoder decoder = charset.newDecoder();
