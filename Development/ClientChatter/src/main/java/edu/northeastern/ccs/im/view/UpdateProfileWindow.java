@@ -139,9 +139,8 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       else {
         printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       }
-    } catch (IOException | NetworkResponseFailureException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
   }
@@ -151,9 +150,8 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUpdateProfileStatus(profileViewStatus, UserConstants.getUserObj()));
       return ResponseParser.parseUpdateUserObj(networkResponse);
-    } catch (IOException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
   }
@@ -163,10 +161,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUpdateUserCredentials(passwordString, UserConstants.getUserObj()));
       return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
-    } catch (IOException exception) {
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-    }
-    catch (NetworkResponseFailureException exception) {
+    } catch (NetworkResponseFailureException exception) {
       printMessageInConsole(exception.getMessage());
     }
     return -1;

@@ -148,11 +148,16 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     clientConnection.connect();
   }
 
-  protected NetworkResponse sendNetworkConnection(NetworkRequest networkRequest) throws IOException {
-    createNetworkConnection();
-    clientConnection.sendRequest(networkRequest);
-    NetworkResponse networkResponse = clientConnection.readResponse();
-    clientConnection.close();
-    return networkResponse;
+  protected NetworkResponse sendNetworkConnection(NetworkRequest networkRequest)
+          throws NetworkResponseFailureException {
+    try {
+      createNetworkConnection();
+      clientConnection.sendRequest(networkRequest);
+      NetworkResponse networkResponse = clientConnection.readResponse();
+      clientConnection.close();
+      return networkResponse;
+    } catch (IOException e) {
+      throw new NetworkResponseFailureException("Unable to connect to network");
+    }
   }
 }

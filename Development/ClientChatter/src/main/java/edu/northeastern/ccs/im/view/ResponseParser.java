@@ -1,11 +1,10 @@
 package edu.northeastern.ccs.im.view;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.northeastern.ccs.im.Message;
@@ -17,121 +16,168 @@ import edu.northeastern.ccs.im.userGroup.User;
 
 public class ResponseParser {
 
+  private final static String networkErrorMessage = "Unable to fetch data";
+  private final static String payloadEmptyErrorMessage = "Payload empty";
+  private final static String payloadParsingErrorMessage = "Error in parsing data";
+
   private static void throwErrorIfResponseFailed(NetworkResponse networkResponse) throws IOException
           , NetworkResponseFailureException {
     if (networkResponse.status().equals(NetworkResponse.STATUS.FAILED)) {
-      JsonNode jsonNode = CommunicationUtils
-              .getObjectMapper().readTree(networkResponse.payload().jsonString());
-      throw new NetworkResponseFailureException("Error");
+      HashMap<String,String> errorMessages =
+              CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(),
+                      new TypeReference<HashMap<String,String>>() {});
+      throw new NetworkResponseFailureException(errorMessages.getOrDefault("message",
+              networkErrorMessage));
     }
   }
 
-  static User parseLoginNetworkResponse(NetworkResponse networkResponse) throws IOException,
-          NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    if (networkResponse.payload() == null || networkResponse.payload().jsonString().equals("")) {
-      throw new NetworkResponseFailureException("");
+  static User parseLoginNetworkResponse(NetworkResponse networkResponse) throws NetworkResponseFailureException {
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      if (networkResponse.payload() == null || networkResponse.payload().jsonString().equals("")) {
+        throw new NetworkResponseFailureException(payloadEmptyErrorMessage);
+      }
+      User parsedUserObj = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+      if (parsedUserObj == null) {
+        throw new NetworkResponseFailureException(payloadEmptyErrorMessage);
+      }
+      UserConstants.setUserObj(parsedUserObj);
+      return parsedUserObj;
     }
-    User parsedUserObj = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
-    if (parsedUserObj == null) {
-      throw new NetworkResponseFailureException("");
+    catch (IOException e) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
     }
-    UserConstants.setUserObj(parsedUserObj);
-    return parsedUserObj;
   }
 
   static boolean parseForgotPasswordResponse(NetworkResponse networkResponse) {
     return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static User parseSearchUserNetworkResponse(NetworkResponse networkResponse) throws IOException,
+  static User parseSearchUserNetworkResponse(NetworkResponse networkResponse) throws
           NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    User parsedUserObj = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
-    return parsedUserObj;
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      User parsedUserObj = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+      return parsedUserObj;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
   static Group parseGroupNetworkResponse(NetworkResponse networkResponse) throws
-          IOException, NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    Group parsedGroupObj = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), Group.class);
-    return parsedGroupObj;
+          NetworkResponseFailureException {
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      Group parsedGroupObj = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), Group.class);
+      return parsedGroupObj;
+    } catch (IOException e) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
   static List<Group> parseSearchGroupNetworkResponse(NetworkResponse networkResponse) throws
-          IOException, NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    List<Group> parsedObjects = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), List.class);
-//    List<Group> groupList = new ArrayList<>();
-//    for (String obj : parsedObjects) {
-//      groupList.add(CommunicationUtils
-//              .getObjectMapper().readValue(obj, Group.class));
-//    }
-    return parsedObjects;
+          NetworkResponseFailureException {
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      List<Group> parsedObjects = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), List.class);
+      return parsedObjects;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
-  static Group parseAddGroupResponse(NetworkResponse networkResponse) throws IOException,
+  static Group parseAddGroupResponse(NetworkResponse networkResponse) throws
           NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    Group parsedUserObj = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), Group.class);
-    return parsedUserObj;
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      Group parsedUserObj = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), Group.class);
+      return parsedUserObj;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
   static boolean parseDeleteGroupResponse(NetworkResponse networkResponse) {
     return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 
-  static boolean parseUpdateUserObj(NetworkResponse networkResponse) throws IOException {
-    if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
-      User parsedUserObj = CommunicationUtils
-              .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
-      UserConstants.setUserObj(parsedUserObj);
-      return true;
+  static boolean parseUpdateUserObj(NetworkResponse networkResponse) {
+    try {
+      if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
+        User parsedUserObj = CommunicationUtils
+                .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+        UserConstants.setUserObj(parsedUserObj);
+        return true;
+      }
+    }
+    catch (IOException exception) {
+      return false;
     }
     return false;
   }
 
-  static Profile parseUpdateUserProfile(NetworkResponse networkResponse) throws IOException,
+  static Profile parseUpdateUserProfile(NetworkResponse networkResponse) throws
           NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    Profile parsedProfileObj = CommunicationUtils
-            .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
-    return parsedProfileObj;
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      Profile parsedProfileObj = CommunicationUtils
+              .getObjectMapper().readValue(networkResponse.payload().jsonString(), Profile.class);
+      return parsedProfileObj;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
-  static List<User> parseFollowersList(NetworkResponse networkResponse) throws IOException,
+  static List<User> parseFollowersList(NetworkResponse networkResponse) throws
           NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      List<User> parsedUsers =
+              CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString()
+                      , ArrayList.class);
 
-    List<User> parsedUsers =
-            CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString()
-                    , ArrayList.class);
-
-    return parsedUsers;
+      return parsedUsers;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 
-  static boolean parseSetFollowersList(NetworkResponse networkResponse) throws IOException {
-    if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
-      User parsedUserObj = CommunicationUtils
-              .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
-      UserConstants.setUserObj(parsedUserObj);
-      return true;
+  static boolean parseSetFollowersList(NetworkResponse networkResponse) {
+    try {
+      if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
+        User parsedUserObj = CommunicationUtils
+                .getObjectMapper().readValue(networkResponse.payload().jsonString(), User.class);
+        UserConstants.setUserObj(parsedUserObj);
+        return true;
+      }
+    }
+    catch (Exception exception) {
+      return false;
     }
     return false;
   }
 
-  public static List<Message> readRecentMessagesAndPrintInScreen(NetworkResponse networkResponse) throws IOException, NetworkResponseFailureException {
-    throwErrorIfResponseFailed(networkResponse);
-    List<Message> messages = CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(),new TypeReference<ArrayList<Message>>() {});
-    messages.stream().map(m -> MessageSocketListener.messageFormatter().formatMessage(m)).filter(m -> !m.equals(""))
-            .forEach(ViewConstants.getOutputStream()::println);
+  public static List<Message> readRecentMessagesAndPrintInScreen(NetworkResponse networkResponse) throws NetworkResponseFailureException {
+    try {
+      throwErrorIfResponseFailed(networkResponse);
+      List<Message> messages = CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(),new TypeReference<ArrayList<Message>>() {});
+      messages.stream().map(m -> MessageSocketListener.messageFormatter().formatMessage(m)).filter(m -> !m.equals(""))
+              .forEach(ViewConstants.getOutputStream()::println);
 
-    return messages;
-
+      return messages;
+    }
+    catch (IOException exception) {
+      throw new NetworkResponseFailureException(payloadParsingErrorMessage);
+    }
   }
 }

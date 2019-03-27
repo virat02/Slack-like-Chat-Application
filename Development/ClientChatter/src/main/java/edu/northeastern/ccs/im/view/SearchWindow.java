@@ -99,11 +99,9 @@ public class SearchWindow extends AbstractTerminalWindow {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
                     .createSearchUserRequest(inputString));
             return ResponseParser.parseSearchUserNetworkResponse(networkResponse);
-        } catch (IOException | NetworkResponseFailureException exception) {
-            /* TODO Provide some good custom message */
-            printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+        } catch (NetworkResponseFailureException exception) {
+            return null;
         }
-        return null;
     }
 
     private List<Group> searchForGroup(String inputString) {
@@ -111,10 +109,8 @@ public class SearchWindow extends AbstractTerminalWindow {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
                     .createSearchGroupRequest(inputString));
             return ResponseParser.parseSearchGroupNetworkResponse(networkResponse);
-        } catch (IOException | NetworkResponseFailureException exception) {
-            /* TODO Provide some good custom message */
-            printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+        } catch (NetworkResponseFailureException exception) {
+            return null;
         }
-        return null;
     }
 }
