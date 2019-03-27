@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.user_group;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,9 @@ import java.util.List;
  */
 @Entity
 @Table(name = "user")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class User implements IUser {
 
     /** The id. */
@@ -27,6 +32,7 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
+
     @OneToMany(targetEntity=User.class)
     @JoinTable
     (
