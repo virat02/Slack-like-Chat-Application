@@ -40,11 +40,7 @@ public class MessageSocketListener implements Runnable, Listener {
   }
 
   public static MessageFormatter messageFormatter() {
-    return m -> {
-      if (UserConstants.getUserName().equals(m.getName()))
-        return "";
-      return m.getName() + ":" + m.getText();
-    };
+    return m -> m.getName() + ":" + m.getText();
   }
 }
 

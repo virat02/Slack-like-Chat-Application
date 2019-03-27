@@ -29,9 +29,11 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 1) {
       chatName = UserConstants.getUserName() + "_" + inputString;
-      // TODO fix this.
       if (UserConstants.getUserName().compareTo(inputString) > 0) {
         chatName = inputString + "_" + UserConstants.getUserName();
+      }
+      else  {
+        chatName = UserConstants.getUserName() + "_" + inputString;
       }
       getMessageWindow(chatName, true).runWindow();
     }
