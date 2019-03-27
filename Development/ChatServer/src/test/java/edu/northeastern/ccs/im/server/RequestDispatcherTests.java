@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * The type Request dispatcher tests.
+ * Request dispatcher tests.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RequestDispatcherTests {
@@ -43,7 +43,6 @@ public class RequestDispatcherTests {
     /**
      * Sets up the tests.
      *
-     * @throws JsonProcessingException the json processing exception
      * @throws IllegalAccessException  the illegal access exception
      */
     @Before
@@ -68,6 +67,8 @@ public class RequestDispatcherTests {
 
     /**
      * When handle network request if create user response successful.
+     *
+     * @throws JsonProcessingException the json processing exception
      */
     @Test
     public void whenHandleNetworkRequestIfCreateUserResponseSuccessful() throws JsonProcessingException {
@@ -656,4 +657,134 @@ public class RequestDispatcherTests {
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
     }
+
+    /**
+     * When handle network request handle update invite request is successful check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleUpdateInviteRequestIsSuccessfulCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(userController.updateInvite(any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle update invite request is failed check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleUpdateInviteRequestIsFailedCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(userController.updateInvite(any())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle update invite request throws exception check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleUpdateInviteRequestThrowsExceptionCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        doThrow(IOException.class).when(userController).updateInvite(any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.UPDATE_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle fetch inviations request is successful check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleFetchInviationsRequestIsSuccessfulCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\"}");
+        when(userController.searchInviteByGroupCode(anyString(), anyString())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.FETCH_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle fetch inviations request is failed check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleFetchInviationsRequestIsFailedCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\"}");
+        when(userController.searchInviteByGroupCode(anyString(), anyString())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.FETCH_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle fetch inviations request throws exception check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleFetchInviationsRequestThrowsExceptionCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\"}");
+        doThrow(IOException.class).when(userController).searchInviteByGroupCode(anyString(), anyString());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.FETCH_INVITE);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle invitation request is successful check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleInvitationRequestIsSuccessfulCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(userController.sendInvite(any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.INVITE_USER);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createSuccessfulResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle invitation request is failed check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleInvitationRequestIsFailedCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        when(userController.sendInvite(any())).thenReturn(networkResponseFactory.createFailedResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.INVITE_USER);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+    /**
+     * When handle network request handle invitation request throws exception check network response.
+     *
+     * @throws IOException the io exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleInvitationRequestThrowsExceptionCheckNetworkResponse() throws IOException {
+        initializeForUserEntityRequests();
+        doThrow(IOException.class).when(userController).sendInvite(any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.INVITE_USER);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
 }

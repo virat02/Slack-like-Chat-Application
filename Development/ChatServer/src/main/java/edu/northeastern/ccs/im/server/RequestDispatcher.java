@@ -41,6 +41,11 @@ public class RequestDispatcher {
         requestDispatcher = new RequestDispatcher();
     }
 
+    /***
+     * Sets up the initialization of map which stores the request strategies
+     * corresponding to the type of network request.
+     * @return
+     */
     private Map<NetworkRequestType, RequestStrategy> initializeRequestStrategies() {
         return Collections.unmodifiableMap(
                 Stream.of(new AbstractMap.SimpleEntry<>(NetworkRequestType.UPDATE_INVITE, handleUpdateInviteRequest()),
@@ -65,6 +70,9 @@ public class RequestDispatcher {
     }
 
 
+    /***
+     * Private constructor to enforce singleton pattern
+     */
     private RequestDispatcher() {
         map = initializeRequestStrategies();
     }
@@ -148,6 +156,10 @@ public class RequestDispatcher {
         }
     }
 
+    /***
+     * Handle the update invitation request
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleUpdateInviteRequest() {
         return networkRequest -> {
             try {
@@ -160,6 +172,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handle the fetching of list of invitations request.
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleFetchInvitationsRequest() {
         return networkRequest -> {
             try {
@@ -173,6 +189,11 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handle the invitation request when someone invites a person to
+     * a group
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleInvitationRequest() {
         return networkRequest -> {
             try {
@@ -185,6 +206,13 @@ public class RequestDispatcher {
             return networkResponseFactory.createFailedResponse();
         };
     }
+
+    /***
+     * Handle the join chatroom request by a user.
+     * @param networkRequest -> The network request representing the transaction
+     * @param socketChannel -> The channel over which transaction is being performed.
+     * @return NetworkResponse response from the server.
+     */
 
     private NetworkResponse handleJoinGroupRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
         final String IOError = "{\"message : \"Some error happened while processing the request. Please try later.\"}";
@@ -213,6 +241,10 @@ public class RequestDispatcher {
         }
     }
 
+    /***
+     * Returns username based on the search query.
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy searchQueryResults() {
         return networkRequest -> {
             try {
@@ -224,6 +256,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handles the login request from client
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleLoginRequest() {
         return networkRequest -> {
             try {
@@ -235,6 +271,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handles the signup request from client
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleCreateUserRequest() {
         return networkRequest -> {
             try {
@@ -246,6 +286,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handles create user profile request from client.
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleCreateUserProfile() {
         return networkRequest -> {
             try {
@@ -257,6 +301,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handle the update user profile request from client.
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleUpdateProfileObj() {
         return networkRequest -> {
             try {
@@ -268,6 +316,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handle the update user profile
+     * @return RequestStrategy handling the request.
+     */
     private RequestStrategy handleUpdateUserProfileObj() {
         return networkRequest -> {
             try {
@@ -279,6 +331,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Handle the update password change request
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleUpdatePasswordChange() {
         return networkRequest -> {
             try {
@@ -290,6 +346,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Deletes a group upon request from moderator
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleDeleteGroup() {
         return networkRequest -> {
             try {
@@ -301,6 +361,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Creates a group
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleCreateGroup() {
         return networkRequest -> {
             try {
@@ -319,6 +383,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Fetches the list of followers
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleGetFollowers() {
         return networkRequest -> {
             try {
@@ -330,6 +398,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Fetches list of followees
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleGetFollowees() {
         return networkRequest -> {
             try {
@@ -341,6 +413,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Set followers for an user
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleSetFollowers() {
         return networkRequest -> {
             try {
@@ -358,6 +434,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Set unfollowers for an user
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy handleSetUnFollowers() {
         return networkRequest -> {
             try {
@@ -375,6 +455,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Fetches a list of groups.
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy getGroupQueryResults() {
         return networkRequest -> {
             try {
@@ -386,6 +470,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * Updates a group
+     * @return RequestStrategy handling the request
+     */
     private RequestStrategy updateGroupQueryResults() {
         return networkRequest -> {
             try {
@@ -397,6 +485,10 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * An functional object which handles the dispatching of
+     * request for a particular network request
+     */
     @FunctionalInterface
     private interface RequestStrategy {
         NetworkResponse execute(NetworkRequest networkRequest);
