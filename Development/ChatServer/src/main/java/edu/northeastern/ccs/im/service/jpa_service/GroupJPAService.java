@@ -217,11 +217,11 @@ public class GroupJPAService{
      */
 	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
 		beginTransaction();
+		userJPA.setEntityManager(null);
 		User u = userJPA.search(username);
 		boolean isModerator=false;
 		int userId = u.getId();
 		List<User> moderators = currentGroup.getModerators();
-
 		for(User user : moderators){
 			if(user.getId()==u.getId()){
 				isModerator=true;
