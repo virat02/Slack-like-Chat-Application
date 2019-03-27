@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -102,13 +103,17 @@ public class GroupServiceTest {
 //    public void testCreateIfNotPresentForPublicGroupForUserAlreadyExistsException()
 //			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 //
+//        Group g = mock(Group.class);
+//        User u = mock(User.class);
 ////        when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 ////        groupService.setJPAService(groupJPAService);
 ////        assertTrue(groupService.createIfNotPresent(groupOne.getGroupCode()));
 //		groupService.setUserService(userJPAService);
-//		when(userJPAService.search(anyString())).thenReturn(userOne);
-//		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
-//		assertFalse(groupService.createIfNotPresent(groupOne.getGroupCode(), userOne.getUsername(), false));
+//		groupService.setJPAService(groupJPAService);
+//		when(g.getUsers()).thenReturn(Collections.emptyList());
+//		when(userJPAService.search(anyString())).thenReturn(u);
+//		when(groupJPAService.searchUsingCode(anyString())).thenReturn(g);
+//		groupService.createIfNotPresent(groupOne.getGroupCode(), userOne.getUsername(), false);
 //
 //    }
 //

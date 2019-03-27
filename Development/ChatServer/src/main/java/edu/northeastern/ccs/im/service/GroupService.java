@@ -7,12 +7,15 @@ import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * GroupService class helps in delegating between the GroupController
  * and the GroupJPA service
  */
 public class GroupService implements IService {
+
+    private static final Logger LOGGER = Logger.getLogger(GroupService.class.getName());
 
     private GroupJPAService groupJPA = new GroupJPAService();
     private UserJPAService userJPA = new UserJPAService();
@@ -81,31 +84,41 @@ public class GroupService implements IService {
      * @throws GroupNotFoundException
      */
     private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
-            throws UserNotPresentInTheGroup, UserNotFoundException,
-            GroupNotPersistedException, GroupNotFoundException {
+            throws GroupNotPersistedException {
 
-        Group g = searchUsingCode(groupUniqueKey);
+        try {
+            searchUsingCode(groupUniqueKey);
+        } catch (GroupNotFoundException e) {
 
-        //Check if the user is already a participant of the group
-        String [] users = username.split("_");
-        String userToSearch;
+            try {
+                //Check if the user is already a participant of the group
+                String[] users = username.split("_");
+                String userToSearch;
 
-        //Fetch the user to be searched if already present in the group
-        if(users[0].equals(username)){
-            userToSearch = users[1];
-        }
-        else {
-            userToSearch = users[0];
-        }
+                //Fetch the user to be searched if already present in the group
+                if(users[0].equals(username)){
+                    userToSearch = users[1];
+                }
+                else {
+                    userToSearch = users[0];
+                }
 
-        if (g.getUsers().contains(userJPA.search(userToSearch))) {
-            throw new UserNotPresentInTheGroup("This user is already a part of this group!");
-        }
-        else {
-            Group group = new Group();
-            group.setGroupCode(groupUniqueKey);
-            groupJPA.setEntityManager(null);
-            groupJPA.createGroup(group);
+                userJPA.setEntityManager(null);
+                userJPA.search(userToSearch);
+
+                Group group = new Group();
+                group.setGroupCode(groupUniqueKey);
+                groupJPA.setEntityManager(null);
+                groupJPA.createGroup(group);
+
+                //TODO
+                //Make "username" the moderator of this group
+                //Add "userToSearch" to this group
+            }
+            catch (UserNotFoundException e1){
+                LOGGER.info("Cannot find the user you are trying to communicate with!");
+                return false;
+            }
         }
 
         return true;
@@ -120,12 +133,13 @@ public class GroupService implements IService {
      * @throws UserNotFoundException
      * @throws UserNotPresentInTheGroup
      */
-    private boolean addUserToPublicGroupIfNotPresent(String groupUniqueKey, String username) throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
+    private boolean addUserToPublicGroupIfNotPresent(String groupUniqueKey, String username)
+            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
 
-        Group g = searchUsingCode(groupUniqueKey);
+        Group g = groupJPA.searchUsingCode(groupUniqueKey);
 
         userJPA.setEntityManager(null);
-        if (!g.getUsers().contains(userJPA.search(username))) {
+        if (!((g.getUsers()).contains(userJPA.search(username)))) {
             throw new UserNotPresentInTheGroup("This user is not part of the group!");
         }
 
