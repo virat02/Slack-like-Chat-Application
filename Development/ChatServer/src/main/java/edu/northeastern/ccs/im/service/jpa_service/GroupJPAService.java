@@ -217,22 +217,34 @@ public class GroupJPAService{
      */
 	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
 		beginTransaction();
+		userJPA.setEntityManager(null);
 		User u = userJPA.search(username);
-
+		boolean isModerator=false;
 		int userId = u.getId();
-		int result = entityManager.createNativeQuery("DELETE FROM basegroup_user WHERE user_id="+ userId+
-				" AND group_id="+currentGroup.getId()).executeUpdate();
-		int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id="+ userId+
-				" AND groups_id="+currentGroup.getId()).executeUpdate();
-		endTransaction();
-
-		if(result==1 && result2==1) {
-			LOGGER.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
-			return 1;
+		List<User> moderators = currentGroup.getModerators();
+		for(User user : moderators){
+			if(user.getId()==u.getId()){
+				isModerator=true;
+				break;
+			}
+		}
+		if(!isModerator) {
+			int result = entityManager.createNativeQuery("DELETE FROM basegroup_user WHERE user_id=" + userId +
+					" AND group_id=" + currentGroup.getId()).executeUpdate();
+			int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id=" + userId +
+					" AND groups_id=" + currentGroup.getId()).executeUpdate();
+			endTransaction();
+			if(result==1 && result2==1) {
+				LOGGER.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
+				return 1;
+			}
+			else{
+				LOGGER.info("Could not remove User: "+username+" from Group: "+currentGroup.getGroupCode());
+				return 0;
+			}
 		}
 		else{
-			LOGGER.info("Could not remove User: "+username+" from Group: "+currentGroup.getGroupCode());
-			return 0;
+			throw new IllegalArgumentException("Cannot remove moderator of a group");
 		}
 	}
 }
