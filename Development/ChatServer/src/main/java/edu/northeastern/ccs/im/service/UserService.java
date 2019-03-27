@@ -55,6 +55,15 @@ public final class UserService implements IService {
         this.inviteJPAService.setEntityManager(null);
     }
 
+    public void setGroupJPAService(GroupJPAService groupJPAService){
+        if(groupJPAService == null) {
+            this.groupJPAService = new GroupJPAService();
+        } else {
+            this.groupJPAService = groupJPAService;
+        }
+        this.groupJPAService.setEntityManager(null);
+    }
+
     /**
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
