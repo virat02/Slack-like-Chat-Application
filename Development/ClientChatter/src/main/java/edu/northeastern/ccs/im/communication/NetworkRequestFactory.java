@@ -173,9 +173,13 @@ public class NetworkRequestFactory {
      * Creates a request for joining a group.
      * @return NetworkRequest containing the required request
      */
-    public NetworkRequest createJoinGroup(String groupCode) {
+    public NetworkRequest createJoinGroup(String groupCode, String userName, boolean isPrivate) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
-                () -> "{\"groupCode\":\"" + groupCode + "\"}");
+                () -> "{" +
+                        "\"groupCode\":\"" + groupCode + "\"" + "," +
+                         "\"userName\":\"" + userName + "\"" + "," +
+                        "\"isPrivate\":\"" + isPrivate + "\""
+                        + "}");
     }
 
     public NetworkRequest createDeleteGroupRequest(String groupName, String groupCode, User user) {

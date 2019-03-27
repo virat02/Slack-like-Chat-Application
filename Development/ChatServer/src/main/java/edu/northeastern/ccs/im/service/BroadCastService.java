@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.Message;
-import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.server.ClientRunnable;
 
 import java.io.IOException;

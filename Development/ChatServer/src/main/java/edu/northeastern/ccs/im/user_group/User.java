@@ -247,4 +247,15 @@ public class User implements IUser {
     public void setProfileAccess(boolean access) {
         this.profileAccess = access;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User
+                && ((User) obj).username.equals(this.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.username.hashCode();
+    }
 }

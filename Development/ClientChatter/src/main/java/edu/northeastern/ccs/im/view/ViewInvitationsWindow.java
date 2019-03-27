@@ -53,8 +53,12 @@ public class ViewInvitationsWindow extends AbstractTerminalWindow {
         Status inviteStatus = Status.NOUPDATE;
         if (status.equals("A")) {
             inviteStatus = Status.ACCEPTED;
-        } else if (status.equals("B")) {
+        } else if (status.equals("R")) {
             inviteStatus = Status.REJECTED;
+        } else  {
+            ViewConstants.getOutputStream().println("Invalid request");
+            printInConsoleForProcess(1);
+            return;
         }
 
         NetworkRequest networkRequest = networkRequestFactory.createUpdateGroupInvite(invitationId, inviteStatus);
