@@ -17,6 +17,7 @@ public class GroupController implements IController<Group>{
 	private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"The group you are trying to find does not exist!\"}";
 	private static final String USER_NOT_FOUND_JSON = "{\"message\" : \"The user you are trying to find does not exist!\"}";
 	private static final String GROUP_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the group!\"}";
+	private static final String MODERATOR_CANNOT_BE_DELETED = "{\"message\" : \"Given user is a moderator. Moderator cannot be deleted!\"}";
 
 
 	private GroupService groupService = new GroupService();
@@ -168,6 +169,9 @@ public class GroupController implements IController<Group>{
 		} catch (UserNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
 					new PayloadImpl(USER_NOT_FOUND_JSON));
+		} catch (IllegalArgumentException e){
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(MODERATOR_CANNOT_BE_DELETED));
 		}
 	}
 }
