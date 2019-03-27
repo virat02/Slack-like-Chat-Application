@@ -89,9 +89,6 @@ public class SignUpWindow extends AbstractTerminalWindow {
           }
         }
       }
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
     } catch (NetworkResponseFailureException exception) {
       printMessageInConsole(exception.getMessage());
     }

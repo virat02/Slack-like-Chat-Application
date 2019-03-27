@@ -73,10 +73,7 @@ public class LoginWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createLoginRequest(userIdString, passwordString));
       return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
-    } catch (IOException exception) {
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-    }
-    catch (NetworkResponseFailureException exception) {
+    } catch (NetworkResponseFailureException exception) {
       printMessageInConsole(exception.getMessage());
     }
     return -1;
