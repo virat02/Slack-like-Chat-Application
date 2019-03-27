@@ -120,8 +120,8 @@ public class CirclesWindow extends AbstractTerminalWindow {
       networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createSetUserFolloweresList(userName, UserConstants.getUserObj()));
       return ResponseParser.parseSetFollowersList(networkResponse);
-    } catch (IOException e) {
-      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       printInConsoleForProcess(0);
     }
     return false;
@@ -133,8 +133,8 @@ public class CirclesWindow extends AbstractTerminalWindow {
       networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createSetUserUnFolloweresList(userName, UserConstants.getUserObj()));
       return ResponseParser.parseSetFollowersList(networkResponse);
-    } catch (IOException e) {
-      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       printInConsoleForProcess(0);
     }
     return false;

@@ -49,6 +49,27 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
         goBack();
     }
 
+  @Override
+  protected void getInputFromUser() {
+    String input;
+    try {
+      while((input = ViewConstants.getInputStream().readLine()) != null) {
+        if (input.trim().equals("")) {
+          printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
+          printInConsoleForCurrentProcess();
+          continue;
+        }
+        else if ((input.equals("exit")) || (input.equals("/.."))) {
+          goBack();
+          return;
+        }
+        else
+          inputFetchedFromUser(input);
+      }
+    } catch (IOException e) {
+      getInputFromUser();
+    }
+  }
 
     @Override
     void inputFetchedFromUser(String inputString) {

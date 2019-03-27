@@ -56,9 +56,8 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
               .createForgotPasswordRequest(recoveryAddress));
 
       return ResponseParser.parseForgotPasswordResponse(networkResponse);
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       return false;
     }
   }
