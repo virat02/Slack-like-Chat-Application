@@ -1,9 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
-import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -62,15 +59,83 @@ public class GroupService implements IService {
      * @return
      * @throws GroupNotPersistedException
      */
-    public boolean createIfNotPresent(String groupCode) throws GroupNotPersistedException{
-        try {
-            groupJPA.setEntityManager(null);
-            groupJPA.searchUsingCode(groupCode);
-        } catch (GroupNotFoundException e) {
+    public boolean createIfNotPresent(String groupCode, String username, boolean flag)
+            throws GroupNotFoundException, UserNotFoundException, UserAlreadyPresentInGroupException, GroupNotPersistedException {
+//        try {
+//            groupJPA.setEntityManager(null);
+//            groupJPA.searchUsingCode(groupCode);
+//        } catch (GroupNotFoundException e) {
+//            Group group = new Group();
+//            group.setGroupCode(groupCode);
+//            groupJPA.setEntityManager(null);
+//            groupJPA.createGroup(group);
+//        }
+
+        //Check if request for private group
+        if(flag) {
+            return createPrivateGroupIfNotPresent(groupCode, username);
+        }
+
+        //If request for public group
+        return addUserToPublicGroupIfNotPresent(groupCode, username);
+    }
+
+    /**
+     * Creates a private group iff the group is not already present, else creates a new group
+     * @param groupUniqueKey
+     * @param username
+     * @return
+     * @throws UserAlreadyPresentInGroupException
+     * @throws UserNotFoundException
+     * @throws GroupNotPersistedException
+     * @throws GroupNotFoundException
+     */
+    private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
+            throws UserAlreadyPresentInGroupException, UserNotFoundException,
+            GroupNotPersistedException, GroupNotFoundException {
+
+        Group g = searchUsingCode(groupUniqueKey);
+
+        //Check if the user is already a participant of the group
+        String [] users = username.split("_");
+        String userToSearch;
+
+        //Fetch the user to be searched if already present in the group
+        if(users[0].equals(username)){
+            userToSearch = users[1];
+        }
+        else {
+            userToSearch = users[0];
+        }
+
+        if (g.getUsers().contains(userJPA.search(userToSearch))) {
+            throw new UserAlreadyPresentInGroupException("This user is already a part of this group!");
+        }
+        else {
             Group group = new Group();
-            group.setGroupCode(groupCode);
+            group.setGroupCode(groupUniqueKey);
             groupJPA.setEntityManager(null);
             groupJPA.createGroup(group);
+        }
+
+        return true;
+    }
+
+    /**
+     * Adds a user to a group iff the user is not already a part of the group
+     * @param groupUniqueKey
+     * @param username
+     * @return
+     * @throws GroupNotFoundException
+     * @throws UserNotFoundException
+     * @throws UserAlreadyPresentInGroupException
+     */
+    private boolean addUserToPublicGroupIfNotPresent(String groupUniqueKey, String username) throws GroupNotFoundException, UserNotFoundException, UserAlreadyPresentInGroupException {
+
+        Group g = searchUsingCode(groupUniqueKey);
+
+        if (g.getUsers().contains(userJPA.search(username))) {
+            throw new UserAlreadyPresentInGroupException("This user is already a part of this group!");
         }
 
         return true;
