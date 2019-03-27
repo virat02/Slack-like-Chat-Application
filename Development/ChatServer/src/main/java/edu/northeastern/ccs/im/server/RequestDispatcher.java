@@ -20,6 +20,7 @@ import edu.northeastern.ccs.im.service.MessageManagerService;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static edu.northeastern.ccs.im.communication.NetworkRequest.NetworkRequestType;
@@ -287,7 +288,7 @@ public class RequestDispatcher {
         try {
             Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
             List<User> moderators = group.getModerators();
-            group.setModerators(null);
+            group.setModerators(Collections.emptyList());
             NetworkResponse response = groupController.addEntity(group);
             if (response.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                 group.setModerators(moderators);
