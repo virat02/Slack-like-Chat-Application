@@ -9,6 +9,10 @@ import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
 import edu.northeastern.ccs.im.user_group.*;
 import edu.northeastern.ccs.im.service.MessageManagerService;
@@ -184,12 +188,22 @@ public class RequestDispatcher {
             JsonNode jsonNode = CommunicationUtils
                     .getObjectMapper().readTree(networkRequest.payload().jsonString());
             String groupCode = jsonNode.get("groupCode").asText();
-            BroadCastService messageService = messageManagerService.getService(groupCode);
+            String userName = jsonNode.get("userName").asText();
+            boolean flag = jsonNode.get("isPrivate").asBoolean();
+            BroadCastService messageService = messageManagerService.getService(groupCode, userName, flag);
             List<Message> messages = messageService.getRecentMessages();
             messageService.addConnection(socketChannel);
             return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
-        } catch (IllegalAccessException | IOException e ) {
+        } catch (IOException e) {
             ChatLogger.error(e.getMessage());
+        } catch (UserNotPresentInTheGroup userNotPresentInTheGroup) {
+            userNotPresentInTheGroup.printStackTrace();
+        } catch (GroupNotPersistedException e) {
+            e.printStackTrace();
+        } catch (GroupNotFoundException e) {
+            e.printStackTrace();
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
         }
         return networkResponseFactory.createFailedResponse();
     }

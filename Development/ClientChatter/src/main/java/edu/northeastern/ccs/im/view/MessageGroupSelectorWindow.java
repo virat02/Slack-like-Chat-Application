@@ -18,9 +18,9 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
     }}, clientConnectionFactory);
   }
 
-  public TerminalWindow getMessageWindow(String chatId) {
+  public TerminalWindow getMessageWindow(String chatId, boolean isPrivate) {
     if (messageWindow == null) {
-      messageWindow = new MessageWindow(this, clientConnectionFactory, chatId);
+      messageWindow = new MessageWindow(this, clientConnectionFactory, chatId, isPrivate);
     }
     return messageWindow;
   }
@@ -29,14 +29,15 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 1) {
       chatName = UserConstants.getUserName() + "_" + inputString;
+      // TODO fix this.
       if (UserConstants.getUserName().compareTo(inputString) > 0) {
         chatName = inputString + "_" + UserConstants.getUserName();
       }
-      getMessageWindow(chatName).runWindow();
+      getMessageWindow(chatName, true).runWindow();
     }
     else if (getCurrentProcess() == 2) {
       chatName = inputString;
-      getMessageWindow(chatName).runWindow();
+      getMessageWindow(chatName, false).runWindow();
     }
     if ((getCurrentProcess() == 3) && (inputString.equals("1"))) {
       printInConsoleForProcess(0);

@@ -98,9 +98,9 @@ public class GroupServiceTest {
 //    /**
 //     * Testing the createIfNotPresent group method
 //     */
-//    @Test(expected = UserAlreadyPresentInGroupException.class)
+//    @Test(expected = UserNotPresentInTheGroup.class)
 //    public void testCreateIfNotPresentForPublicGroupForUserAlreadyExistsException()
-//			throws GroupNotPersistedException, GroupNotFoundException, UserAlreadyPresentInGroupException, UserNotFoundException {
+//			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 //
 ////        when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
 ////        groupService.setJPAService(groupJPAService);

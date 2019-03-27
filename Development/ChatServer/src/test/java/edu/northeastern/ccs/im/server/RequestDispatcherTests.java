@@ -5,6 +5,10 @@ import edu.northeastern.ccs.im.communication.*;
 import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
 import edu.northeastern.ccs.im.service.MessageBroadCastService;
 import edu.northeastern.ccs.im.service.MessageManagerService;
@@ -43,10 +47,14 @@ public class RequestDispatcherTests {
      * @throws IllegalAccessException  the illegal access exception
      */
     @Before
-    public void setup() throws JsonProcessingException, IllegalAccessException {
+    public void setup() throws JsonProcessingException, IllegalAccessException,
+            UserNotFoundException,
+            GroupNotPersistedException,
+            UserNotPresentInTheGroup,
+            GroupNotFoundException {
         broadCastService = mock(MessageBroadCastService.class);
         messageManagerService = mock(MessageManagerService.class);
-        when(messageManagerService.getService(anyString())).thenReturn(broadCastService);
+        when(messageManagerService.getService(anyString(), anyString(), anyBoolean())).thenReturn(broadCastService);
         requestDispatcher = RequestDispatcher.getInstance();
         networkRequest = mock(NetworkRequest.class);
         payload = mock(Payload.class);
