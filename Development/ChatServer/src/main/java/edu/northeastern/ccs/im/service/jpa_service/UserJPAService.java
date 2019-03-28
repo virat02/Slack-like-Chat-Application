@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
@@ -118,7 +119,7 @@ public class UserJPAService {
             return result;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ChatLogger.error(e.getMessage());
             throw new UserNotFoundException("User with username: "+username+ " not found! ");
         }
 

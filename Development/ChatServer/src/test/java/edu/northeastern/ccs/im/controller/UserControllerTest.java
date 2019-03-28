@@ -488,17 +488,17 @@ public class UserControllerTest {
      * @throws IllegalAccessException if we can't access the object.
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
-    @Test
-    public void testSearchInviteFailGroupNotFound() throws
-            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
-        String groupCode = "Group";
-        String username = "Username";
-        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(IllegalAccessException.class);
-        userController.setUserService(userService);
-        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
-        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(userService).searchInviteByGroupCode(any(), anyString());
-    }
+//    @Test
+//    public void testSearchInviteFailGroupNotFound() throws
+//            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
+//        String groupCode = "Group";
+//        String username = "Username";
+//        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(IllegalAccessException.class);
+//        userController.setUserService(userService);
+//        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
+//        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+//        verify(userService).searchInviteByGroupCode(any(), anyString());
+//    }
 
     /**
      * Tests to ensure the search invite works properly when an exception is thrown.

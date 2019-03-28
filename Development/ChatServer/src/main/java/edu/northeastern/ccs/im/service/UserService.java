@@ -309,7 +309,7 @@ public final class UserService implements IService {
      * @throws InviteNotFoundException if the invite is not found
      */
     public List<Invite> searchInviteByGroupCode(String groupCode, String username) throws GroupNotFoundException,
-            InviteNotFoundException, UserNotFoundException, IllegalAccessException {
+            InviteNotFoundException, UserNotFoundException {
         userJPAService.setEntityManager(null);
         User retrievedUser = userJPAService.search(username);
 

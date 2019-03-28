@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.*;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
@@ -237,11 +238,11 @@ public class GroupJPAService{
 					" AND groups_id=" + currentGroup.getId()).executeUpdate();
 			endTransaction();
 			if(result==1 && result2==1) {
-				LOGGER.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
+				ChatLogger.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
 				return 1;
 			}
 			else{
-				LOGGER.info("Could not remove User: "+username+" from Group: "+currentGroup.getGroupCode());
+				ChatLogger.info("Could not remove User: "+username+" from Group: "+currentGroup.getGroupCode());
 				return 0;
 			}
 		}
