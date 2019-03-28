@@ -22,7 +22,7 @@ public class ResponseParser {
   private final static String payloadEmptyErrorMessage = "Payload empty";
   private final static String payloadParsingErrorMessage = "Error in parsing data";
 
-  private static void throwErrorIfResponseFailed(NetworkResponse networkResponse) throws IOException
+  public static void throwErrorIfResponseFailed(NetworkResponse networkResponse) throws IOException
           , NetworkResponseFailureException {
     if (networkResponse.status().equals(NetworkResponse.STATUS.FAILED)) {
       HashMap<String,String> errorMessages =

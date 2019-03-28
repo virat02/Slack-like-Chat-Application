@@ -3,7 +3,6 @@ package edu.northeastern.ccs.im.view;
 import java.io.IOException;
 import java.util.HashMap;
 
-import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
 
@@ -32,18 +31,15 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
             messageClientConnection.connect();
             messageClientConnection.sendRequest(networkRequest);
             NetworkResponse networkResponse = messageClientConnection.readResponse();
-            if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-                ResponseParser.readRecentMessagesAndPrintInScreen(networkResponse);
-                messageSocketListener = new MessageSocketListener(messageClientConnection);
-                Thread threadObject = new Thread((Runnable) messageSocketListener);
-                threadObject.start();
-                messageClientConnection.sendMessage(Message.makeSimpleLoginMessage(UserConstants.getUserName(), groupCode));
-                super.runWindow();
-            }
-        } catch (NetworkResponseFailureException e) {
-            ChatLogger.error("Could not be joined due as network request was not successful");
-        } catch (IOException e) {
-            ChatLogger.error("Could not be joined to chat group due to an error");
+            ResponseParser.throwErrorIfResponseFailed(networkResponse);
+            ResponseParser.readRecentMessagesAndPrintInScreen(networkResponse);
+            messageSocketListener = new MessageSocketListener(messageClientConnection);
+            Thread threadObject = new Thread((Runnable) messageSocketListener);
+            threadObject.start();
+            messageClientConnection.sendMessage(Message.makeSimpleLoginMessage(UserConstants.getUserName(), groupCode));
+            super.runWindow();
+        } catch (NetworkResponseFailureException | IOException e) {
+            ViewConstants.getOutputStream().println(e.getMessage());
         }
 
         goBack();

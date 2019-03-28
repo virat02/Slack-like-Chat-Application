@@ -180,7 +180,9 @@ public class GroupJPAService{
 			String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "'";
 			beginTransaction();
 			TypedQuery<Group> query = entityManager.createQuery(queryString, Group.class);
-			return query.getSingleResult();
+			Group group = query.getSingleResult();
+			endTransaction();
+			return group;
 		}
 		catch (Exception e) {
 			LOGGER.info("Can't find Group with code: " + groupCode);
