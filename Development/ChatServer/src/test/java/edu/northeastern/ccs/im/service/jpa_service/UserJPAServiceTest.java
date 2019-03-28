@@ -170,7 +170,7 @@ public class UserJPAServiceTest {
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenReturn(new User());
         userJPAService.setEntityManager(entityManager);
-        User newUser = userJPAService.loginUser(userOne);
+        userJPAService.loginUser(userOne);
     }
 
     /**
@@ -199,24 +199,22 @@ public class UserJPAServiceTest {
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(userOne);
         when(mockedQuery.getResultList()).thenReturn(listOfUsers);
         userJPAService.setEntityManager(entityManager);
         List<User> newUsers = userJPAService.getFollowers(userOne);
-        assertEquals(1, newUsers.size());
+        assertEquals(2, newUsers.size());
     }
 
     /**
      * A test to see if the user can't get it's own followers.
      */
-    @Test
-    public void testGetFollowersZero() throws UserNotFoundException, ListOfUsersNotFound {
+    @Test(expected = ListOfUsersNotFound.class)
+    public void testGetFollowersZero() throws ListOfUsersNotFound {
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         userJPAService.setEntityManager(entityManager);
-        List<User> newUsers = userJPAService.getFollowers(userOne);
-        assertEquals(0, newUsers.size());
+        userJPAService.getFollowers(userOne);
     }
 
     /**
@@ -235,7 +233,7 @@ public class UserJPAServiceTest {
         when(mockedQuery.getResultList()).thenReturn(listOfUsers);
         userJPAService.setEntityManager(entityManager);
         List<User> newUsers = userJPAService.getFollowees(userOne);
-        assertEquals(1, newUsers.size());
+        assertEquals(2, newUsers.size());
     }
 
     /**
@@ -295,7 +293,7 @@ public class UserJPAServiceTest {
      * Tests to ensure the user not found exception can be thrown
      * @throws UserNotFoundException when a user is not found.
      */
-    @Test (expected = ListOfUsersNotFound.class)
+    @Test
     public void testGetUserUsersNotFound() throws ListOfUsersNotFound, UserNotFoundException {
         List<User> listOfUsers = mock(List.class);
         listOfUsers.add(userTwo);
@@ -308,6 +306,7 @@ public class UserJPAServiceTest {
         when(mockedQuery.getResultList()).thenReturn(listOfUsers);
         userJPAService.setEntityManager(entityManager);
         List<User> newUsers = userJPAService.getFollowees(userOne);
+        assertEquals(0, newUsers.size());
     }
 
 }

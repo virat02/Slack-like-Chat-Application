@@ -174,14 +174,11 @@ public class UserJPAService {
      * @param user we are getting the followers of.
      * @return The list of follower's of the given user
      */
-    public List<User> getFollowers(User user) throws UserNotFoundException, ListOfUsersNotFound {
-        if(user == search(user.getUsername())) {
-            String queryString = "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
-            beginTransaction();
-            return getUsers(queryString);
-        }
-
-        return Collections.emptyList();
+    public List<User> getFollowers(User user) throws ListOfUsersNotFound {
+        String queryString =
+                "SELECT f FROM User u LEFT JOIN u.following f WHERE u.id = " + user.getId();
+        beginTransaction();
+        return getUsers(queryString);
     }
 
     /**
@@ -193,19 +190,14 @@ public class UserJPAService {
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             List<User> followerList = query.getResultList();
-
-            //Filter out users with no profile access
-            for (User u : followerList) {
-                if (!u.getProfileAccess()) {
-                    followerList.remove(u);
-                }
+            if (followerList.isEmpty() || followerList.contains(null)) {
+                throw new ListOfUsersNotFound("No users following!");
             }
-
             return followerList;
         }
         catch (Exception e) {
             LOGGER.info(e.getMessage());
-            throw new ListOfUsersNotFound("could not fetch list of users!");
+            throw new ListOfUsersNotFound("Could not fetch list of users!");
         }
     }
 

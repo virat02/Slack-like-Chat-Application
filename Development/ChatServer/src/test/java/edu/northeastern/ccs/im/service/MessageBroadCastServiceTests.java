@@ -26,6 +26,7 @@ public class MessageBroadCastServiceTests {
     private BroadCastService broadCastService;
     private MessageService messageService;
     private Message message;
+
     private ClientRunnable clientRunnable;
 
     /**
@@ -54,8 +55,7 @@ public class MessageBroadCastServiceTests {
     }
 
     /**
-     * Should broad cast message if message is broadcast and message is persistent.
-     *
+     * Should broad cast message if message is broadcast and message is persistent
      * @throws IOException                  the io exception
      * @throws UserNotFoundException        the user not found exception
      * @throws MessageNotPersistedException the message not persisted exception
@@ -71,7 +71,6 @@ public class MessageBroadCastServiceTests {
 
     /**
      * Should not broad cast message if message is not broadcast and dont call message service.
-     *
      * @throws IOException                  the io exception
      * @throws UserNotFoundException        the user not found exception
      * @throws MessageNotPersistedException the message not persisted exception
@@ -156,7 +155,6 @@ public class MessageBroadCastServiceTests {
 
     /**
      * Should return a single message, when broadCastService returns a single message.
-     *
      * @throws GroupNotFoundException the group not found exception
      */
     @Test
