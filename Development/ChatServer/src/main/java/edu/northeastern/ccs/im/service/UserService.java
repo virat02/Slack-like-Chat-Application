@@ -9,6 +9,7 @@ import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +107,8 @@ public final class UserService implements IService {
         if(!passwordCheck.get("num")) {
             throw new PasswordDoesNotContainNumberException("Password must contain at least one number!");
         }
+        Base64.Encoder encoder = Base64.getEncoder();
+        user.setPassword(encoder.encodeToString(user.getPassword().getBytes()));
         userJPAService.setEntityManager(null);
         int id = userJPAService.createUser(user);
         if(id == 0) {

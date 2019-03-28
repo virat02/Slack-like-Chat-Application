@@ -48,8 +48,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       printInConsoleForProcess(0);
     }
     else if (getCurrentProcess() == 3) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      String oldPasswordString = encoder.encodeToString(inputString.getBytes());
+      String oldPasswordString = inputString;
 
       if (oldPasswordString.equals(UserConstants.getUserObj().getPassword())) {
         printInConsoleForProcess(4);
@@ -60,13 +59,11 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       }
     }
     else if (getCurrentProcess() == 4) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      passwordString = encoder.encodeToString(inputString.getBytes());
+      passwordString = inputString;
       printInConsoleForProcess(5);
     }
     else if (getCurrentProcess() == 5) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      if (passwordString.equals(encoder.encodeToString(inputString.getBytes()))) {
+      if (passwordString.equals(inputString)) {
         if (updateUserPassword() != -1) {
           printMessageInConsole(ConstantStrings.UPDATE_PROFILE_SUCCESS);
           printInConsoleForProcess(0);
