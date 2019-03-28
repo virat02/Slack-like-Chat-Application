@@ -244,7 +244,7 @@ public class RequestDispatcherTests {
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotFoundExceptionCheckNetworkResponse()
             throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
-        final String userNotFound = "{\"message : \"The user doesn't exist in the system.\"}";
+        final String userNotFound = "{\"message\" : \"The user doesn't exist in the system.\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
@@ -266,7 +266,7 @@ public class RequestDispatcherTests {
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotPresentInTheGroupExceptionCheckNetworkResponse()
             throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
-        final String userNotPresentInGroup = "{\"message : \"You are not a participant of the group\"}";
+        final String userNotPresentInGroup = "{\"message\" : \"You are not a participant of the group\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
@@ -288,7 +288,7 @@ public class RequestDispatcherTests {
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToGroupNotFoundExceptionCheckNetworkResponse()
             throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
-        final String groupNotFound = "{\"message : \"The group doesn't exist. Please create a group\"}";
+        final String groupNotFound = "{\"message\" : \"The group doesn't exist. Please create a group\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
