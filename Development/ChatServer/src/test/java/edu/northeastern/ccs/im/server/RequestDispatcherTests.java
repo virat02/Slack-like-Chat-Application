@@ -43,7 +43,12 @@ public class RequestDispatcherTests {
     /**
      * Sets up the tests.
      *
-     * @throws IllegalAccessException  the illegal access exception
+     * @throws JsonProcessingException    the json processing exception
+     * @throws IllegalAccessException     the illegal access exception
+     * @throws UserNotFoundException      the user not found exception
+     * @throws GroupNotPersistedException the group not persisted exception
+     * @throws UserNotPresentInTheGroup   the user not present in the group
+     * @throws GroupNotFoundException     the group not found exception
      */
     @Before
     public void setup() throws JsonProcessingException, IllegalAccessException,
@@ -204,7 +209,7 @@ public class RequestDispatcherTests {
      */
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsSuccessfulCheckNetworkResponse() throws IOException {
-        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
@@ -217,13 +222,80 @@ public class RequestDispatcherTests {
      * @throws IOException the io exception
      */
     @Test
-    public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulCheckNetworkResponse() throws IOException {
-        when(payload.jsonString()).thenReturn("{\"groupCode\": \"xyz\"}");
+    public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToIOExceptionCheckNetworkResponse() throws IOException {
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
         doThrow(IOException.class).when(broadCastService).addConnection(mockSocketChannel);
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+    }
+
+
+    /**
+     * When handle network request if join group is un successful due to user not found exception check network response.
+     *
+     * @throws IOException                the io exception
+     * @throws UserNotFoundException      the user not found exception
+     * @throws GroupNotPersistedException the group not persisted exception
+     * @throws UserNotPresentInTheGroup   the user not present in the group
+     * @throws GroupNotFoundException     the group not found exception
+     */
+    @Test
+    public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotFoundExceptionCheckNetworkResponse()
+            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+        final String userNotFound = "{\"message : \"The user doesn't exist in the system.\"}";
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
+        requestDispatcher.setMessageManagerService(messageManagerService);
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
+        doThrow(UserNotFoundException.class).when(messageManagerService).getService(anyString(), anyString(),anyBoolean());
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+        Assert.assertEquals(networkResponse.payload().jsonString(), userNotFound);
+    }
+
+    /**
+     * When handle network request if join group is un successful due to user not present in the group exception check network response.
+     *
+     * @throws IOException                the io exception
+     * @throws UserNotFoundException      the user not found exception
+     * @throws GroupNotPersistedException the group not persisted exception
+     * @throws UserNotPresentInTheGroup   the user not present in the group
+     * @throws GroupNotFoundException     the group not found exception
+     */
+    @Test
+    public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotPresentInTheGroupExceptionCheckNetworkResponse()
+            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+        final String userNotPresentInGroup = "{\"message : \"You are not a participant of the group\"}";
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
+        requestDispatcher.setMessageManagerService(messageManagerService);
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
+        doThrow(UserNotPresentInTheGroup.class).when(messageManagerService).getService(anyString(), anyString(),anyBoolean());
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+        Assert.assertEquals(networkResponse.payload().jsonString(), userNotPresentInGroup);
+    }
+
+    /**
+     * When handle network request if join group is un successful due to group not found exception check network response.
+     *
+     * @throws IOException                the io exception
+     * @throws UserNotFoundException      the user not found exception
+     * @throws GroupNotPersistedException the group not persisted exception
+     * @throws UserNotPresentInTheGroup   the user not present in the group
+     * @throws GroupNotFoundException     the group not found exception
+     */
+    @Test
+    public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToGroupNotFoundExceptionCheckNetworkResponse()
+            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+        final String groupNotFound = "{\"message : \"The group doesn't exist. Please create a group\"}";
+        when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
+        requestDispatcher.setMessageManagerService(messageManagerService);
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.JOIN_GROUP);
+        doThrow(GroupNotFoundException.class).when(messageManagerService).getService(anyString(), anyString(),anyBoolean());
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
+        Assert.assertEquals(networkResponse.payload().jsonString(), groupNotFound);
     }
 
     /**
@@ -656,6 +728,66 @@ public class RequestDispatcherTests {
         when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_FOLLOWERS);
         NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
         Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle set followers throws exception network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetFollowersThrowsExceptionNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}" + "\n" + "{\"id\": 1, \"username\": \"sibendu\"}");
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_FOLLOWERS);
+        doThrow(IOException.class).when(userController).followUser(anyString(), any());
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
+    }
+
+
+    /**
+     * When handle network request handle set un followers is successful check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetUnFollowersIsSuccessfulCheckNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}" + "\n" + "{\"id\": 1, \"username\": \"sibendu\"}");
+        when(userController.unfollowUser(anyString(), any())).thenReturn(networkResponseFactory.createSuccessfulResponse());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createSuccessfulResponse().status());
+    }
+
+    /**
+     * When handle network request handle set un followers parsed size is one check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetUnFollowersParsedSizeIsOneCheckNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}");
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponseFactory.createFailedResponse().status(), networkResponse.status());
+    }
+
+    /**
+     * When handle network request handle set un followers throws io exception check network response.
+     *
+     * @throws JsonProcessingException the json processing exception
+     */
+    @Test
+    public void whenHandleNetworkRequestHandleSetUnFollowersThrowsIOExceptionCheckNetworkResponse() throws JsonProcessingException {
+        initializeForUserEntityRequests();
+        when(payload.jsonString()).thenReturn("{\"id\": 1, \"username\": \"sibendu\"}" + "\n" + "{\"id\": 1, \"username\": \"sibendu\"}");
+        doThrow(IOException.class).when(userController).unfollowUser(anyString(), any());
+        when(networkRequest.networkRequestType()).thenReturn(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS);
+        NetworkResponse networkResponse = requestDispatcher.handleNetworkRequest(networkRequest, mockSocketChannel);
+        Assert.assertEquals(networkResponse.status(), networkResponseFactory.createFailedResponse().status());
     }
 
     /**
