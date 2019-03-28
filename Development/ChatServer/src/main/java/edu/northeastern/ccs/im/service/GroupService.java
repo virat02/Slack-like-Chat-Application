@@ -25,6 +25,7 @@ public class GroupService implements IService {
      */
     public GroupService() {
         groupJPA = new GroupJPAService();
+        userJPA = new UserJPAService();
     }
 
     /**
@@ -38,7 +39,7 @@ public class GroupService implements IService {
         } else {
             this.userJPA = userJPA;
         }
-        this.groupJPA.setEntityManager(null);
+        this.userJPA.setEntityManager(null);
     }
 
     /**
@@ -57,7 +58,6 @@ public class GroupService implements IService {
 
     /**
      * Create a group iff the group does not already exist
-     *
      * @param groupCode
      * @return
      * @throws GroupNotPersistedException
@@ -66,7 +66,7 @@ public class GroupService implements IService {
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
 
         //Check if request for private group
-        if (flag) {
+        if(flag) {
             return createPrivateGroupIfNotPresent(groupCode, username);
         }
 
@@ -139,7 +139,7 @@ public class GroupService implements IService {
         Group g = groupJPA.searchUsingCode(groupUniqueKey);
 
         userJPA.setEntityManager(null);
-        if (!((g.getUsers()).contains(userJPA.search(username)))) {
+        if (!(g.getUsers().contains(userJPA.search(username)))) {
             throw new UserNotPresentInTheGroup("This user is not part of the group!");
         }
 

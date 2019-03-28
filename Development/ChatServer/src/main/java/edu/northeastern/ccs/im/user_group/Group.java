@@ -280,8 +280,5 @@
         return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
     }
-
-
-
-    }
+}
 
