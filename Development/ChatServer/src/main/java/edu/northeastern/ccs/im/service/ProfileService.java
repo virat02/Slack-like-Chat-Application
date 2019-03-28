@@ -1,10 +1,13 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
+
+import java.util.regex.Pattern;
 
 /**
  * Class for all the profile service methods
@@ -32,9 +35,32 @@ public class ProfileService {
     }
 
     /**
+     * Returns true iff the email id is valid
+     * @param emailId
+     */
+    public boolean isValidEmail(String emailId){
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (emailId == null)
+            return false;
+        return pat.matcher(emailId).matches();
+    }
+
+    /**
      * Creates a profile if the respective inputs are valid
      */
-    public Profile createProfile(Profile pf) throws ProfileNotPersistedException {
+    public Profile createProfile(Profile pf)
+            throws ProfileNotPersistedException, InvalidEmailException {
+
+        //Check for validity of email
+        if(!isValidEmail(pf.getEmail())){
+         throw new InvalidEmailException("Invalid email id entered!");
+        }
+
         profileJPAService.setEntityManager(null);
         return profileJPAService.createProfile(pf);
     }
