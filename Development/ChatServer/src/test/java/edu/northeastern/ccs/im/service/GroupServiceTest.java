@@ -165,27 +165,6 @@ public class GroupServiceTest {
 	}
 
 	/**
-	 * Testing the createIfNotPresent group method for throwing a UserNotFoundException
-	 */
-	@Test
-	public void testCreateIfNotPresentForPrivateGroupForUserNotFoundException()
-			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
-
-//		Group g = mock(Group.class);
-//
-//		groupService.setUserService(userJPAService);
-//		groupService.setJPAService(groupJPAService);
-//		when(userJPAService.search("Jerry")).thenReturn(userOne);
-//		when(userJPAService.search("Danny")).thenReturn(userTwo);
-//		when(groupJPAService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
-//		when(groupJPAService.createGroup(g)).thenReturn(1);
-//		when(groupJPAService.updateGroup(g)).thenReturn(true);
-//
-//		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Jerry", true));
-//		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Danny", true));
-	}
-
-	/**
 	 * Testing the update group method
 	 */
 	@Test
