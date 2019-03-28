@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
@@ -24,6 +25,7 @@ public class MessageJPAService {
 
     /**
      * Set a group service
+     *
      * @param groupService
      */
     public void setGroupService(GroupService groupService) {
@@ -32,15 +34,15 @@ public class MessageJPAService {
 
     /**
      * Set an entity manager
+     *
      * @param entityManager
      */
     public void setEntityManager(EntityManager entityManager) {
-        if(entityManager == null) {
+        if (entityManager == null) {
             EntityManagerFactory emFactory;
             emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
             this.entityManager = emFactory.createEntityManager();
-        }
-        else{
+        } else {
             this.entityManager = entityManager;
         }
     }
@@ -75,7 +77,7 @@ public class MessageJPAService {
             entityManager.persist(message);
             entityManager.flush();
             endTransaction();
-            LOGGER.info("Created message with message id : "+message.getId());
+            LOGGER.info("Created message with message id : " + message.getId());
             return message.getId();
         } catch (Exception e) {
             LOGGER.info("JPA Could not persist the message!");
@@ -91,7 +93,7 @@ public class MessageJPAService {
     public boolean updateMessage(Message message) throws MessageNotFoundException {
         beginTransaction();
         Message thisMessage = entityManager.find(Message.class, message.getId());
-        if(thisMessage == null){
+        if (thisMessage == null) {
             LOGGER.info("Can't find Message for ID:" + message.getId());
             throw new MessageNotFoundException("Can't find Message for ID:" + message.getId());
         }
@@ -104,12 +106,11 @@ public class MessageJPAService {
         thisMessage.setExpiration(message.getExpiration());
         endTransaction();
 
-        if(thisMessage.toString().equals(message.toString())){
-            LOGGER.info("Updated message with message id : "+message.getId());
+        if (thisMessage.toString().equals(message.toString())) {
+            LOGGER.info("Updated message with message id : " + message.getId());
             return true;
-        }
-        else {
-            LOGGER.info("Could not update message with message id : "+message.getId());
+        } else {
+            LOGGER.info("Could not update message with message id : " + message.getId());
             return false;
         }
 
@@ -117,6 +118,7 @@ public class MessageJPAService {
 
     /**
      * Gets a message given it's id
+     *
      * @param id
      * @return
      */
@@ -137,7 +139,7 @@ public class MessageJPAService {
      *
      * @param groupUniqueKey
      */
-    public List<Message> getTop15Messages(String groupUniqueKey)throws GroupNotFoundException{
+    public List<Message> getTop15Messages(String groupUniqueKey) throws GroupNotFoundException {
 
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
@@ -147,14 +149,7 @@ public class MessageJPAService {
         TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
         List<Message> msgList = query.setMaxResults(15).getResultList();
         msgList.sort(Comparator.comparing(Message::getId));
-
-        if(msgList != null){
-            LOGGER.info("Top 15 messages for a group: "+groupUniqueKey+" retrieved!");
-            return msgList;
-        }
-        else{
-            LOGGER.info("No messages could be retrieved for the given group unique key: "+ groupUniqueKey);
-            throw new NoResultException("No messages could be retrieved for the given group unique key: "+groupUniqueKey);
-        }
+        ChatLogger.info("Top 15 messages for a group: " + groupUniqueKey + " retrieved!");
+        return msgList;
     }
 }

@@ -163,7 +163,7 @@ public class UserJPAServiceTest {
     /**
      * Tests the login functionality for a user interacting with the Database fails.
      */
-    @Test
+    @Test(expected = UserNotFoundException.class)
     public void testLoginFail() throws UserNotFoundException {
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
@@ -171,7 +171,6 @@ public class UserJPAServiceTest {
         when(mockedQuery.getSingleResult()).thenReturn(new User());
         userJPAService.setEntityManager(entityManager);
         User newUser = userJPAService.loginUser(userOne);
-        assertNull(newUser);
     }
 
     /**

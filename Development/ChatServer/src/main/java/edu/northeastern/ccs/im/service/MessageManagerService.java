@@ -37,11 +37,19 @@ public class MessageManagerService {
         return instance;
     }
 
-    /**
-     * Gets a particular message service based on client request
+    /***
      *
-     * @param groupUniqueKey The group unique code of the group
-     * @return BroadCastService
+     * Gets a particular message service based on client request
+     * @param groupUniqueKey - The unique code for the group
+     * @param username - The user which needs to initiate conversation
+     * @param flag - Whether this conversation is private or not
+     * @return An instance of BroadCastService responsible for handling the group
+     *          messaging conversations.
+     * @throws GroupNotFoundException If the group doesn't exist in the system
+     * @throws UserNotFoundException If the user doesn't exist in the system
+     * @throws UserNotPresentInTheGroup If the user is not a participant of the system
+     * @throws GroupNotPersistedException If group cannot be created( for private groups)
+     *
      */
     public BroadCastService getService(String groupUniqueKey, String username, Boolean flag)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
@@ -51,19 +59,6 @@ public class MessageManagerService {
         if (!hmap.containsKey(groupUniqueKey))
             hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
         return hmap.get(groupUniqueKey);
-    }
-
-    /**
-     * Creates a broadcast service iff at-least one client is present
-     */
-    public void checkForInactivity(MessageBroadCastService messageBroadCastService) {
-        if (!messageBroadCastService.isClientActive()) {
-            for (Map.Entry<String, BroadCastService> entry : hmap.entrySet()) {
-                if (entry.getValue() == messageBroadCastService) {
-                    hmap.remove(entry.getKey());
-                }
-            }
-        }
     }
 
 }

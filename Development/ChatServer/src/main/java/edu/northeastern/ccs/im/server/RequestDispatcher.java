@@ -215,7 +215,7 @@ public class RequestDispatcher {
      */
 
     private NetworkResponse handleJoinGroupRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
-        final String IOError = "{\"message : \"Some error happened while processing the request. Please try later.\"}";
+        final String IOError = "{\"message\" : \"Some error happened while processing the request. Please try later.\"}";
         final String userNotPresentInGroup = "{\"message\" : \"You are not a participant of the group\"}";
         final String groupNotFound = "{\"message\" : \"The group doesn't exist. Please create a group\"}";
         final String userNotFound = "{\"message\" : \"The user doesn't exist in the system.\"}";

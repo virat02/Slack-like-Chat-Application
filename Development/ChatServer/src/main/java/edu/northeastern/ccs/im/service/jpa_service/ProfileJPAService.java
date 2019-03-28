@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
@@ -61,7 +62,7 @@ public class ProfileJPAService {
             entityManager.flush();
             int profileId = p.getId();
             endTransaction();
-            LOGGER.info("Created profile with profile id : "+profileId);
+            ChatLogger.info("Created profile with profile id : "+profileId);
             return p;
         }
         catch (Exception e) {
