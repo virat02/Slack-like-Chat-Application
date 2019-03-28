@@ -47,8 +47,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
         printMessageInConsole(ConstantStrings.PASSWORDS_DO_NOT_MATCH);
         printInConsoleForProcess(2);
       } else {
-        Base64.Encoder encoder = Base64.getEncoder();
-        passwordString = encoder.encodeToString(inputString.getBytes());
+        passwordString = inputString;
         int id = createUserAndFetchId();
         if (id == -1) {
           printInConsoleForProcess(4);

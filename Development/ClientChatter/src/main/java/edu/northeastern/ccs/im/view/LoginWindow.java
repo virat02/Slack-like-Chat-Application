@@ -44,8 +44,7 @@ public class LoginWindow extends AbstractTerminalWindow {
       userIdString = inputString;
       printInConsoleForNextProcess();
     } else if (getCurrentProcess() == 1) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      passwordString = encoder.encodeToString(inputString.getBytes());
+      passwordString = inputString;
       int currentUser;
       if ((currentUser = loginUser()) != -1) {
         printMessageInConsole(ConstantStrings.LOGIN_SUCCESSFUL);
