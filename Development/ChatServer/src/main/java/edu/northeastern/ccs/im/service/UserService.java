@@ -134,8 +134,7 @@ public final class UserService implements IService {
             character = string.charAt(i);
             if( Character.isDigit(character)) {
                 booleanHashMap.replace("num", true);
-            }
-            else if (Character.isUpperCase(character)) {
+            } else if (Character.isUpperCase(character)) {
                 booleanHashMap.replace("cap", true);
             } else if (Character.isLowerCase(character)) {
                 booleanHashMap.replace("low", true);
