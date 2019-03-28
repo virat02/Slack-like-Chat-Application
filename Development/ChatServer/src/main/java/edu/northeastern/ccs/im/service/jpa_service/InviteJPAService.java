@@ -1,6 +1,5 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
@@ -29,6 +28,14 @@ public class InviteJPAService {
         } else {
             this.entityManager = entityManager;
         }
+    }
+
+    /**
+     * A setter for GroupJPAService
+     * @param groupJPA the groupjpa service we are setting.
+     */
+    public void setGroupJPA(GroupJPAService groupJPA) {
+        this.groupJPA = groupJPA;
     }
 
     /**
@@ -135,10 +142,10 @@ public class InviteJPAService {
 
     /**
      *  search a list of invites based on groupCode
-     * @param groupCode
-     * @return
-     * @throws GroupNotFoundException
-     * @throws InviteNotFoundException
+     * @param groupCode of the group
+     * @return list of invites found
+     * @throws GroupNotFoundException if the group is not found
+     * @throws InviteNotFoundException if the invite is not found
      */
     public List<Invite> searchInviteByGroupCode(String groupCode , User moderator) throws GroupNotFoundException, InviteNotFoundException {
         try {
