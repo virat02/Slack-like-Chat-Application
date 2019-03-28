@@ -143,9 +143,9 @@ public class ResponseParser {
           NetworkResponseFailureException {
     try {
       throwErrorIfResponseFailed(networkResponse);
-      List<User> parsedUsers = CommunicationUtils.getObjectMapper()
-              .readValue(networkResponse.payload().jsonString(),
-                      new TypeReference<ArrayList<User>>() {});
+      List<User> parsedUsers =
+              CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString()
+                      , ArrayList.class);
 
       return parsedUsers;
     }

@@ -111,6 +111,20 @@ public class NetworkRequestFactory {
     }
 
     /***
+     * Creates a network request for searching the group
+     * @param searchString
+     * @return NetworkRequest
+     */
+    public NetworkRequest createSearchGroupRequest(String searchString) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEARCH_GROUP,
+                () -> {
+                    Group group = new Group();
+                    group.setName(searchString);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+                });
+    }
+
+    /***
      * Creates a request for creation of a new group.
      * @param groupName
      * @return NetworkRequest
@@ -237,6 +251,15 @@ public class NetworkRequestFactory {
 
     public NetworkRequest createGetUserFollowersList(String userName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWERS,
+                () -> {
+                    User user = new User();
+                    user.setUsername(userName);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+                });
+    }
+
+    public NetworkRequest createGetUserFolloweesList(String userName) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
                 () -> {
                     User user = new User();
                     user.setUsername(userName);

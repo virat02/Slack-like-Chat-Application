@@ -18,12 +18,14 @@ public class MessageSocketListener implements Runnable, Listener {
 
     @Override
     public void run() {
+        ViewConstants.getOutputStream().println("Entered");
         while (isRunning) {
             List<Message> messages = clientConnection.readMessages();
             messages.stream()
                     .map(m -> messageFormatter().formatMessage(m))
                     .forEach(ViewConstants.getOutputStream()::println);
         }
+        ViewConstants.getOutputStream().println("Ended");
     }
 
     //Listener Methods

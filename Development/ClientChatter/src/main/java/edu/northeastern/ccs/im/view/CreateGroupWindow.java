@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.view;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
@@ -7,31 +8,29 @@ import edu.northeastern.ccs.im.communication.NetworkRequestFactory;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 
 public class CreateGroupWindow extends AbstractTerminalWindow {
-
-  private String groupName;
-  private String groupCode;
+	
+	private String groupName;
+	private String groupCode;
   public CreateGroupWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.CREATE_GROUP);
       put(1, ConstantStrings.CREATE_GROUP_CODE);
-      put(2, ConstantStrings.DEFAULT_MENU);
-      put(3, ConstantStrings.FAILURE_MENU);
+      put(2, ConstantStrings.CREATE_GROUP_SUCCESS);
+      put(3, ConstantStrings.CREATE_GROUP_FAILED);
     }}, clientConnectionFactory);
   }
 
   @Override
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 0) {
-      groupName = inputString;
-      printInConsoleForNextProcess();
+    	 groupName = inputString;
+    	 printInConsoleForNextProcess();
     } else if (getCurrentProcess() == 1) {
-      groupCode = inputString;
+    	groupCode = inputString;
       if (createGroup(groupName,groupCode)) {
-        printMessageInConsole(ConstantStrings.CREATE_GROUP_SUCCESS);
-        printInConsoleForProcess(2);
+        printInConsoleForNextProcess();
       }
       else {
-        printMessageInConsole(ConstantStrings.CREATE_GROUP_FAILED);
         printInConsoleForProcess(3);
       }
     }
