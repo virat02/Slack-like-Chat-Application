@@ -24,8 +24,7 @@ public class ConstantStrings {
     public static final String EMAIL_ADDRESS_STRING = "Enter Email Address: ";
     public static final String PASSWORD_STRING = "Enter Password: ";
     public static final String LOGIN_SUCCESSFUL = "Login Successful";
-    public static final String LOGIN_FAILED = "Invalid Username/password\n"
-            + "1 - Retry\n" + "2 - Forgot Password\n" + DEFAULT_MENU;
+    public static final String LOGIN_FAILED = "1 - Retry\n" + "2 - Forgot Password\n" + DEFAULT_MENU;
 
     //Sign Up Strings
     public static final String USER_NAME_STRING = "Enter Username: ";
@@ -109,11 +108,13 @@ public class ConstantStrings {
             "Sub group Details\n" + DEFAULT_MENU;
     public static final String GROUP_UPDATE = "Enter Group Code To Update: ";
     public static final String GROUP_NOT_FOUND = "Group not found\n" + FAILURE_MENU;
+    public static final String GROUP_NOT_FOUND_MESSAGE = "Group not found";
     public static final String GROUP_UPDATE_USER = "Enter User Name To Update: ";
     public static final String GROUP_UPDATE_PASSWORD = "Enter Group Password: ";
     public static final String GROUP_UPDATE_SUCCESSFUL = "Group Updated Successful";
     public static final String GROUP_UPDATE_FAILED = "Group Update Failed";
     public static final String GROUP_USER_PRESENT = "User already in group";
+    public static final String GROUP_USER_ABSENT_PARENT = "User not present in parent group";
     public static final String GROUP_USER_ABSENT = "User not in group";
     public static final String GROUP_USER_NO_PERMISSION = "You do not have permission to update " +
             "the " +

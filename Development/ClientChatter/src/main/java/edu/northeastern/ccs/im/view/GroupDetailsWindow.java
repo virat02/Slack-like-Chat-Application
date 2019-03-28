@@ -29,13 +29,37 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
       put(4, ConstantStrings.GROUP_UPDATE_PASSWORD);
       put(5, ConstantStrings.CREATE_GROUP);
       put(6, ConstantStrings.CREATE_GROUP_CODE);
+      put(7, ConstantStrings.GROUP_UPDATE);
     }}, clientConnectionFactory);
   }
 
   public GroupDetailsWindow(TerminalWindow caller,
-                            ClientConnectionFactory clientConnectionFactory, Group baseGroup) {
+                            ClientConnectionFactory clientConnectionFactory, Group baseGroup,
+                            Group currentGroup) {
     this(caller, clientConnectionFactory);
     this.baseGroup = baseGroup;
+    this.group = currentGroup;
+    this.groupName = currentGroup.getName();
+  }
+
+  @Override
+  public void runWindow() {
+    if (baseGroup == null && group == null) {
+      super.runWindow();
+    } else {
+      printMessageInConsole("Group - " + groupName);
+      printInConsoleForProcess(2);
+    }
+  }
+
+  @Override
+  public void goBack() {
+    baseGroup = null;
+    groupName = null;
+    group = null;
+    subGroupName = null;
+    subGroupId = null;
+    super.goBack();
   }
 
   @Override
@@ -68,52 +92,14 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
         currentProcess = 2;
         printInConsoleForProcess(3);
       } else if (inputString.equals("3")) {
-        currentProcess = 3;
         printInConsoleForProcess(4);
       } else if (inputString.equals("4")) {
-        printMessageInConsole("Group Name: " + group.getName());
-        printMessageInConsole("Group Code: " + group.getGroupCode());
-
-        StringBuilder moderator = new StringBuilder("Moderators: ");
-        if (group.getModerators().size() > 0) {
-          moderator.append(group.getModerators().get(0).getUsername());
-          for (int index = 1 ; index < group.getModerators().size() ; index ++) {
-            User user = group.getModerators().get(index);
-            moderator.append(", ");
-            moderator.append(user.getUsername());
-          }
-        }
-        else {
-          moderator.append("-");
-        }
-        printMessageInConsole(moderator.toString());
-
-        StringBuilder usersString = new StringBuilder("Users: ");
-        if (group.getUsers().size() > 0) {
-          usersString.append(group.getUsers().get(0).getUsername());
-          for (int index = 1 ; index < group.getUsers().size() ; index ++) {
-            User user = group.getUsers().get(index);
-            usersString.append(", ");
-            usersString.append(user.getUsername());
-          }
-        }
-        else {
-          usersString.append("-");
-        }
-        printMessageInConsole(usersString.toString());
-
-        if (group.getModerators().stream().filter(obj -> obj.getId()
-                == UserConstants.getUserId()).collect(Collectors.toList()).size() > 0) {
-          printMessageInConsole("Password: " + group.getGroupPassword());
-        }
-        else {
-          printMessageInConsole("Password: ******");
-        }
+        printGroupDetails();
         printInConsoleForProcess(2);
       } else if (inputString.equals("5")) {
         printInConsoleForProcess(5);
       } else if (inputString.equals("6")) {
-//        printInConsoleForProcess();
+        printInConsoleForProcess(7);
       } else if (inputString.equals("0")) {
         goBack();
       } else if (inputString.equals("*")) {
@@ -122,53 +108,7 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
         invalidInputPassed();
       }
     } else if (getCurrentProcess() == 3) {
-      User user = searchForUsers(inputString);
-      if (user != null) {
-        List<User> groupUsers = group.getUsers();
-        if (group.getModerators().stream().filter(obj -> obj.getId()
-                == UserConstants.getUserId()).collect(Collectors.toList()).size() > 0) {
-          if (currentProcess == 1){
-            if (groupUsers.stream().filter(obj -> obj.getId() == user.getId()).collect(Collectors.toList()).size() > 0) {
-              printMessageInConsole(ConstantStrings.GROUP_USER_PRESENT);
-            }
-            else {
-              groupUsers.add(user);
-              group.setUsers(groupUsers);
-              if (updateGroup(group)) {
-                printMessageInConsole(ConstantStrings.GROUP_UPDATE_SUCCESSFUL);
-              }
-              else {
-                printMessageInConsole(ConstantStrings.GROUP_UPDATE_FAILED);
-              }
-            }
-          }
-          else {
-            if (groupUsers.stream().filter(obj -> obj.getId() == user.getId()).collect(Collectors.toList()).size() > 0) {
-
-              User currentUser = groupUsers.stream().filter(obj -> obj.getId() == user.getId())
-                      .collect(Collectors.toList()).get(0);
-
-              groupUsers.remove(currentUser);
-              group.setUsers(groupUsers);
-              if (updateGroup(group)) {
-                printMessageInConsole(ConstantStrings.GROUP_UPDATE_SUCCESSFUL);
-              }
-              else {
-                printMessageInConsole(ConstantStrings.GROUP_UPDATE_FAILED);
-              }
-            }
-            else {
-              printMessageInConsole(ConstantStrings.GROUP_USER_ABSENT);
-            }
-          }
-        }
-        else {
-          printMessageInConsole(ConstantStrings.GROUP_USER_NO_PERMISSION);
-        }
-      }
-      else {
-        printMessageInConsole(ConstantStrings.USER_INVALID);
-      }
+      addOrRemoveUser(inputString);
       printInConsoleForProcess(2);
     } else if (getCurrentProcess() == 4) {
       if (group.getModerators().stream().filter(obj -> obj.getId()
@@ -197,6 +137,129 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
         printMessageInConsole(ConstantStrings.CREATE_GROUP_FAILED);
         printInConsoleForProcess(2);
       }
+    } else if (getCurrentProcess() == 7) {
+      List<Group> subGroups = group.getGroups().stream()
+              .filter(obj -> obj.getGroupCode().equals(inputString)).collect(Collectors.toList());
+      if (subGroups.size() != 0) {
+        new GroupDetailsWindow(this, clientConnectionFactory, group, subGroups.get(0))
+                .runWindow();
+      }
+      else {
+        printMessageInConsole(ConstantStrings.GROUP_NOT_FOUND_MESSAGE);
+        printInConsoleForProcess(2);
+      }
+    }
+  }
+
+  private void printGroupDetails() {
+    printMessageInConsole("Group Name: " + group.getName());
+    printMessageInConsole("Group Code: " + group.getGroupCode());
+
+    StringBuilder moderator = new StringBuilder("Moderators: ");
+    if (group.getModerators().size() > 0) {
+      moderator.append(group.getModerators().get(0).getUsername());
+      for (int index = 1 ; index < group.getModerators().size() ; index ++) {
+        User user = group.getModerators().get(index);
+        moderator.append(", ");
+        moderator.append(user.getUsername());
+      }
+    }
+    else {
+      moderator.append("-");
+    }
+    printMessageInConsole(moderator.toString());
+
+    StringBuilder usersString = new StringBuilder("Users: ");
+    if (group.getUsers().size() > 0) {
+      usersString.append(group.getUsers().get(0).getUsername());
+      for (int index = 1 ; index < group.getUsers().size() ; index ++) {
+        User user = group.getUsers().get(index);
+        usersString.append(", ");
+        usersString.append(user.getUsername());
+      }
+    }
+    else {
+      usersString.append("-");
+    }
+    printMessageInConsole(usersString.toString());
+
+    StringBuilder subGroupsBuilder = new StringBuilder("Sub Groups: ");
+    if (group.getGroups().size() > 0) {
+      subGroupsBuilder.append(group.getGroups().get(0).getName());
+      for (int index = 1 ; index < group.getUsers().size() ; index ++) {
+        Group subGroup = group.getGroups().get(index);
+        subGroupsBuilder.append(", ");
+        subGroupsBuilder.append(subGroup.getName());
+      }
+    }
+    else {
+      subGroupsBuilder.append("-");
+    }
+    printMessageInConsole(subGroupsBuilder.toString());
+
+    if (group.getModerators().stream().filter(obj -> obj.getId()
+            == UserConstants.getUserId()).collect(Collectors.toList()).size() > 0) {
+      printMessageInConsole("Password: " + group.getGroupPassword());
+    }
+    else {
+      printMessageInConsole("Password: ******");
+    }
+  }
+
+  private void addOrRemoveUser(String inputString) {
+    User user = searchForUsers(inputString);
+    if (user != null) {
+      List<User> groupUsers = group.getUsers();
+      if (group.getModerators().stream().filter(obj -> obj.getId()
+              == UserConstants.getUserId()).collect(Collectors.toList()).size() > 0) {
+        if (currentProcess == 1) {
+          if (groupUsers.stream().filter(obj -> obj.getId() == user.getId()).collect(Collectors.toList()).size() > 0) {
+            printMessageInConsole(ConstantStrings.GROUP_USER_PRESENT);
+          }
+          else {
+            if (baseGroup != null && baseGroup.getUsers()
+                    .stream().filter(obj -> obj.getUsername().equals(user.getUsername()))
+                    .count() == 0) {
+              printMessageInConsole(ConstantStrings.GROUP_USER_ABSENT_PARENT);
+            }
+            else {
+              groupUsers.add(user);
+              group.setUsers(groupUsers);
+              if (updateGroup(group)) {
+                printMessageInConsole(ConstantStrings.GROUP_UPDATE_SUCCESSFUL);
+              }
+              else {
+                printMessageInConsole(ConstantStrings.GROUP_UPDATE_FAILED);
+              }
+            }
+          }
+        }
+        else {
+          if (groupUsers.stream().filter(obj -> obj.getId() == user.getId()).collect(Collectors.toList()).size() > 0) {
+
+            User currentUser = groupUsers.stream().filter(obj -> obj.getId() == user.getId())
+                    .collect(Collectors.toList()).get(0);
+
+            groupUsers.remove(currentUser);
+            group.setUsers(groupUsers);
+            if (updateGroup(group)) {
+              printMessageInConsole(ConstantStrings.GROUP_UPDATE_SUCCESSFUL);
+            }
+            else {
+              printMessageInConsole(ConstantStrings.GROUP_UPDATE_FAILED);
+            }
+          }
+          else {
+            printMessageInConsole(ConstantStrings.GROUP_USER_ABSENT);
+          }
+        }
+      }
+      else {
+        printMessageInConsole(ConstantStrings.GROUP_USER_NO_PERMISSION);
+      }
+    }
+    else {
+      printMessageInConsole(ConstantStrings.USER_INVALID);
     }
   }
 
@@ -205,9 +268,8 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
               .createUpdateGroupRequest(group));
       return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
-    } catch (IOException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
   }
@@ -217,9 +279,8 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
               .createSearchUserRequest(inputString));
       return ResponseParser.parseSearchUserNetworkResponse(networkResponse);
-    } catch (IOException | NetworkResponseFailureException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return null;
   }
@@ -229,9 +290,8 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory
               .createGetGroupRequest(inputString));
       return ResponseParser.parseGroupNetworkResponse(networkResponse);
-    } catch (IOException | NetworkResponseFailureException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return null;
   }
@@ -247,9 +307,8 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
         group.setGroups(subGroups);
         return updateGroup(group);
       }
-    } catch (IOException | NetworkResponseFailureException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
   }

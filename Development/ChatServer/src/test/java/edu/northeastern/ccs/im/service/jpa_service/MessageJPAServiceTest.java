@@ -68,11 +68,16 @@ public class MessageJPAServiceTest {
         Date d = new Date();
 
         group = mock(Group.class);
+        group.setGroupCode("XYZ");
 
         ///Set user id's
         u1.setId(1);
         u2.setId(2);
         u3.setId(3);
+
+        u1.setUsername("u1");
+        u2.setUsername("u2");
+        u3.setUsername("u3");
 
         //Create a message m1
         m1 = new Message();

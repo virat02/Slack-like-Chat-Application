@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.user_group;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
+
     @OneToMany(targetEntity=User.class)
     @JoinTable
     (
@@ -34,6 +37,7 @@ public class User implements IUser {
         joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
     )
+    @JsonIgnore
     private List<User> following = new ArrayList<>();
 
     /** The name. */
