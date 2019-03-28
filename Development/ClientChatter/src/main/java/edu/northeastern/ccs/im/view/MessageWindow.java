@@ -15,7 +15,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
     public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory, String groupCode, boolean isPrivate) {
         super(caller, new HashMap<Integer, String>() {{
-            put(0, "Message Window");
+            put(0, "");
         }}, clientConnectionFactory);
         this.groupCode = groupCode;
         this.isPrivate = isPrivate;
