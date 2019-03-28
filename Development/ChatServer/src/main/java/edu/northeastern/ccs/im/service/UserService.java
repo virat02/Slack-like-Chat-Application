@@ -231,6 +231,8 @@ public final class UserService implements IService {
      * @return the updated user.
      */
     public User update(User user) throws UserNotFoundException {
+        Base64.Encoder encoder = Base64.getEncoder();
+        user.setPassword(encoder.encodeToString(user.getPassword().getBytes()));
         userJPAService.setEntityManager(null);
         userJPAService.updateUser(user);
         userJPAService.setEntityManager(null);
@@ -254,7 +256,10 @@ public final class UserService implements IService {
      */
     public User loginUser(Object user) throws UserNotFoundException {
         userJPAService.setEntityManager(null);
-        return userJPAService.loginUser((User) user);
+        User newUser = (User) user;
+        Base64.Encoder encoder = Base64.getEncoder();
+        newUser.setPassword(encoder.encodeToString(newUser.getPassword().getBytes()));
+        return userJPAService.loginUser(newUser);
     }
 
     /**

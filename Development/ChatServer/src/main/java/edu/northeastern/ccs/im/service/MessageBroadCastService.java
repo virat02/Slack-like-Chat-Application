@@ -53,6 +53,7 @@ public class MessageBroadCastService implements BroadCastService {
      * @param groupCode the group code
      */
     public MessageBroadCastService(String groupCode) {
+        this();
         this.groupCode = groupCode;
     }
 
