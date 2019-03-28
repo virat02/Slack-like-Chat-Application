@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
@@ -186,16 +187,25 @@ public class InviteJPAService {
         return false;
     }
 
-    private boolean isUserInvitedToGroup(Invite invite){
-        Group group =invite.getGroup();
-        User receiver = invite.getReceiver();
-        String queryString =
-                "SELECT i FROM Invite i WHERE i.group.id =" + group.getId() + " AND i.receiver.id = "+receiver.getId();
-        TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
-        List<Invite> inviteList = query.getResultList();
-        if(!inviteList.isEmpty())
-            return true;
-        return false;
+    public boolean isUserInvitedToGroup(Invite invite){
+        try {
+            System.out.println("hello");
+            Group group = invite.getGroup();
+            User receiver = invite.getReceiver();
+            String queryString =
+                    "SELECT i FROM Invite i WHERE i.group.id =" + group.getId() + " AND i.receiver.id = " + receiver.getId()
+                            + " AND NOT i.status = edu.northeastern.ccs.im.service.jpa_service.Status.REJECTED";
+            TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+            List<Invite> inviteList = query.getResultList();
+            System.out.println(inviteList.size());
+            if (!inviteList.isEmpty())
+                return true;
+            return false;
+        }
+        catch (Exception e){
+            System.out.println(e);
+            return false;
+        }
     }
 
 }
