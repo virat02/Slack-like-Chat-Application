@@ -9,10 +9,6 @@ import edu.northeastern.ccs.im.user_group.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -22,15 +18,14 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 /**
- * The type Message broad cast service tests.
+ * Messagebroadcast service tests.
  */
 public class MessageBroadCastServiceTests {
+
     private SocketChannel socketChannel;
     private BroadCastService broadCastService;
     private MessageService messageService;
     private Message message;
-
-
     private ClientRunnable clientRunnable;
 
     /**
@@ -61,7 +56,10 @@ public class MessageBroadCastServiceTests {
     /**
      * Should broad cast message if message is broadcast and message is persistent.
      *
-     * @throws IOException the io exception
+     * @throws IOException                  the io exception
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
      */
     @Test
     public void shouldBroadCastMessageIfMessageIsBroadcastAndMessageIsPersistent() throws IOException, UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
@@ -74,13 +72,77 @@ public class MessageBroadCastServiceTests {
     /**
      * Should not broad cast message if message is not broadcast and dont call message service.
      *
-     * @throws IOException the io exception
+     * @throws IOException                  the io exception
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
      */
     @Test
     public void shouldNotBroadCastMessageIfMessageIsNotBroadcastAndDontCallMessageService() throws IOException, UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
         broadCastService.addConnection(socketChannel);
         when(message.isBroadcastMessage()).thenReturn(false);
+        broadCastService.broadcastMessage(message);
         verify(messageService, times(0)).createMessage(anyString(), anyString(), anyString());
+    }
+
+    /**
+     * Should broad cast message if message is broadcast and call message service.
+     *
+     * @throws IOException                  the io exception
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
+     */
+    @Test
+    public void shouldBroadCastMessageIfMessageIsBroadcastAndCallMessageService() throws IOException, UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
+        broadCastService.addConnection(socketChannel);
+        when(message.isBroadcastMessage()).thenReturn(true);
+        when(messageService.createMessage(any(), any(), any())).thenReturn(true);
+        broadCastService.broadcastMessage(message);
+        verify(messageService, times(1)).createMessage(any(), any(), any());
+    }
+
+    /**
+     * Should not broad cast message if message is not broadcast and throws message not persisted exception.
+     *
+     * @throws IOException                  the io exception
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
+     */
+    @Test
+    public void shouldNotBroadCastMessageIfMessageIsNotBroadcastAndThrowsMessageNotPersistedException() throws IOException, UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
+        broadCastService.addConnection(socketChannel);
+        when(message.isBroadcastMessage()).thenReturn(true);
+        doThrow(MessageNotPersistedException.class).when(messageService).createMessage(any(), any(), any());
+        broadCastService.broadcastMessage(message);
+    }
+
+    /**
+     * Should not broad cast message if message is not broadcast and throws user not found exception.
+     *
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
+     */
+    @Test
+    public void shouldNotBroadCastMessageIfMessageIsNotBroadcastAndThrowsUserNotFoundException() throws UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
+        when(message.isBroadcastMessage()).thenReturn(true);
+        doThrow(UserNotFoundException.class).when(messageService).createMessage(any(), any(), any());
+        broadCastService.broadcastMessage(message);
+    }
+
+    /**
+     * Should not broad cast message if message is not broadcast and throws group not found exception.
+     *
+     * @throws UserNotFoundException        the user not found exception
+     * @throws MessageNotPersistedException the message not persisted exception
+     * @throws GroupNotFoundException       the group not found exception
+     */
+    @Test
+    public void shouldNotBroadCastMessageIfMessageIsNotBroadcastAndThrowsGroupNotFoundException() throws UserNotFoundException, MessageNotPersistedException, GroupNotFoundException {
+        when(message.isBroadcastMessage()).thenReturn(true);
+        doThrow(GroupNotFoundException.class).when(messageService).createMessage(any(), any(), any());
         broadCastService.broadcastMessage(message);
     }
 
@@ -94,6 +156,8 @@ public class MessageBroadCastServiceTests {
 
     /**
      * Should return a single message, when broadCastService returns a single message.
+     *
+     * @throws GroupNotFoundException the group not found exception
      */
     @Test
     public void shouldReturnASingleMessage() throws GroupNotFoundException {
@@ -120,6 +184,8 @@ public class MessageBroadCastServiceTests {
     /**
      * Should return zero messages if null pointer exception is thrown
      * by message service getTop15Messages.
+     *
+     * @throws GroupNotFoundException the group not found exception
      */
     @Test
     public void shouldReturnZeroMessageIfNoResultExceptionIsThrown() throws GroupNotFoundException {
@@ -131,6 +197,8 @@ public class MessageBroadCastServiceTests {
     /**
      * Should return zero messages if null pointer exception is thrown
      * by message service getTop15Messages.
+     *
+     * @throws GroupNotFoundException the group not found exception
      */
     @Test
     public void shouldReturnZeroMessageIfGroupNotFoundExceptionIsThrown() throws GroupNotFoundException {

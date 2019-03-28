@@ -38,13 +38,13 @@ public class MessageBroadCastService implements BroadCastService {
         this.messageService = messageService;
     }
 
-    private MessageService messageService = new MessageService();
+    private MessageService messageService;
 
     /**
      * Instantiates a new Message broad cast service.
      */
     public MessageBroadCastService() {
-
+        messageService = new MessageService();
     }
 
     /**
