@@ -44,6 +44,8 @@ public class GroupEntityTest {
 		Group group2 = new Group(3 , str);
 		User user1 = new User();
 		User user2 = new User();
+		user1.setUsername("virat");
+		user2.setUsername("sangeetha");
 		group2.addUser(user1);
 		group2.addUser(user2);
 		List<User> userList = new ArrayList<>();

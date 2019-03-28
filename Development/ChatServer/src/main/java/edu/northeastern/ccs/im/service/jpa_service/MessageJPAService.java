@@ -8,6 +8,8 @@ import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
 
 import javax.persistence.*;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -69,6 +71,7 @@ public class MessageJPAService {
     public int createMessage(Message message) throws MessageNotPersistedException {
         try {
             beginTransaction();
+            message.setTimestamp(new Date());
             entityManager.persist(message);
             entityManager.flush();
             endTransaction();
@@ -139,11 +142,11 @@ public class MessageJPAService {
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
 
-        String queryString = "SELECT m FROM Message m, Group g WHERE m.receiver.id = "
-                + g.getId() + " ORDER BY m.timestamp DESC";
+        String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
         beginTransaction();
         TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
         List<Message> msgList = query.setMaxResults(15).getResultList();
+        msgList.sort(Comparator.comparing(Message::getId));
 
         if(msgList != null){
             LOGGER.info("Top 15 messages for a group: "+groupUniqueKey+" retrieved!");

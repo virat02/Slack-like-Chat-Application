@@ -16,6 +16,7 @@ import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
 import edu.northeastern.ccs.im.user_group.*;
 import edu.northeastern.ccs.im.service.MessageManagerService;
+
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
@@ -93,10 +94,11 @@ public class RequestDispatcher {
 
     /**
      * Handle the networks requests coming from clients.
-     *
+     * <p>
      * Network Requests has different types. Hence, once the
      * network request type is being found, it will be parsed accordingly,
      * and the appropriate controller and service is being called.
+     *
      * @param networkRequest the network request
      * @param socketChannel  the socket channel -> The client connection, basically used for
      *                       chat communications, apart from that every request/ response is stateless
@@ -138,11 +140,11 @@ public class RequestDispatcher {
             return handleSetFollowers(networkRequest);
         } else if (networkRequestType == NetworkRequestType.SET_UNFOLLOWERS) {
             return handleSetUnFollowers(networkRequest);
-        } else if (networkRequestType == NetworkRequestType.INVITE_USER)    {
+        } else if (networkRequestType == NetworkRequestType.INVITE_USER) {
             return handleInvitationRequest(networkRequest);
-        } else if (networkRequestType == NetworkRequestType.FETCH_INVITE)   {
+        } else if (networkRequestType == NetworkRequestType.FETCH_INVITE) {
             return handleFetchInvitationsRequest(networkRequest);
-        } else if (networkRequestType == NetworkRequestType.UPDATE_INVITE)  {
+        } else if (networkRequestType == NetworkRequestType.UPDATE_INVITE) {
             return handleUpdateInviteRequest(networkRequest);
         }
 
@@ -183,6 +185,10 @@ public class RequestDispatcher {
     }
 
     private NetworkResponse handleJoinGroupRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
+        final String IOError = "{\"message : \"Some error happened while processing the request. Please try later.\"}";
+        final String userNotPresentInGroup = "{\"message : \"You are not a participant of the group\"}";
+        final String groupNotFound = "{\"message : \"The group doesn't exist. Please create a group\"}";
+        final String userNotFound = "{\"message : \"The user doesn't exist in the system.\"}";
         // Get the message service
         try {
             JsonNode jsonNode = CommunicationUtils
@@ -194,18 +200,15 @@ public class RequestDispatcher {
             List<Message> messages = messageService.getRecentMessages();
             messageService.addConnection(socketChannel);
             return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
-        } catch (IOException e) {
-            ChatLogger.error(e.getMessage());
+        } catch (IOException | GroupNotPersistedException e) {
+            return networkResponseFactory.createFailedResponseWithPayload(() -> IOError);
         } catch (UserNotPresentInTheGroup userNotPresentInTheGroup) {
-            userNotPresentInTheGroup.printStackTrace();
-        } catch (GroupNotPersistedException e) {
-            e.printStackTrace();
+            return networkResponseFactory.createFailedResponseWithPayload(() -> userNotPresentInGroup);
         } catch (GroupNotFoundException e) {
-            e.printStackTrace();
+            return networkResponseFactory.createFailedResponseWithPayload(() -> groupNotFound);
         } catch (UserNotFoundException e) {
-            e.printStackTrace();
+            return networkResponseFactory.createFailedResponseWithPayload(() -> userNotFound);
         }
-        return networkResponseFactory.createFailedResponse();
     }
 
     private NetworkResponse searchQueryResults(NetworkRequest networkRequest) {

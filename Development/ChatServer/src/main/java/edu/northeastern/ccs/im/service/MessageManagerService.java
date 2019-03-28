@@ -21,7 +21,7 @@ public class MessageManagerService {
 
     private GroupService groupService = new GroupService();
 
-    public void setGroupService(GroupService groupService)  {
+    public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
     }
     /**
@@ -47,18 +47,16 @@ public class MessageManagerService {
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
 
         //Check if the group with the given unique identifier exists
-        if (groupService.createIfNotPresent(groupUniqueKey, username, flag)
-                && (!hmap.containsKey(groupUniqueKey))) {
-
-                hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
-        }
+        groupService.createIfNotPresent(groupUniqueKey, username, flag);
+        if (!hmap.containsKey(groupUniqueKey))
+            hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
         return hmap.get(groupUniqueKey);
     }
 
     /**
      * Creates a broadcast service iff at-least one client is present
      */
-    public void checkForInactivity(MessageBroadCastService messageBroadCastService){
+    public void checkForInactivity(MessageBroadCastService messageBroadCastService) {
         if (!messageBroadCastService.isClientActive()) {
             for (Map.Entry<String, BroadCastService> entry : hmap.entrySet()) {
                 if (entry.getValue() == messageBroadCastService) {

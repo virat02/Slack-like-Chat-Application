@@ -76,65 +76,55 @@ public class GroupService implements IService {
 
     /**
      * Creates a private group iff the group is not already present, else creates a new group
-     * @param groupUniqueKey
-     * @param username
-     * @return
-     * @throws UserNotPresentInTheGroup
-     * @throws UserNotFoundException
-     * @throws GroupNotPersistedException
-     * @throws GroupNotFoundException
+     *
+     * @param groupUniqueKey the unique key of the group searched for.
+     * @param username       The username which is trying to initiate a private conversation
+     * @return Boolean value indicating the outcome of the operations
+     * @throws GroupNotPersistedException exception happened during group persistance
+     * @throws UserNotFoundException      user cannot be found, the user with whom conversation is
+     *                                    being initiated.
      */
     private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
-            throws GroupNotPersistedException, GroupNotFoundException {
+            throws GroupNotPersistedException, UserNotFoundException {
 
         try {
             searchUsingCode(groupUniqueKey);
             LOGGER.info("Private group already exists!");
+            return true;
         } catch (GroupNotFoundException e) {
-
-            try {
-                //Check if the user is already a participant of the group
-                String[] users = groupUniqueKey.split("_");
-                String userToSearch;
-
-                //Fetch the user to be searched if already present in the group
-                if(users[0].equals(username)){
-                    userToSearch = users[1];
-                }
-                else {
-                    userToSearch = users[0];
-                }
-
-                userJPA.setEntityManager(null);
-                User u1 = userJPA.search(userToSearch);
-
-                userJPA.setEntityManager(null);
-                User u2 = userJPA.search(username);
-
-                Group group = new Group();
-                group.setGroupCode(groupUniqueKey);
-                groupJPA.setEntityManager(null);
-                groupJPA.createGroup(group);
-
-                //Make both users : "username" and "userToSearch" the moderator of this group
-                group.addModerator(u1);
-                group.addModerator(u2);
-
-                //Update the database
-                groupJPA.setEntityManager(null);
-                groupJPA.updateGroup(group);
-            }
-            catch (UserNotFoundException e1){
-                LOGGER.info("Cannot find the user you are trying to communicate with!");
-                return false;
-            }
+            LOGGER.info("Private group has not been created.Trying to create one");
         }
+
+        String[] users = groupUniqueKey.split("_");
+        String userToSearch;
+
+        //Fetch the user to be searched if already present in the group
+        if (users[0].equals(username)) {
+            userToSearch = users[1];
+        } else {
+            userToSearch = users[0];
+        }
+
+        userJPA.setEntityManager(null);
+        User u1 = userJPA.search(userToSearch);
+        userJPA.setEntityManager(null);
+        User u2 = userJPA.search(username);
+
+        Group group = new Group();
+        group.setGroupCode(groupUniqueKey);
+        //Make both users : "username" and "userToSearch" the moderator of this group
+        group.addModerator(u1);
+        group.addModerator(u2);
+        groupJPA.setEntityManager(null);
+        //Update the database
+        groupJPA.createGroup(group);
 
         return true;
     }
 
     /**
      * Adds a user to a group iff the user is not already a part of the group
+     *
      * @param groupUniqueKey
      * @param username
      * @return
@@ -145,10 +135,11 @@ public class GroupService implements IService {
     private boolean addUserToPublicGroupIfNotPresent(String groupUniqueKey, String username)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
 
+        groupJPA.setEntityManager(null);
         Group g = groupJPA.searchUsingCode(groupUniqueKey);
 
         userJPA.setEntityManager(null);
-        if (!((g.getUsers()).contains(userJPA.search(username)))) {
+        if (!(g.getUsers().contains(userJPA.search(username)))) {
             throw new UserNotPresentInTheGroup("This user is not part of the group!");
         }
 

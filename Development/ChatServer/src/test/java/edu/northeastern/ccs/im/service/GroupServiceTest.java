@@ -55,6 +55,7 @@ public class GroupServiceTest {
 		groupOne.setGroupCode("One23");
 		groupTwo.setName("GroupTwoTest");
 		groupTwo.setId(2345);
+		groupTwo.setGroupCode("Hello");
 
 		userOne = new User();
         userTwo = new User();
@@ -106,7 +107,7 @@ public class GroupServiceTest {
 		groupService.setJPAService(groupJPAService);
 		when(g.getUsers()).thenReturn(Collections.emptyList());
 		when(userJPAService.search(anyString())).thenReturn(userOne);
-		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(g);
 		groupService.createIfNotPresent("abc", "Jerry", false);
 
     }
@@ -206,10 +207,7 @@ public class GroupServiceTest {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupTwo);
 		when(groupJPAService.updateGroup(any())).thenReturn(false);
 		groupService.setJPAService(groupJPAService);
-		Group newGroup = groupService.update(groupOne);
-
-		verify(groupJPAService).getGroup(anyInt());
-		assertNotEquals(groupOne,newGroup);
+		assertNotEquals(groupOne,groupService.update(groupOne));
 	}
 
 	/**
