@@ -56,8 +56,10 @@ public final class UserController implements IController<User> {
         } catch (UserNotPersistedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_PERSISTED_JSON));
-        } catch(UserNotFoundException | UsernameTooSmallException
-                | UsernameDoesNotContainLowercaseException | UsernameDoesNotContainNumberException
+        } catch(UserNotFoundException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
+        } catch(UsernameTooSmallException | UsernameDoesNotContainLowercaseException | UsernameDoesNotContainNumberException
                 | UsernameDoesNotContainUppercaseException | UsernameTooLongException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USERNAME_INCORRECT));
