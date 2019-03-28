@@ -219,11 +219,7 @@ public final class UserController implements IController<User> {
         } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
-        } catch (InviteNotFoundException | UserNotFoundException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
-        } catch (GroupNotFoundException e) {
-            e.printStackTrace();
+        } catch (InviteNotFoundException | UserNotFoundException | GroupNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
