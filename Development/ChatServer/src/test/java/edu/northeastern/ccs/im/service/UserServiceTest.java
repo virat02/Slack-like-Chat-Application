@@ -45,12 +45,12 @@ public class UserServiceTest {
     public void setUp() {
         userOne = new User();
         userTwo = new User();
-        userOne.setUsername("Jerry");
-        userOne.setPassword("Banjo");
+        userOne.setUsername("Jerry1");
+        userOne.setPassword("Banjo1");
         userOne.setId(123);
 
-        userTwo.setUsername("Danny");
-        userTwo.setPassword("Dragons");
+        userTwo.setUsername("Danny1");
+        userTwo.setPassword("Dragons1");
         userTwo.setId(2);
 
         userService = new UserService();
@@ -59,8 +59,6 @@ public class UserServiceTest {
         inviteJPAService = mock(InviteJPAService.class);
         groupJPAService = mock(GroupJPAService.class);
         invite = new Invite();
-        userOne.setUsername("User");
-        userTwo.setUsername("Name");
         invite.setSender(userOne);
         invite.setReceiver(userTwo);
         groupOne = new Group();
@@ -74,7 +72,7 @@ public class UserServiceTest {
      * A test to ensure create entity works properly.
      */
     @Test
-    public void testCreateEntity() throws UserNotPersistedException, UserNotFoundException {
+    public void testCreateEntity() throws UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainUppercaseException, PasswordDoesNotContainLowercaseException, UsernameDoesNotContainLowercaseException, UsernameDoesNotContainNumberException, PasswordDoesNotContainNumberException, PasswordTooSmallException, UsernameTooSmallException, UsernameDoesNotContainUppercaseException, UsernameTooLongException, PasswordTooLargeException {
         when(userJPAService.createUser(any())).thenReturn(1);
         when(userJPAService.getUser(anyInt())).thenReturn(userOne);
         userService.setJPAService(userJPAService);
@@ -89,7 +87,7 @@ public class UserServiceTest {
      * A test to ensure create entity doesn't work when the int returns 0.
      */
     @Test
-    public void testFailToCreateEntity() throws UserNotPersistedException, UserNotFoundException {
+    public void testFailToCreateEntity() throws UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainUppercaseException, PasswordDoesNotContainLowercaseException, UsernameDoesNotContainLowercaseException, UsernameDoesNotContainNumberException, PasswordDoesNotContainNumberException, PasswordTooSmallException, UsernameTooSmallException, UsernameDoesNotContainUppercaseException, UsernameTooLongException, PasswordTooLargeException {
         when(userJPAService.createUser(any())).thenReturn(0);
         userService.setJPAService(userJPAService);
         User newUser = userService.addUser(userOne);
@@ -283,7 +281,13 @@ public class UserServiceTest {
         assertEquals(invite, userService.updateInvite(invite));
     }
 
-
+    /**
+     * Tests to ensure we can find a group by it's code.
+     * @throws UserNotFoundException user not found
+     * @throws GroupNotFoundException when a group isn't found in DB
+     * @throws InviteNotFoundException when an invite isn't found in the DB
+     * @throws IllegalAccessException when there is illegal access in the DB
+     */
     @Test
     public void testSearchInviteByGroupCode() throws UserNotFoundException, GroupNotFoundException,
             InviteNotFoundException, IllegalAccessException {
@@ -292,5 +296,235 @@ public class UserServiceTest {
         userService.setInviteJPAService(inviteJPAService);
         userService.setJPAService(userJPAService);
         assertEquals(0, userService.searchInviteByGroupCode("code", "user").size());
+    }
+
+    /**
+     * Tests to ensure we can't have a username without an uppercase letter.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = UsernameDoesNotContainUppercaseException.class)
+    public void testUsernameNoUpper() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "user1";
+        String password = "Password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a username that is too small.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = UsernameTooSmallException.class)
+    public void testUsernameTooSmall() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "Ra2";
+        String password = "Password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a username without an lowercase letter.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = UsernameDoesNotContainLowercaseException.class)
+    public void testUsernameNoLower() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "USER1";
+        String password = "Password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a username without a number.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = UsernameDoesNotContainNumberException.class)
+    public void testUsernameNoNumber() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "Userone";
+        String password = "Password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a password that is too small.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = PasswordTooSmallException.class)
+    public void testPasswordTooSmall() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "User1";
+        String password = "Pa1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a password without an uppercase letter.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = PasswordDoesNotContainUppercaseException.class)
+    public void testPasswordNoUpper() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "User1";
+        String password = "password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a password without an lowercase letter.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = PasswordDoesNotContainLowercaseException.class)
+    public void testPasswordNoLower() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "User1";
+        String password = "PASSWORD1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a password without a number.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = PasswordDoesNotContainNumberException.class)
+    public void testPasswordNoNumber() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "User1";
+        String password = "Password";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a password that is too long.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = PasswordTooLargeException.class)
+    public void testPasswordTooLong() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "User1";
+        String password = "ThisPasswordIsTooLong11243";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
+
+    /**
+     * Tests to ensure we can't have a username that is too long.
+     * @throws UsernameDoesNotContainUppercaseException username doesn't contain an uppercase letter.
+     * @throws UsernameDoesNotContainNumberException username doesn't contain a number.
+     * @throws UsernameDoesNotContainLowercaseException username doesn't contain a lowercase letter.
+     * @throws PasswordDoesNotContainUppercaseException password does not contain an uppercase letter.
+     * @throws PasswordTooSmallException password is too small.
+     * @throws UserNotPersistedException user is not persisted.
+     * @throws UserNotFoundException user is not found in the DB.
+     * @throws PasswordDoesNotContainLowercaseException password doesn't contain a lower case letter.
+     * @throws UsernameTooSmallException username is too small.
+     * @throws PasswordDoesNotContainNumberException password does not contain a number.
+     */
+    @Test (expected = UsernameTooLongException.class)
+    public void testUsernameIsTooLong() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
+        String username = "ThisUsernameIsDefinitelyTooLong1123";
+        String password = "Password1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
     }
 }
