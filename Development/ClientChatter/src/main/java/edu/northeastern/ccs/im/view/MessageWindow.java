@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.view;
 import java.io.IOException;
 import java.util.HashMap;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
 
@@ -15,7 +16,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
     public MessageWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory, String groupCode, boolean isPrivate) {
         super(caller, new HashMap<Integer, String>() {{
-            put(0, "Message Window");
+            put(0, "");
         }}, clientConnectionFactory);
         this.groupCode = groupCode;
         this.isPrivate = isPrivate;

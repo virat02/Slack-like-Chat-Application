@@ -16,7 +16,7 @@ public final class UserController implements IController<User> {
 
     private static final String USER_NOT_PERSISTED_JSON = "{\"message\" : \"Username already taken\"}";
     private static final String USER_NOT_FOUND_JSON = "{\"message\" : \"Invalid Username\"}";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message\" : \"Invalid Username\"}";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message\" : \"No users found\"}";
     private static final String INVITE_NOT_UPDATED = "{\"message\" : \"Invite not updated\"}";
     private static final String INVITE_NOT_DELETED = "{\"message\" : \"Invite could not be deleted\"}";
     private static final String INVITE_NOT_FOUND = "{\"message\" : \"Invalid Invite\"}";

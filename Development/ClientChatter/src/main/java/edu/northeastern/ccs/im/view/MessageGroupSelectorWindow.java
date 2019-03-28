@@ -19,9 +19,7 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
   }
 
   public TerminalWindow getMessageWindow(String chatId, boolean isPrivate) {
-    if (messageWindow == null) {
-      messageWindow = new MessageWindow(this, clientConnectionFactory, chatId, isPrivate);
-    }
+    messageWindow = new MessageWindow(this, clientConnectionFactory, chatId, isPrivate);
     return messageWindow;
   }
 

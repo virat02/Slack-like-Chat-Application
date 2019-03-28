@@ -9,6 +9,8 @@ import edu.northeastern.ccs.im.user_group.User;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.jws.soap.SOAPBinding;
+
 /**
  * GroupService class helps in delegating between the GroupController
  * and the GroupJPA service
@@ -139,7 +141,20 @@ public class GroupService implements IService {
         Group g = groupJPA.searchUsingCode(groupUniqueKey);
 
         userJPA.setEntityManager(null);
-        if (!(g.getUsers().contains(userJPA.search(username)))) {
+        boolean userNotPresent = true;
+        for (User user : g.getModerators()) {
+            if (user.getUsername().equals(username)) {
+                userNotPresent = false;
+                break;
+            }
+        }
+        for (User user : g.getUsers()) {
+            if (user.getUsername().equals(username)) {
+                userNotPresent = false;
+                break;
+            }
+        }
+        if (userNotPresent) {
             throw new UserNotPresentInTheGroup("This user is not part of the group!");
         }
 
