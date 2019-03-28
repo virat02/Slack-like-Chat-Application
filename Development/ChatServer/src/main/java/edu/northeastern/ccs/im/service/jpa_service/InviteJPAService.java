@@ -188,7 +188,6 @@ public class InviteJPAService {
     }
 
     public boolean isUserInvitedToGroup(Invite invite){
-            System.out.println("hello");
             Group group = invite.getGroup();
             User receiver = invite.getReceiver();
             String queryString =
@@ -196,11 +195,9 @@ public class InviteJPAService {
                             + " AND NOT i.status = edu.northeastern.ccs.im.service.jpa_service.Status.REJECTED";
             TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
             List<Invite> inviteList = query.getResultList();
-            System.out.println(inviteList.size());
             if (!inviteList.isEmpty())
                 return true;
             return false;
-
     }
 
 }
