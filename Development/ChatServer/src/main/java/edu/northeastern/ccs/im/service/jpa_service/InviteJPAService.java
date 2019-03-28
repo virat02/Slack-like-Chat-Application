@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
@@ -13,6 +13,7 @@ public class InviteJPAService {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(UserJPAService.class.getName());
     private GroupJPAService groupJPA = new GroupJPAService();
+    private static final String NO_INVITE = "Could not get the invite!";
 
     /** The emfactory. */
     //The entity manager for this class.
@@ -86,8 +87,8 @@ public class InviteJPAService {
             endTransaction();
             return invite;
         } catch (Exception e) {
-            LOGGER.info("Could not get the invite!");
-            throw new InviteNotFoundException("Could not get the invite!");
+            LOGGER.info(NO_INVITE);
+            throw new InviteNotFoundException(NO_INVITE);
         }
     }
 
@@ -157,11 +158,10 @@ public class InviteJPAService {
                 String queryString =
                         "SELECT i FROM Invite i WHERE i.group.id ='" + group.getId() + "'";
                 TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
-                List<Invite> inviteList = query.getResultList();
-                return inviteList;
+                return query.getResultList();
             }
             else {
-                LOGGER.info("User is not the moderator of the group with code: " + groupCode);
+                ChatLogger.info("User is not the moderator of the group with code: " + groupCode);
                 throw new IllegalAccessException("User is not the moderator of the group with code: " + groupCode);
             }
         }
@@ -170,8 +170,8 @@ public class InviteJPAService {
             throw new GroupNotFoundException("Can't find Group with code: " + groupCode);
         }
         catch (Exception e) {
-            LOGGER.info("Could not get the invite!");
-            throw new InviteNotFoundException("Could not get the invite!");
+            LOGGER.info(NO_INVITE);
+            throw new InviteNotFoundException(NO_INVITE);
         }
     }
 

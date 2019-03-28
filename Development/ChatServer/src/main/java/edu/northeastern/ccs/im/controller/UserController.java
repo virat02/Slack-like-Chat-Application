@@ -22,17 +22,10 @@ public final class UserController implements IController<User> {
     private static final String INVITE_NOT_FOUND = "{\"message\" : \"Invalid Invite\"}";
     private static final String INVITE_NOT_ADDED =  "{\"message\" : \"Unable to make invite!\"}";
     private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"Invalid Group\"}";
-    private static final String USER_NOT_MODERATOR_JSON = "{\"message\" : \"User is not the moderator of the group\"}";
     private static final String PASS_INCORRECT = "{\"message\" : \"Password must be between 4 and 20 digits long, contain " +
             "at least one number, one uppercase letter and one lowercase letter.\"}";
     private static final String USERNAME_INCORRECT = "{\"message\" : \"Username must be between 4 and 20 digits long, contain " +
             "at least one number, one uppercase letter and one lowercase letter\"}";
-
-
-
-
-
-
 
     private UserService userService = new UserService();
 
@@ -286,10 +279,6 @@ public final class UserController implements IController<User> {
         } catch (InviteNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(INVITE_NOT_FOUND));
-        }
-        catch (IllegalAccessException e){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_MODERATOR_JSON));
         }
         catch (UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
