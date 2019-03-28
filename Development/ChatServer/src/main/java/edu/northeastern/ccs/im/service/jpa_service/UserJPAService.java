@@ -34,14 +34,6 @@ public class UserJPAService {
             this.entityManager = entityManager;
         }
     }
-
-    /**
-     * A method to begin the transaction.
-     */
-    private void beginTransaction() {
-        entityManager.getTransaction().begin();
-    }
-
     /**
      * A private method that'll end the transaction.
      */
@@ -215,4 +207,12 @@ public class UserJPAService {
 
         return Collections.emptyList();
     }
+
+    /**
+     * A method to begin the transaction.
+     */
+    private void beginTransaction() {
+        entityManager.getTransaction().begin();
+    }
+
 }

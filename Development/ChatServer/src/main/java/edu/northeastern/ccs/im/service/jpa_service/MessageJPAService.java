@@ -38,13 +38,21 @@ public class MessageJPAService {
      * @param entityManager
      */
     public void setEntityManager(EntityManager entityManager) {
-        if (entityManager == null) {
+        if (entityManager != null) {
+            this.entityManager = entityManager;
+        } else {
             EntityManagerFactory emFactory;
             emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
             this.entityManager = emFactory.createEntityManager();
-        } else {
-            this.entityManager = entityManager;
         }
+    }
+
+    /**
+     * Close the entity manager
+     */
+    private void endTransaction() {
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
     /**
@@ -54,14 +62,6 @@ public class MessageJPAService {
      */
     private void beginTransaction() {
         entityManager.getTransaction().begin();
-    }
-
-    /**
-     * Close the entity manager
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
     }
 
     /**
