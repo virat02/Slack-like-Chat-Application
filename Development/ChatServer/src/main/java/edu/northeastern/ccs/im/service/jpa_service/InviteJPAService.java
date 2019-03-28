@@ -188,7 +188,6 @@ public class InviteJPAService {
     }
 
     public boolean isUserInvitedToGroup(Invite invite){
-        try {
             System.out.println("hello");
             Group group = invite.getGroup();
             User receiver = invite.getReceiver();
@@ -201,11 +200,7 @@ public class InviteJPAService {
             if (!inviteList.isEmpty())
                 return true;
             return false;
-        }
-        catch (Exception e){
-            System.out.println(e);
-            return false;
-        }
+
     }
 
 }
