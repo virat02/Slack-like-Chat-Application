@@ -13,10 +13,7 @@ import edu.northeastern.ccs.im.server.MessageManagerServiceTest;
 import edu.northeastern.ccs.im.server.RequestDispatcherTests;
 import edu.northeastern.ccs.im.server.RequestHandlerTests;
 import edu.northeastern.ccs.im.service.*;
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAServiceTest;
-import edu.northeastern.ccs.im.service.jpa_service.MessageJPAServiceTest;
-import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAServiceTest;
-import edu.northeastern.ccs.im.service.jpa_service.UserJPAServiceTest;
+import edu.northeastern.ccs.im.service.jpa_service.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -56,6 +53,7 @@ import org.junit.runners.Suite;
         MessageJPAServiceTest.class,
         ProfileJPAServiceTest.class,
         UserJPAServiceTest.class,
+        InviteJPAServiceTest.class,
 
         //Entities
         GroupEntityTest.class,
