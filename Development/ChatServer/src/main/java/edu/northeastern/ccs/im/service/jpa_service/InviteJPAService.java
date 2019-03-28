@@ -187,7 +187,7 @@ public class InviteJPAService {
         return false;
     }
 
-    public boolean isUserInvitedToGroup(Invite invite){
+    private boolean isUserInvitedToGroup(Invite invite){
             Group group = invite.getGroup();
             User receiver = invite.getReceiver();
             String queryString =
