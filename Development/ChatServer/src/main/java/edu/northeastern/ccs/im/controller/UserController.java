@@ -22,23 +22,10 @@ public final class UserController implements IController<User> {
     private static final String INVITE_NOT_FOUND = "{\"message\" : \"Invalid Invite\"}";
     private static final String INVITE_NOT_ADDED =  "{\"message\" : \"Unable to make invite!\"}";
     private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"Invalid Group\"}";
-    private static final String USER_NOT_MODERATOR_JSON = "{\"message\" : \"User is not the moderator of the group\"}";
-    private static final String USERNAME_TOO_SMALL = "{\"message\" : \"Username needs to be at least 4 digits long.\"}";
-    private static final String USERNAME_NO_LOWER = "{\"message\" : \"Username needs to contain at least one lower case letter.\"}";
-    private static final String USERNAME_NO_UPPER = "{\"message\" : \"Username needs to contain at least one upper case letter.\"}";
-    private static final String USERNAME_NO_NUMBER = "{\"message\" : \"Username needs to contain at least one number.\"}";
-    private static final String PASS_TOO_SMALL = "{\"message\" : \"Password needs to be at least 4 digits long.\"}";
-    private static final String PASS_NO_LOWER = "{\"message\" : \"Password needs to contain at least one lower case letter.\"}";
-    private static final String PASS_NO_UPPER = "{\"message\" : \"Password needs to contain at least one upper case letter.\"}";
-    private static final String PASS_NO_NUMBER = "{\"message\" : \"Password needs to contain at least one number.\"}";
-    private static final String PASS_TOO_LONG = "{\"message\" : \"Password can't be more than 20 digits long.\"}";
-    private static final String USERNAME_TOO_LONG = "{\"message\" : \"Username can't be more than 20 digits long.\"}";
-
-
-
-
-
-
+    private static final String PASS_INCORRECT = "{\"message\" : \"Password must be between 4 and 20 digits long, contain " +
+            "at least one number, one uppercase letter and one lowercase letter.\"}";
+    private static final String USERNAME_INCORRECT = "{\"message\" : \"Username must be between 4 and 20 digits long, contain " +
+            "at least one number, one uppercase letter and one lowercase letter\"}";
 
     private UserService userService = new UserService();
 
@@ -59,43 +46,20 @@ public final class UserController implements IController<User> {
         try {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
                     new PayloadImpl(CommunicationUtils.toJson(userService.addUser(user))));
-        }
-        catch(UserNotFoundException e){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_FOUND_JSON));
-        } catch (UserNotPersistedException e){
+        } catch (UserNotPersistedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_PERSISTED_JSON));
-        } catch (UsernameTooSmallException e) {
+        } catch(UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USERNAME_TOO_SMALL));
-        } catch (UsernameDoesNotContainLowercaseException e) {
+                    new PayloadImpl(USER_NOT_FOUND_JSON));
+        } catch(UsernameTooSmallException | UsernameDoesNotContainLowercaseException | UsernameDoesNotContainNumberException
+                | UsernameDoesNotContainUppercaseException | UsernameTooLongException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USERNAME_NO_LOWER));
-        } catch (UsernameDoesNotContainNumberException e) {
+                    new PayloadImpl(USERNAME_INCORRECT));
+        } catch (PasswordTooSmallException | PasswordDoesNotContainLowercaseException
+                | PasswordDoesNotContainUppercaseException | PasswordDoesNotContainNumberException | PasswordTooLargeException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USERNAME_NO_NUMBER));
-        } catch (UsernameDoesNotContainUppercaseException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USERNAME_NO_UPPER));
-        } catch (PasswordTooSmallException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_TOO_SMALL));
-        } catch (PasswordDoesNotContainLowercaseException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_LOWER));
-        } catch (PasswordDoesNotContainUppercaseException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_UPPER));
-        } catch (PasswordDoesNotContainNumberException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_NUMBER));
-        } catch (PasswordTooLargeException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_TOO_LONG));
-        } catch (UsernameTooLongException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USERNAME_TOO_LONG));
+                    new PayloadImpl(PASS_INCORRECT));
         }
     }
 
@@ -255,11 +219,7 @@ public final class UserController implements IController<User> {
         } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
-        } catch (InviteNotFoundException | UserNotFoundException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
-        } catch (GroupNotFoundException e) {
-            e.printStackTrace();
+        } catch (InviteNotFoundException | UserNotFoundException | GroupNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
         }
@@ -315,10 +275,6 @@ public final class UserController implements IController<User> {
         } catch (InviteNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(INVITE_NOT_FOUND));
-        }
-        catch (IllegalAccessException e){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_MODERATOR_JSON));
         }
         catch (UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
