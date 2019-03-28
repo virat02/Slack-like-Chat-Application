@@ -13,9 +13,6 @@ import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -30,9 +27,7 @@ public class GroupServiceTest {
 	/**
 	 * Initializing all the objects necessary for testing
 	 */
-
 	private UserJPAService userJPAService;
-	private UserService userService;
 	private GroupJPAService groupJPAService;
 	private GroupService groupService;
 	private User userOne;
@@ -75,7 +70,6 @@ public class GroupServiceTest {
         groupService = new GroupService();
         groupJPAService = mock(GroupJPAService.class);
 
-		userService = new UserService();
 		userJPAService = mock(UserJPAService.class);
 	}
 

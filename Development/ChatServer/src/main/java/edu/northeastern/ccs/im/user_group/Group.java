@@ -280,18 +280,5 @@
         return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Group
-                && ((Group) obj).groupCode.equals(this.groupCode);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.groupCode.hashCode();
-    }
-
-
-    }
+}
 
