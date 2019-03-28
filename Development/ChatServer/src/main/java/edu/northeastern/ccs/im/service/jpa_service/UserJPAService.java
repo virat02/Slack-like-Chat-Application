@@ -157,7 +157,7 @@ public class UserJPAService {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             User newUser = query.getSingleResult();
             if(!user.getUsername().equals(newUser.getUsername()) || !user.getPassword().equals(newUser.getPassword())) {
-                return null;
+                throw new UserNotFoundException("Wrong password");
             } else {
                 return newUser;
             }

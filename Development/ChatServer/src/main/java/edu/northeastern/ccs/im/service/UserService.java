@@ -10,6 +10,7 @@ import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -68,7 +69,43 @@ public final class UserService implements IService {
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
      */
-    public User addUser(User user) throws UserNotFoundException, UserNotPersistedException {
+    public User addUser(User user) throws UserNotFoundException, UserNotPersistedException,
+            UsernameTooSmallException, UsernameDoesNotContainNumberException,
+            UsernameDoesNotContainUppercaseException, UsernameDoesNotContainLowercaseException,
+            PasswordDoesNotContainLowercaseException, PasswordTooSmallException,
+            PasswordDoesNotContainUppercaseException, PasswordDoesNotContainNumberException, PasswordTooLargeException, UsernameTooLongException {
+        if(user.getUsername().length() < 4) {
+            throw new UsernameTooSmallException("Username needs to be at least 4 letters long.");
+        }
+        if(user.getUsername().length() > 20) {
+            throw new UsernameTooLongException("Username can't be more than 20 letters long!");
+        }
+        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+        if(!usernameCheck.get("low")) {
+            throw new UsernameDoesNotContainLowercaseException("Username must contain at least one lowercase letter.");
+        }
+        if(!usernameCheck.get("cap")) {
+            throw new UsernameDoesNotContainUppercaseException("Username must contain at least one capital letter!");
+        }
+        if(!usernameCheck.get("num")) {
+            throw new UsernameDoesNotContainNumberException("Username must contain at least one number!");
+        }
+        if(user.getPassword().length() < 4) {
+            throw new PasswordTooSmallException("Password needs to be at least 4 letters long.");
+        }
+        if(user.getPassword().length() > 20) {
+            throw new PasswordTooLargeException("Password can't be more than 20 letters long!");
+        }
+        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+        if(!passwordCheck.get("low")) {
+            throw new PasswordDoesNotContainLowercaseException("Password must contain at least one lowercase letter.");
+        }
+        if(!passwordCheck.get("cap")) {
+            throw new PasswordDoesNotContainUppercaseException("Password must contain at least one capital letter!");
+        }
+        if(!passwordCheck.get("num")) {
+            throw new PasswordDoesNotContainNumberException("Password must contain at least one number!");
+        }
         userJPAService.setEntityManager(null);
         int id = userJPAService.createUser(user);
         if(id == 0) {
@@ -86,6 +123,30 @@ public final class UserService implements IService {
         userJPAService.setEntityManager(null);
         return userJPAService.search(username);
     }
+
+    private HashMap<String, Boolean> checkString(String string) {
+        char character;
+        HashMap<String, Boolean> booleanHashMap = new HashMap<>();
+        booleanHashMap.put("cap", false);
+        booleanHashMap.put("low", false);
+        booleanHashMap.put("num", false);
+        for(int i=0;i < string.length();i++) {
+            character = string.charAt(i);
+            if( Character.isDigit(character)) {
+                booleanHashMap.replace("num", true);
+            }
+            else if (Character.isUpperCase(character)) {
+                booleanHashMap.replace("cap", true);
+            } else if (Character.isLowerCase(character)) {
+                booleanHashMap.replace("low", true);
+            }
+            if(booleanHashMap.get("num") && booleanHashMap.get("cap") && booleanHashMap.get("low")) {
+                break;
+            }
+        }
+        return booleanHashMap;
+    }
+
 
     /**
      * Follow a particular user given their username.

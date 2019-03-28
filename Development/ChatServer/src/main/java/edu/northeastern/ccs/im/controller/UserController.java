@@ -14,15 +14,26 @@ import edu.northeastern.ccs.im.user_group.User;
  */
 public final class UserController implements IController<User> {
 
-    private static final String USER_NOT_PERSISTED_JSON = "{\"message : \"Username already taken\"}";
-    private static final String USER_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
-    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message : \"Invalid Username\"}";
-    private static final String INVITE_NOT_UPDATED = "{\"message : \"Invite not updated\"}";
-    private static final String INVITE_NOT_DELETED = "{\"message : \"Invite could not be deleted\"}";
-    private static final String INVITE_NOT_FOUND = "{\"message : \"Invalid Invite\"}";
-    private static final String INVITE_NOT_ADDED =  "{\"message : \"Unable to make invite!\"}";
-    private static final String GROUP_NOT_FOUND_JSON = "{\"message : \"Invalid Group\"}";
-    private static final String USER_NOT_MODERATOR_JSON = "{\"message : \"User is not the moderator of the group\"}";
+    private static final String USER_NOT_PERSISTED_JSON = "{\"message\" : \"Username already taken\"}";
+    private static final String USER_NOT_FOUND_JSON = "{\"message\" : \"Invalid Username\"}";
+    private static final String LIST_OF_USERS_NOT_FOUND_JSON = "{\"message\" : \"Invalid Username\"}";
+    private static final String INVITE_NOT_UPDATED = "{\"message\" : \"Invite not updated\"}";
+    private static final String INVITE_NOT_DELETED = "{\"message\" : \"Invite could not be deleted\"}";
+    private static final String INVITE_NOT_FOUND = "{\"message\" : \"Invalid Invite\"}";
+    private static final String INVITE_NOT_ADDED =  "{\"message\" : \"Unable to make invite!\"}";
+    private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"Invalid Group\"}";
+    private static final String USER_NOT_MODERATOR_JSON = "{\"message\" : \"User is not the moderator of the group\"}";
+    private static final String USERNAME_TOO_SMALL = "{\"message\" : \"Username needs to be at least 4 digits long.\"}";
+    private static final String USERNAME_NO_LOWER = "{\"message\" : \"Username needs to contain at least one lower case letter.\"}";
+    private static final String USERNAME_NO_UPPER = "{\"message\" : \"Username needs to contain at least one upper case letter.\"}";
+    private static final String USERNAME_NO_NUMBER = "{\"message\" : \"Username needs to contain at least one number.\"}";
+    private static final String PASS_TOO_SMALL = "{\"message\" : \"Password needs to be at least 4 digits long.\"}";
+    private static final String PASS_NO_LOWER = "{\"message\" : \"Password needs to contain at least one lower case letter.\"}";
+    private static final String PASS_NO_UPPER = "{\"message\" : \"Password needs to contain at least one upper case letter.\"}";
+    private static final String PASS_NO_NUMBER = "{\"message\" : \"Password needs to contain at least one number.\"}";
+    private static final String PASS_TOO_LONG = "{\"message\" : \"Password can't be more than 20 digits long.\"}";
+    private static final String USERNAME_TOO_LONG = "{\"message\" : \"Username can't be more than 20 digits long.\"}";
+
 
 
 
@@ -52,10 +63,39 @@ public final class UserController implements IController<User> {
         catch(UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_FOUND_JSON));
-        }
-        catch (UserNotPersistedException e){
+        } catch (UserNotPersistedException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_PERSISTED_JSON));
+        } catch (UsernameTooSmallException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USERNAME_TOO_SMALL));
+        } catch (UsernameDoesNotContainLowercaseException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USERNAME_NO_LOWER));
+        } catch (UsernameDoesNotContainNumberException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USERNAME_NO_NUMBER));
+        } catch (UsernameDoesNotContainUppercaseException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USERNAME_NO_UPPER));
+        } catch (PasswordTooSmallException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(PASS_TOO_SMALL));
+        } catch (PasswordDoesNotContainLowercaseException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(PASS_NO_LOWER));
+        } catch (PasswordDoesNotContainUppercaseException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(PASS_NO_UPPER));
+        } catch (PasswordDoesNotContainNumberException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(PASS_NO_NUMBER));
+        } catch (PasswordTooLargeException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(PASS_TOO_LONG));
+        } catch (UsernameTooLongException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(USERNAME_TOO_LONG));
         }
     }
 
