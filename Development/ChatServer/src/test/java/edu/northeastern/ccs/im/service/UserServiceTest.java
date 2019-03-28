@@ -527,4 +527,14 @@ public class UserServiceTest {
         user.setPassword(password);
         userService.addUser(user);
     }
+
+    @Test (expected = PasswordDoesNotContainUppercaseException.class)
+    public void testABC1Fail() throws UsernameTooLongException, UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, PasswordTooLargeException {
+        String username = "Jalannin1";
+        String password = "abc1";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.addUser(user);
+    }
 }

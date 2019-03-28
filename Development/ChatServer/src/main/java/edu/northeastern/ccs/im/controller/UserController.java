@@ -27,11 +27,8 @@ public final class UserController implements IController<User> {
     private static final String USERNAME_NO_LOWER = "{\"message\" : \"Username needs to contain at least one lower case letter.\"}";
     private static final String USERNAME_NO_UPPER = "{\"message\" : \"Username needs to contain at least one upper case letter.\"}";
     private static final String USERNAME_NO_NUMBER = "{\"message\" : \"Username needs to contain at least one number.\"}";
-    private static final String PASS_TOO_SMALL = "{\"message\" : \"Password needs to be at least 4 digits long.\"}";
-    private static final String PASS_NO_LOWER = "{\"message\" : \"Password needs to contain at least one lower case letter.\"}";
-    private static final String PASS_NO_UPPER = "{\"message\" : \"Password needs to contain at least one upper case letter.\"}";
-    private static final String PASS_NO_NUMBER = "{\"message\" : \"Password needs to contain at least one number.\"}";
-    private static final String PASS_TOO_LONG = "{\"message\" : \"Password can't be more than 20 digits long.\"}";
+    private static final String PASS_INCORRECT = "{\"message\" : \"Password must be between 4 and 20 digits long, contain " +
+            "at least one number, one uppercase letter and one lowercase letter.\"}";
     private static final String USERNAME_TOO_LONG = "{\"message\" : \"Username can't be more than 20 digits long.\"}";
 
 
@@ -78,21 +75,10 @@ public final class UserController implements IController<User> {
         } catch (UsernameDoesNotContainUppercaseException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USERNAME_NO_UPPER));
-        } catch (PasswordTooSmallException e) {
+        } catch (PasswordTooSmallException | PasswordDoesNotContainLowercaseException
+                | PasswordDoesNotContainUppercaseException | PasswordDoesNotContainNumberException | PasswordTooLargeException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_TOO_SMALL));
-        } catch (PasswordDoesNotContainLowercaseException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_LOWER));
-        } catch (PasswordDoesNotContainUppercaseException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_UPPER));
-        } catch (PasswordDoesNotContainNumberException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_NO_NUMBER));
-        } catch (PasswordTooLargeException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PASS_TOO_LONG));
+                    new PayloadImpl(PASS_INCORRECT));
         } catch (UsernameTooLongException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USERNAME_TOO_LONG));
