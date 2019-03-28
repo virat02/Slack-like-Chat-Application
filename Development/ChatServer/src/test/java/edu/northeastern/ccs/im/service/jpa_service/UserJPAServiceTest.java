@@ -43,7 +43,7 @@ public class UserJPAServiceTest {
         userOne.setUsername("Jalannin");
         userOne.setPassword("jjj");
         Profile profileOne = new Profile();
-        profileOne.setEmail("jaa@.com");
+        profileOne.setEmail("jaa@gmail.com");
         profileOne.setImageUrl("hhh.com");
         userOne.setProfileAccess(true);
         userOne.setProfile(profileOne);

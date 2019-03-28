@@ -315,6 +315,18 @@ public class GroupServiceTest {
 	}
 
 	/**
+	 * Testing the remove user from group for throwing GroupNotFoundException
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testRemoveUserFromGroupForIllegalArgumentException() throws GroupNotFoundException, UserNotFoundException {
+
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
+		when(groupJPAService.removeUserFromGroup(any(),anyString())).thenThrow(new IllegalArgumentException("Could not find user to be removed!"));
+		groupService.setJPAService(groupJPAService);
+		groupService.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
+	}
+
+	/**
 	 * testing join Group method
 	 */
 	@Test

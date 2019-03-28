@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
@@ -20,6 +21,7 @@ public class ProfileController implements IController<Profile> {
     private static final String PROFILE_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
     private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist!\"}";
     private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
+    private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
 
     /**
      * Sets the user service for the controller.
@@ -42,6 +44,10 @@ public class ProfileController implements IController<Profile> {
         catch (ProfileNotPersistedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(PROFILE_NOT_PERSISTED_JSON));
+        }
+        catch (InvalidEmailException e){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(INVALID_EMAIL_JSON));
         }
     }
 

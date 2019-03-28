@@ -43,15 +43,6 @@ public class ProfileJPAService {
     }
 
     /**
-     * Close the entity manager
-     *
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
-
-    /**
      * Creates a profile in the database
      * @param p
      */
@@ -132,6 +123,15 @@ public class ProfileJPAService {
             LOGGER.info("Could not get any profile with id : " + id);
             throw new ProfileNotFoundException("No profile found with id: " + id);
         }
+    }
+
+    /**
+     * Close the entity manager
+     *
+     */
+    private void endTransaction() {
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
 }

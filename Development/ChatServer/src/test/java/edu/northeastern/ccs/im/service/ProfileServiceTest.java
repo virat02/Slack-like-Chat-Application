@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +71,7 @@ public class ProfileServiceTest {
      *Test for able to create profile in ProfileService
      */
     @Test
-    public void testCreateProfile() throws ProfileNotPersistedException {
+    public void testCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
 
         when(profileJPAService.createProfile(any(Profile.class))).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
@@ -81,12 +83,38 @@ public class ProfileServiceTest {
      *Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
      */
     @Test(expected = ProfileNotPersistedException.class)
-    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException {
+    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException, InvalidEmailException {
 
         when(profileJPAService.createProfile(any(Profile.class))).thenThrow(new ProfileNotPersistedException("Could not persist the profile!"));
         profileService.setProfileJPAService(profileJPAService);
 
         profileService.createProfile(p1);
+    }
+
+    /**
+     *Test for unable to create profile in ProfileService for throwing InvalidEmailException
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testCreateProfileForInvalidEmailException()
+            throws ProfileNotPersistedException, InvalidEmailException {
+
+        Profile p = new Profile();
+        p.setEmail("abcd");
+
+        profileService.createProfile(p);
+    }
+
+    /**
+     *Test for unable to create profile in ProfileService for throwing InvalidEmailException for null email id
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testCreateProfileForInvalidEmailExceptionForNullEmailId()
+            throws ProfileNotPersistedException, InvalidEmailException {
+
+        Profile p = new Profile();
+        p.setEmail(null);
+
+        profileService.createProfile(p);
     }
 
     /**

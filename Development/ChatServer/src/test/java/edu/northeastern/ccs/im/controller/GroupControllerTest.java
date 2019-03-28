@@ -290,4 +290,16 @@ public class GroupControllerTest {
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
         verify(groupService).removeUserFromGroup(any(), anyString());
     }
+
+    /**
+     * Testing the remove user from group for throwing IllegalArgumentException
+     */
+    @Test
+    public void testRemoveUserFromGroupForIllegalArgumentException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.removeUserFromGroup(any(), anyString())).thenThrow(new IllegalArgumentException());
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).removeUserFromGroup(any(), anyString());
+    }
 }

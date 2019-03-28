@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
@@ -67,7 +68,7 @@ public class ProfileControllerTest {
      * Test for successful create Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulCreateProfile() throws ProfileNotPersistedException {
+    public void testSuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
         when(profileService.createProfile(any())).thenReturn(profileOne);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
@@ -78,9 +79,21 @@ public class ProfileControllerTest {
      * Test for unsuccessful create Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulCreateProfile() throws ProfileNotPersistedException {
+    public void testUnsuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
 
         when(profileService.createProfile(any())).thenThrow(new ProfileNotPersistedException("Could not persist profile!"));
+        profileController.setProfileService(profileService);
+        NetworkResponse networkResponse = profileController.addEntity(profileOne);
+        Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+    }
+
+    /**
+     * Test for unsuccessful create Profile in Profile Controller
+     */
+    @Test
+    public void testUnsuccessfulCreateProfileForInvalidEmailException() throws ProfileNotPersistedException, InvalidEmailException {
+
+        when(profileService.createProfile(any())).thenThrow(new InvalidEmailException("Invalid Email!"));
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
