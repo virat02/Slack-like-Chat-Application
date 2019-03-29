@@ -218,10 +218,10 @@ public final class UserController implements IController<User> {
             return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL, () -> "{\"message\": \"Invitation succesfully created\"}");
         } catch (InviteNotAddedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_ADDED)));
+                    new PayloadImpl(INVITE_NOT_ADDED));
         } catch (InviteNotFoundException | UserNotFoundException | GroupNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
+                    new PayloadImpl(INVITE_NOT_FOUND));
         }
     }
 
@@ -236,7 +236,7 @@ public final class UserController implements IController<User> {
                     new PayloadImpl(CommunicationUtils.toJson(userService.deleteInvite(invite))));
         } catch (InviteNotDeletedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_DELETED)));
+                    new PayloadImpl(INVITE_NOT_DELETED));
         }
     }
 
@@ -252,10 +252,10 @@ public final class UserController implements IController<User> {
                     new PayloadImpl(CommunicationUtils.toJson(userService.updateInvite(invite))));
         } catch (InviteNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_FOUND)));
+                    new PayloadImpl(INVITE_NOT_FOUND));
         } catch (InviteNotUpdatedException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(CommunicationUtils.toJson(INVITE_NOT_UPDATED)));
+                    new PayloadImpl(INVITE_NOT_UPDATED));
         }
     }
 

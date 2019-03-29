@@ -90,7 +90,7 @@ public class ViewInvitationsWindow extends AbstractTerminalWindow {
                 printInConsoleForProcess(1);
             }
         } catch (IOException | NetworkResponseFailureException e) {
-            ViewConstants.getOutputStream().println("Network error");
+            ViewConstants.getOutputStream().println(e.getMessage());
             goBack();
         }
     }

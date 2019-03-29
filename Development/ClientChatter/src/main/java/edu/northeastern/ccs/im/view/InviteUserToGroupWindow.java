@@ -16,7 +16,8 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
     public InviteUserToGroupWindow(TerminalWindow terminalWindow, ClientConnectionFactory clientConnectionFactory) {
         super(terminalWindow,
                 Stream.of(new AbstractMap.SimpleEntry<>(0, ConstantStrings.USER_NAME_STRING),
-                        new AbstractMap.SimpleEntry<>(1, ConstantStrings.CREATE_GROUP_CODE))
+                        new AbstractMap.SimpleEntry<>(1, ConstantStrings.CREATE_GROUP_CODE),
+                        new AbstractMap.SimpleEntry<>(2, ConstantStrings.FAILURE_MENU))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 , clientConnectionFactory);
     }
@@ -47,6 +48,7 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
             NetworkResponse networkResponse = sendNetworkConnection(inviteGroupRequest);
             ResponseParser.parseNetworkResponse(networkResponse);
         } catch (IOException | NetworkResponseFailureException exception)  {
+            ViewConstants.getOutputStream().println(exception.getMessage());
             printInConsoleForProcess(2);
         }
 
