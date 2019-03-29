@@ -192,7 +192,9 @@ public class GroupService implements IService {
      */
     public Group delete(Group group) throws GroupNotFoundException, GroupNotDeletedException{
         groupJPA.setEntityManager(null);
-        groupJPA.deleteGroup(group);
+        Group currentGroup = groupJPA.searchUsingCode(group.getGroupCode());
+        groupJPA.setEntityManager(null);
+        groupJPA.deleteGroup(currentGroup);
         groupJPA.setEntityManager(null);
         return groupJPA.getGroup(group.getId());
     }

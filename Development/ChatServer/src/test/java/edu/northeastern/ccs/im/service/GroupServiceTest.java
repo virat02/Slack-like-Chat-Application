@@ -207,16 +207,6 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-	/**
-	 * Testing the delete group method for throwing GroupNotFoundException
-	 */
-	@Test(expected = GroupNotFoundException.class)
-	public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException, GroupNotDeletedException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
-		doThrow(new GroupNotFoundException("Group not found")).when(groupJPAService).deleteGroup(any());
-		groupService.setJPAService(groupJPAService);
-		groupService.delete(groupOne);
-	}
 
 	/**
 	 * Testing the delete group method for throwing GroupNotDeletedException
