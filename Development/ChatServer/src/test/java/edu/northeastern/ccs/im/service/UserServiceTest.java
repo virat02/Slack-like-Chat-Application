@@ -220,7 +220,7 @@ public class UserServiceTest {
      * @throws UserNotFoundException exception thrown when a user is not found.
      */
     @Test
-    public void testUnfollow() throws UserNotFoundException {
+    public void testUnfollow() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "username";
         when(userJPAService.search(anyString())).thenReturn(userTwo);
         userService.setJPAService(userJPAService);
@@ -232,7 +232,7 @@ public class UserServiceTest {
      * @throws UserNotFoundException throws when a user is not found.
      */
     @Test (expected = IllegalArgumentException.class)
-    public void testUnfollowFail() throws UserNotFoundException {
+    public void testUnfollowFail() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "username";
         when(userJPAService.search(anyString())).thenReturn(null);
         userService.setJPAService(userJPAService);

@@ -19,6 +19,7 @@ import edu.northeastern.ccs.im.user_group.User;
 public class GroupJPAService{
 
 	private static final Logger LOGGER = Logger.getLogger(GroupJPAService.class.getName());
+	private static final String ERROR_MESSAGE = "Can't find Group for ID: ";
 
 	private UserJPAService userJPA = new UserJPAService();
 
@@ -108,7 +109,7 @@ public class GroupJPAService{
 
 		if (group == null) {
 			LOGGER.info("Could not update group since group not found");
-			throw new GroupNotFoundException("Can't find Group for ID: " + currentGroup.getId());
+			throw new GroupNotFoundException( ERROR_MESSAGE + currentGroup.getId());
 		}
 
 		group.setFollowees(currentGroup.getFollowees());
@@ -144,7 +145,7 @@ public class GroupJPAService{
 		Group group = entityManager.find(Group.class, id);
 
 		if (group == null) {
-			throw new GroupNotFoundException("Can't find Group for ID: " + id);
+			throw new GroupNotFoundException(ERROR_MESSAGE + id);
 		}
 
 		group.addUser(user);
@@ -166,7 +167,7 @@ public class GroupJPAService{
 		}
 		catch (Exception e) {
 			LOGGER.info("Can't find Group with name: " + groupName);
-			throw new GroupNotFoundException("Can't find Group with name: " + groupName);
+			throw new GroupNotFoundException(ERROR_MESSAGE + groupName);
 		}
 
 	}

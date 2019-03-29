@@ -133,9 +133,7 @@ public class ProfileJPAService {
             TypedQuery<Profile> query = entityManager.createQuery(queryString.toString(), Profile.class);
             Profile profile = query.getSingleResult();
             endTransaction();
-            if (profile.getId() > -1)
-                return true;
-            return false;
+            return profile.getId() > -1;
         }
         catch (Exception e){
             throw new ProfileNotPersistedException("No profile found with email id: " + email);

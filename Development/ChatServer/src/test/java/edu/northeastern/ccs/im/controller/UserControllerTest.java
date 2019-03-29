@@ -544,7 +544,7 @@ public class UserControllerTest {
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testUnfollowFail() throws UserNotFoundException {
+    public void testUnfollowFail() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "user";
         User user = new User();
         user.setUsername(username);
@@ -560,7 +560,7 @@ public class UserControllerTest {
      * @throws UserNotFoundException if invite is not found
      */
     @Test
-    public void testUnfollow() throws UserNotFoundException {
+    public void testUnfollow() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "user";
         User user = new User();
         user.setUsername(username);
