@@ -151,6 +151,34 @@ public class GroupJPAService{
 		endTransaction();
 	}
 
+	/**
+	 * Updates the givrn group with the sub group
+	 * @param currentGroup the current that is being updated
+	 * @return boolean value if the update is successful or not
+	 * @throws GroupNotFoundException thrown when the group is not found
+	 */
+	public Boolean addSubGroupToGroup(Group currentGroup) throws GroupNotFoundException{
+		beginTransaction();
+		Group group = entityManager.find(Group.class, currentGroup.getId());
+
+		if (group == null) {
+			LOGGER.info("Could not update group since group not found");
+			throw new GroupNotFoundException("Can't find Group for ID: " + currentGroup.getId());
+		}
+
+		group.setGroups(currentGroup.getGroups());
+		endTransaction();
+
+		if(group.toString().equals(currentGroup.toString())){
+			LOGGER.info("Updated Group : "+currentGroup.getId());
+			return true;
+		}
+		else {
+			LOGGER.info("Could not update group : "+currentGroup.getId());
+			return false;
+		}
+	}
+
 
     /**
      * searchUsingName method returns the list of groups with a given name
@@ -200,7 +228,7 @@ public class GroupJPAService{
 		try {
 			beginTransaction();
 			Group group = entityManager.find(Group.class, currentGroup.getId());
-			group.setDeleted(true);
+			group.setIsDeleted(true);
 			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
 			endTransaction();
 		}
