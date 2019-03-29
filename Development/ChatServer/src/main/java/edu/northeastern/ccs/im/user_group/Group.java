@@ -87,13 +87,27 @@
     )
     private List<User> followees = new ArrayList<>();
 
+        /**
+         * groupCode
+         */
     @Column(unique=true)
     private String groupCode;
 
+        /**
+         * creadtedOn
+         */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
+        /**
+         * group Password
+         */
     private String groupPassword;
+
+        /**
+         * isDeleted
+         */
+    private Boolean isDeleted;
 
 
     /**
@@ -106,6 +120,7 @@
         super();
         this.id = id;
         this.name = name;
+        this.isDeleted=false;
     }
 
     /**
@@ -113,6 +128,7 @@
      */
     public Group() {
         super();
+        this.isDeleted=false;
     }
 
     /**
@@ -355,6 +371,22 @@
     public String toString(){
         return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
+    }
+
+    /**
+     * returns the isDeleted attribute
+     * @return
+     */
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    /**
+     * Sets the boolean value for isDeleted attr
+     * @param deleted
+     */
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }
 
