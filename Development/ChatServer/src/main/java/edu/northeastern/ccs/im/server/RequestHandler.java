@@ -27,7 +27,7 @@ public class RequestHandler {
 
     /***
      * Obtain a single instance of RequestHandler
-     * @return
+     * @return A Single instance of this request handler.
      */
     public static RequestHandler getInstance() {
         return requestHandler;

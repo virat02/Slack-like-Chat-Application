@@ -10,7 +10,7 @@ public class SocketFactory {
     /***
      *
      * @return an instance of socket channel
-     * @throws IOException
+     * @throws IOException Thrown by SocketChannel.open()
      */
     public SocketChannel createSocket() throws IOException {
         return SocketChannel.open();
