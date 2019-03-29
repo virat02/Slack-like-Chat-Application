@@ -9,7 +9,6 @@ import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
 
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -155,12 +154,12 @@ public final class UserService implements IService {
     public User follow(String username, User currentUser) throws UserNotFoundException {
 
         User u = search(username);
-
-        if(currentUser != null && u != null){
-            currentUser.addFollowing(u);
+        User fetchedCurrentUser = search(currentUser.getUsername());
+        if(fetchedCurrentUser != null && u != null){
+            fetchedCurrentUser.addFollowing(u);
             userJPAService.setEntityManager(null);
-            userJPAService.updateUser(currentUser);
-            return currentUser;
+            userJPAService.updateUser(fetchedCurrentUser);
+            return fetchedCurrentUser;
         }
         else{
             LOGGER.info("Could not successfully follow the user!");
@@ -173,15 +172,14 @@ public final class UserService implements IService {
      * Unfollow a particular user given their username.
      * @param username of the user we want to unfollow.
      */
-    public User unfollow(String username, User currentUser) throws UserNotFoundException {
-
+    public User unfollow(String username, User currentUser) throws UserNotFoundException, UnfollowNotFollowingUserException {
         User u = search(username);
-
-        if(currentUser != null && u != null){
-            currentUser.removeFollowing(u);
+        User fetchedCurrentUser = search(currentUser.getUsername());
+        if(fetchedCurrentUser != null && u != null){
+            fetchedCurrentUser.removeFollowing(u);
             userJPAService.setEntityManager(null);
-            userJPAService.updateUser(currentUser);
-            return currentUser;
+            userJPAService.updateUser(fetchedCurrentUser);
+            return fetchedCurrentUser;
         }
         else{
             LOGGER.info("Could not successfully follow the user!");

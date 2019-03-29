@@ -51,7 +51,6 @@ public class UserJPAService {
         try {
             beginTransaction();
             entityManager.persist(user);
-//            entityManager.flush();
             int id= user.getId();
             endTransaction();
             return id;

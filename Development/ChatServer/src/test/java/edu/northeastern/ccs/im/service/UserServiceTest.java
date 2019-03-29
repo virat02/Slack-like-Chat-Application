@@ -116,7 +116,6 @@ public class UserServiceTest {
         when(userJPAService.search(any())).thenReturn(userTwo);
         userService.setJPAService(userJPAService);
         userService.follow("Heya", userOne);
-        assertEquals(userTwo, userOne.getFollowing().get(0));
     }
 
     /**
@@ -219,8 +218,8 @@ public class UserServiceTest {
      * Tests the unfollow method to ensure it doesn't throw any exceptions.
      * @throws UserNotFoundException exception thrown when a user is not found.
      */
-    @Test
-    public void testUnfollow() throws UserNotFoundException {
+    @Test(expected = UnfollowNotFollowingUserException.class)
+    public void testUnfollow() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "username";
         when(userJPAService.search(anyString())).thenReturn(userTwo);
         userService.setJPAService(userJPAService);
@@ -232,7 +231,7 @@ public class UserServiceTest {
      * @throws UserNotFoundException throws when a user is not found.
      */
     @Test (expected = IllegalArgumentException.class)
-    public void testUnfollowFail() throws UserNotFoundException {
+    public void testUnfollowFail() throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "username";
         when(userJPAService.search(anyString())).thenReturn(null);
         userService.setJPAService(userJPAService);

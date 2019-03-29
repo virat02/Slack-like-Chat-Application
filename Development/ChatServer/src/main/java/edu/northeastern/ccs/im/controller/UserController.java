@@ -26,6 +26,7 @@ public final class UserController implements IController<User> {
             "at least one number, one uppercase letter and one lowercase letter.\"}";
     private static final String USERNAME_INCORRECT = "{\"message\" : \"Username must be between 4 and 20 digits long, contain " +
             "at least one number, one uppercase letter and one lowercase letter\"}";
+    private static final String CANNOT_UNFOLLOW_JSON = "{\"message\" : \"Cannot unfollow a user you do not follow!\"}";
 
     private UserService userService = new UserService();
 
@@ -164,6 +165,10 @@ public final class UserController implements IController<User> {
         catch(UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_FOUND_JSON));
+        }
+        catch (UnfollowNotFollowingUserException e) {
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(CANNOT_UNFOLLOW_JSON));
         }
     }
 

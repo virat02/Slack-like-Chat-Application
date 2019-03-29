@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.user_group;
 
 import com.fasterxml.jackson.annotation.*;
+import edu.northeastern.ccs.im.customexceptions.UnfollowNotFollowingUserException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -185,14 +186,13 @@ public class User implements IUser {
      * Removes a user to the list of people we are following.
      * @param user the person we are following.
      */
-    public void removeFollowing(User user) {
-        if (user != null) {
-
-            for (User obj : this.following) {
-                if (obj.username.equals(user.username)) {
-                    this.following.remove(obj);
-                    break;
-                }
+    public void removeFollowing(User user) throws UnfollowNotFollowingUserException {
+        if(user != null) {
+            if(!this.following.contains(user)) {
+                throw new UnfollowNotFollowingUserException("Cannot unfollow a user you are not following!");
+            }
+            else{
+                this.following.remove(user);
             }
         }
         else {
