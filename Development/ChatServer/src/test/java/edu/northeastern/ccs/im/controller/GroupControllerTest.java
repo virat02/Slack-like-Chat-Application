@@ -1,6 +1,10 @@
 package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,15 +49,13 @@ public class GroupControllerTest {
         userOne.setPassword("hello123");
         userOne.setUsername("Hello");
         userOne.setId(12);
-
-
     }
 
     /**
      * Testing the create group method
      */
     @Test
-    public void testCreateGroup(){
+    public void testCreateGroup() throws GroupNotPersistedException, GroupNotFoundException {
         when(groupService.create(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.addEntity(groupOne);
@@ -62,10 +64,34 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the create group method for GroupNotPersistedException
+     */
+    @Test
+    public void testCreateGroupForGroupNotPersistedException() throws GroupNotPersistedException, GroupNotFoundException {
+        when(groupService.create(any())).thenThrow(new GroupNotPersistedException("Could not persist group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.addEntity(groupOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).create(any());
+    }
+
+    /**
+     * Testing the create group method for GroupNotFoundException
+     */
+    @Test
+    public void testCreateGroupForGroupNotFoundException() throws GroupNotPersistedException, GroupNotFoundException {
+        when(groupService.create(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.addEntity(groupOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).create(any());
+    }
+
+    /**
      * Testing the searching using groupCode
      */
     @Test
-    public void testSearchUsingCode(){
+    public void testSearchUsingCode() throws GroupNotFoundException{
         when(groupService.searchUsingCode(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.getEntity(groupOne.getGroupCode());
@@ -74,10 +100,22 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the searching using groupCode for throwing GroupNotFoundException
+     */
+    @Test
+    public void testSearchUsingCodeForGroupNotFoundException() throws GroupNotFoundException{
+        when(groupService.searchUsingCode(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.getEntity(groupOne.getGroupCode());
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).searchUsingCode(any());
+    }
+
+    /**
      * Testing the update group method
      */
     @Test
-    public void testUpdateGroup(){
+    public void testUpdateGroup() throws GroupNotFoundException {
         when(groupService.update(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.updateEntity(groupOne);
@@ -86,10 +124,22 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the update group method for GroupNotFoundException
+     */
+    @Test
+    public void testUpdateGroupForGroupNotFoundException() throws GroupNotFoundException {
+        when(groupService.update(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.updateEntity(groupOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).update(any());
+    }
+
+    /**
      * Testing the delete group method
      */
     @Test
-    public void testDeleteGroup(){
+    public void testDeleteGroup() throws GroupNotFoundException, GroupNotDeletedException {
         when(groupService.delete(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
@@ -98,10 +148,34 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the delete group method for throwing GroupNotFoundException
+     */
+    @Test
+    public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException, GroupNotDeletedException {
+        when(groupService.delete(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).delete(any());
+    }
+
+    /**
+     * Testing the delete group method for throwing GroupNotDeletedException
+     */
+    @Test
+    public void testDeleteGroupForGroupNotDeletedException() throws GroupNotFoundException, GroupNotDeletedException {
+        when(groupService.delete(any())).thenThrow(new GroupNotDeletedException("Could not delete group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).delete(any());
+    }
+
+    /**
      * Testing the searching using groupCode
      */
     @Test
-    public void testSearchUsingCodeEntity(){
+    public void testSearchUsingCodeEntity() throws GroupNotFoundException {
         when(groupService.searchUsingCode(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.searchEntity(groupOne.getGroupCode());
@@ -110,10 +184,22 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the searching using groupCode for throwing GroupNotFoundException
+     */
+    @Test
+    public void testSearchUsingCodeEntityForGroupNotFoundException() throws GroupNotFoundException {
+        when(groupService.searchUsingCode(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.searchEntity(groupOne.getGroupCode());
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).searchUsingCode(any());
+    }
+
+    /**
      * Testing the searching using name
      */
     @Test
-    public void testSearchUsingName(){
+    public void testSearchUsingName() throws GroupNotFoundException {
         when(groupService.searchUsingName(any())).thenReturn(groupList);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.searchAllGroup(groupOne.getName());
@@ -122,10 +208,22 @@ public class GroupControllerTest {
     }
 
     /**
+     * Testing the searching using name for throwing GroupNotFoundException
+     */
+    @Test
+    public void testSearchUsingNameForGroupNotFoundException() throws GroupNotFoundException {
+        when(groupService.searchUsingName(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        groupController.setGroupService(groupService);
+        NetworkResponse networkResponse = groupController.searchAllGroup(groupOne.getName());
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(groupService).searchUsingName(any());
+    }
+
+    /**
      * Testing the join Group
      */
     @Test
-    public void testJoinGroup(){
+    public void testJoinGroup() throws GroupNotFoundException, UserNotFoundException {
         when(groupService.joinGroup(any())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.joinGroup(groupOne);
@@ -134,35 +232,11 @@ public class GroupControllerTest {
     }
 
     /**
-     * Testing the remove user from group
+     * Testing the join Group for throwing GroupNotFoundException
      */
     @Test
-    public void testRemoveUSerFromGroup(){
-        when(groupService.removeUserFromGroup(any(), anyInt())).thenReturn(groupOne);
-        groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getId());
-        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
-        verify(groupService).removeUserFromGroup(any(), anyInt());
-    }
-
-    /**
-     * Testing the remove user from group with exception thrown
-     */
-    @Test
-    public void testRemoveUserException(){
-        when(groupService.removeUserFromGroup(any(), anyInt())).thenThrow(IllegalArgumentException.class);
-        groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getId());
-        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).removeUserFromGroup(any(), anyInt());
-    }
-
-    /**
-     * Testing the join Group with exception
-     */
-    @Test
-    public void testJoinGroupException(){
-        when(groupService.joinGroup(any())).thenThrow(IllegalArgumentException.class);
+    public void testJoinGroupForGroupNotFoundException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.joinGroup(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.joinGroup(groupOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -170,63 +244,62 @@ public class GroupControllerTest {
     }
 
     /**
-     * Testing the searching using groupCode with exception
+     * Testing the join Group for throwing UserNotFoundException
      */
     @Test
-    public void testSearchUsingCodeException(){
-        when(groupService.searchUsingCode(any())).thenThrow(IllegalArgumentException.class);
+    public void testJoinGroupForUserNotFoundException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.joinGroup(any())).thenThrow(new UserNotFoundException("Could not find group!"));
         groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.getEntity(groupOne.getGroupCode());
+        NetworkResponse networkResponse = groupController.joinGroup(groupOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).searchUsingCode(any());
+        verify(groupService).joinGroup(any());
     }
 
     /**
-     * Testing the update group with exception
+     * Testing the remove user from group
      */
     @Test
-    public void testUpdateException(){
-        when(groupService.update(any())).thenThrow(IllegalArgumentException.class);
+    public void testRemoveUserFromGroup() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.removeUserFromGroup(any(), anyString())).thenReturn(groupOne);
         groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.updateEntity(groupOne);
-        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).update(any());
+        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
+        verify(groupService).removeUserFromGroup(any(), anyString());
     }
 
     /**
-     * Testing the delete group method with exception
+     * Testing the remove user from group for throwing GroupNotFoundException
      */
     @Test
-    public void testDeleteException(){
-        when(groupService.delete(any())).thenThrow(IllegalArgumentException.class);
+    public void testRemoveUserFromGroupForGroupNotFoundException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.removeUserFromGroup(any(), anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
         groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
+        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).delete(any());
+        verify(groupService).removeUserFromGroup(any(), anyString());
     }
 
     /**
-     * testing the search using name method with exception
+     * Testing the remove user from group for throwing UserNotFoundException
      */
     @Test
-    public void testSearchUsingNameException(){
-        when(groupService.searchUsingName(any())).thenThrow(IllegalArgumentException.class);
+    public void testRemoveUserFromGroupForUserNotFoundException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.removeUserFromGroup(any(), anyString())).thenThrow(new UserNotFoundException("Could not find user!"));
         groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.searchAllGroup(groupOne.getName());
+        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).searchUsingName(any());
+        verify(groupService).removeUserFromGroup(any(), anyString());
     }
+
     /**
-     * testing the create group method with exception
+     * Testing the remove user from group for throwing IllegalArgumentException
      */
     @Test
-    public void testCreateException(){
-        when(groupService.create(any())).thenThrow(IllegalArgumentException.class);
+    public void testRemoveUserFromGroupForIllegalArgumentException() throws GroupNotFoundException, UserNotFoundException {
+        when(groupService.removeUserFromGroup(any(), anyString())).thenThrow(new IllegalArgumentException());
         groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.addEntity(groupOne);
+        NetworkResponse networkResponse = groupController.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).create(any());
+        verify(groupService).removeUserFromGroup(any(), anyString());
     }
-
-
 }

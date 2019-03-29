@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
@@ -82,27 +86,33 @@ public class MessageServiceTest {
      *Test for able to create message
      */
     @Test
-    public void testCreateMessage() {
+    public void testCreateMessage() throws MessageNotPersistedException {
 
         when(messageJPAService.createMessage(any(Message.class))).thenReturn(1);
-        when(m.getId()).thenReturn(1);
-        when(messageJPAService.getMessage(anyInt())).thenReturn(m);
-
         messageService.setMessageJPAService(messageJPAService);
 
         assertTrue(messageService.createMessage(m));
     }
 
     /**
+     *Test for able to create message for throwing MessageNotPersistedException
+     */
+    @Test(expected = MessageNotPersistedException.class)
+    public void testCreateMessageForMessageNotPersistedException() throws MessageNotPersistedException {
+
+        when(messageJPAService.createMessage(any(Message.class))).thenThrow(new MessageNotPersistedException("Could not persist message!"));
+        messageService.setMessageJPAService(messageJPAService);
+
+        messageService.createMessage(m);
+    }
+
+    /**
      *Test for unable to create message
      */
     @Test
-    public void testCreateMessageFalse() {
+    public void testCreateMessageFalse() throws MessageNotPersistedException {
 
         when(messageJPAService.createMessage(any(Message.class))).thenReturn(-1);
-        when(m.getId()).thenReturn(1);
-        when(messageJPAService.getMessage(anyInt())).thenReturn(m);
-
         messageService.setMessageJPAService(messageJPAService);
 
         assertFalse(messageService.createMessage(m));
@@ -112,7 +122,7 @@ public class MessageServiceTest {
      * Test the create message method from client
      */
     @Test
-    public void testCreateMessageBody() {
+    public void testCreateMessageBody() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
 
         when(userService.search(anyString())).thenReturn(u);
         when(groupService.searchUsingCode(anyString())).thenReturn(g);
@@ -125,10 +135,34 @@ public class MessageServiceTest {
     }
 
     /**
+     * Test the create message method from client for throwing UserNotFound Exception
+     */
+    @Test(expected = UserNotFoundException.class)
+    public void testCreateMessageBodyForUserNotFoundExceptionException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+
+        when(userService.search(anyString())).thenThrow(new UserNotFoundException("Could not find user!"));
+        messageService.setJPAServices(userService, groupService);
+
+        messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE);
+    }
+
+    /**
+     * Test the create message method from client for throwing GroupNotFound Exception
+     */
+    @Test(expected = GroupNotFoundException.class)
+    public void testCreateMessageBodyForGroupNotFoundExceptionException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+
+        when(groupService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
+        messageService.setJPAServices(userService, groupService);
+
+        messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE);
+    }
+
+    /**
      * Test successful update message method
      */
     @Test
-    public void testUpdateMessageService() {
+    public void testUpdateMessageService() throws MessageNotFoundException{
 
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(true);
         messageService.setMessageJPAService(messageJPAService);
@@ -139,7 +173,7 @@ public class MessageServiceTest {
      * Test unsuccessful update message method
      */
     @Test
-    public void testUpdateMessageServiceUnsuccessful() {
+    public void testUpdateMessageServiceUnsuccessful() throws MessageNotFoundException {
 
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(false);
         messageService.setMessageJPAService(messageJPAService);
@@ -150,7 +184,7 @@ public class MessageServiceTest {
      * Test get message method
      */
     @Test
-    public void testGetMessage() {
+    public void testGetMessage() throws MessageNotFoundException{
 
         when(messageJPAService.getMessage(anyInt())).thenReturn(m);
         messageService.setMessageJPAService(messageJPAService);
@@ -161,7 +195,7 @@ public class MessageServiceTest {
      * Test get message method to return null
      */
     @Test
-    public void testGetMessageNullMessage() {
+    public void testGetMessageNullMessage() throws MessageNotFoundException{
 
         when(messageJPAService.getMessage(anyInt())).thenReturn(null);
         messageService.setMessageJPAService(messageJPAService);
@@ -172,7 +206,7 @@ public class MessageServiceTest {
      * Test the delete message method when message is deleted
      */
     @Test
-    public void testDeleteMessageForDeletedMessage() {
+    public void testDeleteMessageForDeletedMessage() throws MessageNotFoundException {
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(true);
         messageService.setMessageJPAService(messageJPAService);
         assertTrue(messageService.deleteMessage(m2));
@@ -183,20 +217,20 @@ public class MessageServiceTest {
      * Test the delete message method when message is not deleted
      */
     @Test
-    public void testDeleteMessageForNotDeletedMessage() {
+    public void testDeleteMessageForNotDeletedMessage() throws MessageNotFoundException{
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(false);
         messageService.setMessageJPAService(messageJPAService);
         assertFalse(messageService.deleteMessage(m));
     }
-
-    /**
-     * Test the getTop15Messages method
-     */
-    @Test
-    public void testGetTop15Messages() {
-        List<Message> msgList = new ArrayList<>();
-        when(messageJPAService.getTop15Messages(anyString())).thenReturn(msgList);
-        messageService.setMessageJPAService(messageJPAService);
-        assertEquals(msgList, messageService.getTop15Messages("ABCD"));
-    }
+//
+//    /**
+//     * Test the getTop15Messages method
+//     */
+//    @Test
+//    public void testGetTop15Messages() {
+//        List<Message> msgList = new ArrayList<>();
+//        when(messageJPAService.getTop15Messages(anyString())).thenReturn(msgList);
+//        messageService.setMessageJPAService(messageJPAService);
+//        assertEquals(msgList, messageService.getTop15Messages("ABCD"));
+//    }
 }

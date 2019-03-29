@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.Profile;
@@ -14,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,34 +71,57 @@ public class ProfileServiceTest {
      *Test for able to create profile in ProfileService
      */
     @Test
-    public void testCreateProfile() {
+    public void testCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
 
-        when(profileJPAService.createProfile(any(Profile.class))).thenReturn(1);
-        when(m.getId()).thenReturn(1);
-        when(profileJPAService.getProfile(anyInt())).thenReturn(p1);
-
+        when(profileJPAService.createProfile(any(Profile.class))).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
 
-        assertTrue(profileService.createProfile(p1));
+        assertEquals(p1,profileService.createProfile(p1));
     }
 
     /**
-     *Test for unable to create profile in ProfileService
+     *Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
      */
-    @Test
-    public void testCreateProfileFalse() {
+    @Test(expected = ProfileNotPersistedException.class)
+    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException, InvalidEmailException {
 
-        when(profileJPAService.createProfile(any(Profile.class))).thenReturn(-1);
+        when(profileJPAService.createProfile(any(Profile.class))).thenThrow(new ProfileNotPersistedException("Could not persist the profile!"));
         profileService.setProfileJPAService(profileJPAService);
 
-        assertFalse(profileService.createProfile(p1));
+        profileService.createProfile(p1);
+    }
+
+    /**
+     *Test for unable to create profile in ProfileService for throwing InvalidEmailException
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testCreateProfileForInvalidEmailException()
+            throws ProfileNotPersistedException, InvalidEmailException {
+
+        Profile p = new Profile();
+        p.setEmail("abcd");
+
+        profileService.createProfile(p);
+    }
+
+    /**
+     *Test for unable to create profile in ProfileService for throwing InvalidEmailException for null email id
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testCreateProfileForInvalidEmailExceptionForNullEmailId()
+            throws ProfileNotPersistedException, InvalidEmailException {
+
+        Profile p = new Profile();
+        p.setEmail(null);
+
+        profileService.createProfile(p);
     }
 
     /**
      * Test successful update profile method
      */
     @Test
-    public void testUpdateProfileService() {
+    public void testUpdateProfileService() throws ProfileNotFoundException{
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenReturn(true);
         profileService.setProfileJPAService(profileJPAService);
@@ -104,9 +132,20 @@ public class ProfileServiceTest {
      * Test unsuccessful update profile method
      */
     @Test
-    public void testUpdateProfileServiceUnsuccessful() {
+    public void testUpdateProfileServiceUnsuccessful() throws ProfileNotFoundException {
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenReturn(false);
+        profileService.setProfileJPAService(profileJPAService);
+        assertFalse(profileService.updateProfile(p1));
+    }
+
+    /**
+     * Test update profile method for ProfileNotFoundException
+     */
+    @Test(expected = ProfileNotFoundException.class)
+    public void testUpdateProfileServiceForProfileNotFoundException() throws ProfileNotFoundException {
+
+        when(profileJPAService.updateProfile(any(Profile.class))).thenThrow(new ProfileNotFoundException("Could not find profile!"));
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.updateProfile(p1));
     }
@@ -115,7 +154,7 @@ public class ProfileServiceTest {
      * Test get profile method
      */
     @Test
-    public void testGetProfile() {
+    public void testGetProfile() throws ProfileNotFoundException {
 
         when(profileJPAService.getProfile(anyInt())).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
@@ -125,19 +164,19 @@ public class ProfileServiceTest {
     /**
      * Test get message method to return null
      */
-    @Test
-    public void testGetProfileNullMessage() {
+    @Test(expected = ProfileNotFoundException.class)
+    public void testGetProfileForProfileNotFoundException() throws ProfileNotFoundException {
 
-        when(profileJPAService.getProfile(anyInt())).thenReturn(null);
+        when(profileJPAService.getProfile(anyInt())).thenThrow(new ProfileNotFoundException("Could not find profile!"));
         profileService.setProfileJPAService(profileJPAService);
-        assertNull(profileService.get(2));
+        profileService.get(2);
     }
 
     /**
      * Test the delete profile method when profile is deleted
      */
     @Test
-    public void testDeleteProfile() {
+    public void testDeleteProfile() throws ProfileNotDeletedException {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(1);
         profileService.setProfileJPAService(profileJPAService);
         assertTrue(profileService.deleteProfile(p1));
@@ -147,8 +186,18 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is not deleted
      */
     @Test
-    public void testDeleteProfileFalse() {
+    public void testDeleteProfileFalse() throws ProfileNotDeletedException{
         when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(-1);
+        profileService.setProfileJPAService(profileJPAService);
+        assertFalse(profileService.deleteProfile(p1));
+    }
+
+    /**
+     * Test the delete profile method to throw ProfileNotDeletedException
+     */
+    @Test(expected = ProfileNotDeletedException.class)
+    public void testDeleteProfileForProfileNotDeletedException() throws ProfileNotDeletedException{
+        when(profileJPAService.deleteProfile(any(Profile.class))).thenThrow(new ProfileNotDeletedException("Could not delete profile!"));
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
     }

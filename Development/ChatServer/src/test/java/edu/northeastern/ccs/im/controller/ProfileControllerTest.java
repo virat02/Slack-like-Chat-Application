@@ -1,6 +1,10 @@
 package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.communication.NetworkResponse;
+import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.service.ProfileService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Profile;
@@ -64,8 +68,8 @@ public class ProfileControllerTest {
      * Test for successful create Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulCreateProfile(){
-        when(profileService.createProfile(any())).thenReturn(true);
+    public void testSuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
+        when(profileService.createProfile(any())).thenReturn(profileOne);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
@@ -75,9 +79,21 @@ public class ProfileControllerTest {
      * Test for unsuccessful create Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulCreateProfile(){
+    public void testUnsuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
 
-        when(profileService.createProfile(any())).thenThrow(IllegalArgumentException.class);
+        when(profileService.createProfile(any())).thenThrow(new ProfileNotPersistedException("Could not persist profile!"));
+        profileController.setProfileService(profileService);
+        NetworkResponse networkResponse = profileController.addEntity(profileOne);
+        Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+    }
+
+    /**
+     * Test for unsuccessful create Profile in Profile Controller
+     */
+    @Test
+    public void testUnsuccessfulCreateProfileForInvalidEmailException() throws ProfileNotPersistedException, InvalidEmailException {
+
+        when(profileService.createProfile(any())).thenThrow(new InvalidEmailException("Invalid Email!"));
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -87,7 +103,7 @@ public class ProfileControllerTest {
      * Test for successful get Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulGetProfile(){
+    public void testSuccessfulGetProfile() throws ProfileNotFoundException {
         when(profileService.get(anyInt())).thenReturn(profileOne);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.getEntity(profileOne.getId());
@@ -98,8 +114,8 @@ public class ProfileControllerTest {
      * Test for unsuccessful get Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulGetProfile(){
-        when(profileService.get(anyInt())).thenThrow(IllegalArgumentException.class);
+    public void testUnsuccessfulGetProfile() throws ProfileNotFoundException {
+        when(profileService.get(anyInt())).thenThrow(ProfileNotFoundException.class);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.getEntity(4);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -109,7 +125,7 @@ public class ProfileControllerTest {
      * Test for successful update Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulUpdateProfile(){
+    public void testSuccessfulUpdateProfile() throws ProfileNotFoundException {
         when(profileService.updateProfile(any())).thenReturn(true);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.updateEntity(profileOne);
@@ -120,8 +136,8 @@ public class ProfileControllerTest {
      * Test for unsuccessful update Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulUpdateProfile(){
-        when(profileService.updateProfile(any())).thenThrow(IllegalArgumentException.class);
+    public void testUnsuccessfulUpdateProfile() throws ProfileNotFoundException {
+        when(profileService.updateProfile(any())).thenThrow(ProfileNotFoundException.class);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.updateEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -131,7 +147,7 @@ public class ProfileControllerTest {
      * Test for successful delete Profile in Profile Controller
      */
     @Test
-    public void testSucessfulDeleteProfile(){
+    public void testSuccessfulDeleteProfile() throws ProfileNotDeletedException {
         when(profileService.deleteProfile(any())).thenReturn(true);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
@@ -142,8 +158,8 @@ public class ProfileControllerTest {
      * Test for unsuccessful delete Profile in Profile Controller
      */
     @Test
-    public void testUnsucessfulDeleteProfile(){
-        when(profileService.deleteProfile(any())).thenThrow(IllegalArgumentException.class);
+    public void testUnsuccessfulDeleteProfile() throws ProfileNotDeletedException {
+        when(profileService.deleteProfile(any())).thenThrow(ProfileNotDeletedException.class);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());

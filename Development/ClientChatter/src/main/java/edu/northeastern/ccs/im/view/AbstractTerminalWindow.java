@@ -76,7 +76,12 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     String input = "";
     try {
       while((input = ViewConstants.getInputStream().readLine()) != null) {
-        if (input.equals("exit")) {
+        if (input.trim().equals("")) {
+          printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
+          printInConsoleForCurrentProcess();
+          continue;
+        }
+        else if (input.equals("exit")) {
           exitApp();
           return;
         }
@@ -143,11 +148,16 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     clientConnection.connect();
   }
 
-  protected NetworkResponse sendNetworkConnection(NetworkRequest networkRequest) throws IOException {
-    createNetworkConnection();
-    clientConnection.sendRequest(networkRequest);
-    NetworkResponse networkResponse = clientConnection.readResponse();
-    clientConnection.close();
-    return networkResponse;
+  protected NetworkResponse sendNetworkConnection(NetworkRequest networkRequest)
+          throws NetworkResponseFailureException {
+    try {
+      createNetworkConnection();
+      clientConnection.sendRequest(networkRequest);
+      NetworkResponse networkResponse = clientConnection.readResponse();
+      clientConnection.close();
+      return networkResponse;
+    } catch (IOException e) {
+      throw new NetworkResponseFailureException("Unable to connect to network");
+    }
   }
 }

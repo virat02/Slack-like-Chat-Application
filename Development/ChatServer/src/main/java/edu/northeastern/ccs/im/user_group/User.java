@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.user_group;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ public class User implements IUser {
     /**
      * The list of people this user follows.
      */
+
     @OneToMany(targetEntity=User.class)
     @JoinTable
     (
@@ -34,6 +37,7 @@ public class User implements IUser {
         joinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
     )
+    @JsonIgnore
     private List<User> following = new ArrayList<>();
 
     /** The name. */
@@ -177,6 +181,25 @@ public class User implements IUser {
     }
 
     /**
+     * Removes a user to the list of people we are following.
+     * @param user the person we are following.
+     */
+    public void removeFollowing(User user) {
+        if (user != null) {
+
+            for (User obj : this.following) {
+                if (obj.username.equals(user.username)) {
+                    this.following.remove(obj);
+                    break;
+                }
+            }
+        }
+        else {
+            throw new NullPointerException("Cannot add a non-existing user");
+        }
+    }
+
+    /**
      * Gets the name.
      *
      * @return the name
@@ -227,5 +250,16 @@ public class User implements IUser {
      */
     public void setProfileAccess(boolean access) {
         this.profileAccess = access;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User
+                && ((User) obj).username.equals(this.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.username.hashCode();
     }
 }

@@ -1,16 +1,9 @@
 package edu.northeastern.ccs.im.communication;
 
-//import edu.northeastern.ccs.jpa.Message;
-//import edu.northeastern.ccs.jpa.Profile;
-//import edu.northeastern.ccs.jpa.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.northeastern.ccs.im.userGroup.Group;
-import edu.northeastern.ccs.im.userGroup.Message;
-import edu.northeastern.ccs.im.userGroup.Profile;
-import edu.northeastern.ccs.im.userGroup.User;
+import edu.northeastern.ccs.im.userGroup.*;
 
 /***
  * A NetworkRequestFactory which returns instance of Network Request depending upon
@@ -180,9 +173,13 @@ public class NetworkRequestFactory {
      * Creates a request for joining a group.
      * @return NetworkRequest containing the required request
      */
-    public NetworkRequest createJoinGroup(String groupCode) {
+    public NetworkRequest createJoinGroup(String groupCode, String userName, boolean isPrivate) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
-                () -> "{\"groupCode\":\"" + groupCode + "\"}");
+                () -> "{" +
+                        "\"groupCode\":\"" + groupCode + "\"" + "," +
+                         "\"userName\":\"" + userName + "\"" + "," +
+                        "\"isPrivate\":\"" + isPrivate + "\""
+                        + "}");
     }
 
     public NetworkRequest createDeleteGroupRequest(String groupName, String groupCode, User user) {
@@ -270,23 +267,73 @@ public class NetworkRequestFactory {
                 });
     }
 
-    public NetworkRequest createSetUserFolloweresList(String userName, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
-                () -> {
+  public NetworkRequest createSetUserFolloweresList(String userName, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
+            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                    "\n" + userName);
+  }
 
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                            "\n" + userName;
+  public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
+            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                    "\n" + userName);
+  }
+    /***
+     * Creates a group invite request.
+     * @param invitee -> The user whom has been invited to join the group
+     * @param inviter -> The user whom invites another user to join the group
+     * @param groupCode -> The group code of the group under consideration
+     * @return An instance of Network Request representing the transaction.
+     */
+    public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
+                () -> {
+                    Invite invite = new Invite();
+                    User inviterUser = new User();
+                    inviterUser.setUsername(inviter);
+                    User inviteeUser = new User();
+                    inviteeUser.setUsername(invitee);
+                    Group group = new Group();
+                    group.setGroupCode(groupCode);
+                    invite.setSender(inviterUser);
+                    invite.setReceiver(inviteeUser);
+                    invite.setGroup(group);
+                    return CommunicationUtils.toJson(invite);
                 });
     }
 
     /***
-     * Creates a group invite request
-     * @param userName
-     * @param groupCode
-     * @return
+     * Creates a invite update request
+     * @param invitationId -> The id of the invitations
+     * @param status -> The updated status of the invitation
+     * @return an instance of this network request representing the transaction
      */
-    public NetworkRequest createGroupInviteRequest(String invitee, String groupCode) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
-                () -> "");
+    public NetworkRequest createUpdateGroupInvite(String invitationId, Status status) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_INVITE,
+                () -> {
+                    Invite invite = new Invite();
+                    invite.setId(Integer.parseInt(invitationId));
+                    invite.setStatus(status);
+                    return CommunicationUtils.toJson(invite);
+                });
+    }
+
+
+    public NetworkRequest fetchInvitationRequest(String userName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.FETCH_INVITE, () -> new StringBuilder()
+                .append("{")
+                .append("\"userName\"")
+                .append(":")
+                .append("\"")
+                .append(userName)
+                .append("\"")
+                .append(",")
+                .append("\"groupCode\"")
+                .append(":")
+                .append("\"")
+                .append(groupCode)
+                .append("\"")
+                .append("}")
+                .toString());
     }
 }

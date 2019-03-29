@@ -43,5 +43,9 @@ public interface NetworkRequest {
         GET_FOLLOWEES,
         GET_FOLLOWERS,
         SET_FOLLOWERS,
+        INVITE_USER,
+        UPDATE_INVITE,
+        FETCH_INVITE,
+        SET_UNFOLLOWERS,
     }
 }

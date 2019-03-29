@@ -19,7 +19,11 @@ public class MessageEntityTest {
      */
     @Test
     public void testConstructor1() {
-        Message m = new Message(1,"hi", new Date(), 10, new User(), new Group(), false);
+        User u = new User();
+        u.setUsername("virat");
+        Group g = new Group();
+        g.setGroupCode("abcd");
+        Message m = new Message(1,"hi", new Date(), 10, u, g , false);
 
         String expected = "Message: hi\n" +
                 "Message Timestamp: " + m.getTimestamp() +

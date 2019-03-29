@@ -9,92 +9,85 @@ import edu.northeastern.ccs.im.userGroup.Profile;
 
 public class SignUpWindow extends AbstractTerminalWindow {
 
-  private String userName;
-  private String passwordString;
-  private String emailAddress;
-  private TerminalWindow chatTerminalWindow;
+    private String userName;
+    private String passwordString;
+    private String emailAddress;
+    private TerminalWindow chatTerminalWindow;
 
-  SignUpWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
-    super(caller, new HashMap<Integer, String>() {{
-      put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
-      put(1, ConstantStrings.USER_NAME_STRING);
-      put(2, ConstantStrings.PASSWORD_STRING);
-      put(3, ConstantStrings.RE_ENTER_PASSWORD_STRING);
-      put(4, ConstantStrings.SIGN_UP_FAILED);
-    }}, clientConnectionFactory);
-  }
-
-  public TerminalWindow getChatTerminalWindow() {
-    if (chatTerminalWindow == null) {
-      chatTerminalWindow = new ChatTerminalWindow(this, clientConnectionFactory);
+    SignUpWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
+        super(caller, new HashMap<Integer, String>() {{
+            put(0, ConstantStrings.EMAIL_ADDRESS_STRING);
+            put(1, ConstantStrings.USER_NAME_STRING);
+            put(2, ConstantStrings.PASSWORD_STRING);
+            put(3, ConstantStrings.RE_ENTER_PASSWORD_STRING);
+            put(4, ConstantStrings.SIGN_UP_FAILED);
+        }}, clientConnectionFactory);
     }
-    return chatTerminalWindow;
-  }
 
-  @Override
-  void inputFetchedFromUser(String inputString) {
-    if (getCurrentProcess() == 0) {
-      emailAddress = inputString;
-      printInConsoleForNextProcess();
-    } else if (getCurrentProcess() == 1) {
-      userName = inputString;
-      printInConsoleForNextProcess();
-    } else if (getCurrentProcess() == 2) {
-      passwordString = inputString;
-      printInConsoleForNextProcess();
-    } else if (getCurrentProcess() == 3) {
-      if (!inputString.equals(passwordString)) {
-        printMessageInConsole(ConstantStrings.PASSWORDS_DO_NOT_MATCH);
-        printInConsoleForProcess(2);
-      } else {
-        Base64.Encoder encoder = Base64.getEncoder();
-        passwordString = encoder.encodeToString(inputString.getBytes());
-        int id = createUserAndFetchId();
-        if (id == -1) {
-          printInConsoleForProcess(4);
+    public TerminalWindow getChatTerminalWindow() {
+        if (chatTerminalWindow == null) {
+            chatTerminalWindow = new ChatTerminalWindow(this, clientConnectionFactory);
         }
-        else {
-          printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
-          getChatTerminalWindow().runWindow();
-        }
-      }
-    } else {
-      if (inputString.equals("1")) {
-        printInConsoleForProcess(0);
-      } else if (inputString.equals("0")) {
-        goBack();
-      } else if (inputString.equals("*")) {
-        exitWindow();
-      } else {
-        invalidInputPassed();
-      }
+        return chatTerminalWindow;
     }
-  }
 
-  private int createUserAndFetchId() {
-    try {
-      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createUserRequest(userName, passwordString));
-      int userId = ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
-      if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL) && userId != -1) {
-        networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-                .createUserProfile(emailAddress,""));
-        if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
-          Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);
-          networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-                  .createUpdateUserProfile(profile, UserConstants.getUserObj()));
-          if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
-            UserConstants.getUserObj().setProfile(profile);
-            return userId;
-          }
+    @Override
+    void inputFetchedFromUser(String inputString) {
+        if (getCurrentProcess() == 0) {
+            emailAddress = inputString;
+            printInConsoleForNextProcess();
+        } else if (getCurrentProcess() == 1) {
+            userName = inputString;
+            printInConsoleForNextProcess();
+        } else if (getCurrentProcess() == 2) {
+            passwordString = inputString;
+            printInConsoleForNextProcess();
+        } else if (getCurrentProcess() == 3) {
+            if (!inputString.equals(passwordString)) {
+                printMessageInConsole(ConstantStrings.PASSWORDS_DO_NOT_MATCH);
+                printInConsoleForProcess(2);
+            } else {
+                passwordString = inputString;
+                int id = createUserAndFetchId();
+                if (id == -1) {
+                    printInConsoleForProcess(4);
+                } else {
+                    printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
+                    getChatTerminalWindow().runWindow();
+                }
+            }
+        } else {
+            if (inputString.equals("1")) {
+                printInConsoleForProcess(0);
+            } else if (inputString.equals("0")) {
+                goBack();
+            } else if (inputString.equals("*")) {
+                exitWindow();
+            } else {
+                invalidInputPassed();
+            }
         }
-      }
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-    } catch (NetworkResponseFailureException exception) {
-      printMessageInConsole(exception.getMessage());
     }
-    return -1;
-  }
+
+    private int createUserAndFetchId() {
+        try {
+            NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+                    .createUserProfile(emailAddress, ""));
+            Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);
+            networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+                    .createUserRequest(userName, passwordString));
+            int userId = ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+            if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL) && userId != -1) {
+                networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+                        .createUpdateUserProfile(profile, UserConstants.getUserObj()));
+                if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
+                    UserConstants.getUserObj().setProfile(profile);
+                    return userId;
+                }
+            }
+        } catch (NetworkResponseFailureException exception) {
+            printMessageInConsole(exception.getMessage());
+        }
+        return -1;
+    }
 }

@@ -24,8 +24,7 @@ public class ConstantStrings {
     public static final String EMAIL_ADDRESS_STRING = "Enter Email Address: ";
     public static final String PASSWORD_STRING = "Enter Password: ";
     public static final String LOGIN_SUCCESSFUL = "Login Successful";
-    public static final String LOGIN_FAILED = "Invalid Username/password\n"
-            + "1 - Retry\n" + "2 - Forgot Password\n" + DEFAULT_MENU;
+    public static final String LOGIN_FAILED = "1 - Retry\n" + "2 - Forgot Password\n" + DEFAULT_MENU;
 
     //Sign Up Strings
     public static final String USER_NAME_STRING = "Enter Username: ";
@@ -38,7 +37,15 @@ public class ConstantStrings {
 
     // Invite user to group
     public static final String INVITE_GROUP_FAILED = "Request failed. Invitation was not successful.\n"
-            + "1 - Retry\n" + DEFAULT_MENU;
+            + FAILURE_MENU;
+
+    // Invitation Accept or Reject
+    public static final String INVITE_ACCEPT_OR_REJECT = "Enter invitation ID followed by a space with an accept(A) or reject(R) letter\n" +
+            DEFAULT_MENU;
+
+    public static final String INVITE_ACCEPT_OR_REJECT_FAILED = "Request failed. \n"
+            + FAILURE_MENU;
+
     //Forgot Password
     public static final String RECOVERY_EMAIL = "Enter Recovery Email Address: ";
     public static final String RECOVERY_INITIATED = "Recovery initiated. "
@@ -47,14 +54,10 @@ public class ConstantStrings {
 
     //Main Chat
     public static final String CHAT_MAIN_COMMAND = "1 - Chat\n"
-            + "2 - Search\n"
-            + "3 - Create Group\n"
-            + "4 - Invite User to your group"
-            + "5 - Delete Group\n"
-            + "6 - Group Details\n"
-            + "7 - Profile\n"
-            + "7 - Circles\n"
-            + "9 - Sign out\n"
+            + "2 - Group\n"
+            + "3 - Circles\n"
+            + "4 - Profile\n"
+            + "0 - Sign out\n"
             + "* - Exit";
 
     //Message Group Selector
@@ -74,17 +77,29 @@ public class ConstantStrings {
     //Update Profile
     public static final String UPDATE_PROFILE =
             "1 - Update Email\n2 - Update Image Url\n3 - Invert Profile View Status\n4 - View " +
-                    "Profile\n" + DEFAULT_MENU;
+                    "Profile\n5 - Update Password\n" + DEFAULT_MENU;
     public static final String UPDATE_PROFILE_EMAIL = "Enter new email id: ";
     public static final String UPDATE_PROFILE_IMAGEURL = "Enter new image URL: ";
     public static final String UPDATE_PROFILE_SUCCESS = "Profile updated successfully";
     public static final String UPDATE_PROFILE_FAILED = "Profile update failed";
+    public static final String UPDATE_ENTER_OLD_PASSWORD = "Enter old password: ";
+    public static final String UPDATE_OLD_PASSWORD_WRONG = "Password is wrong";
+    public static final String UPDATE_ENTER_NEW_PASSWORD = "Enter new password: ";
+
+    //Group
+    public static final String GROUP_MAIN_COMMAND = "1 - View Groups\n"
+            + "2 - Search Groups\n"
+            + "3 - Create Group\n"
+            + "4 - Invite User to your group\n"
+            + "5 - Delete Group\n"
+            + "6 - Group Details\n"
+            + "7 - View list of invitations\n" + DEFAULT_MENU;
 
     //Create Group
     public static final String CREATE_GROUP = "Enter Group Name: ";
     public static final String CREATE_GROUP_CODE = "Enter a unique group code:";
-    public static final String CREATE_GROUP_SUCCESS = "Group created successfully\n" + DEFAULT_MENU;
-    public static final String CREATE_GROUP_FAILED = "Group creation failed\n" + FAILURE_MENU;
+    public static final String CREATE_GROUP_SUCCESS = "Group created successfully";
+    public static final String CREATE_GROUP_FAILED = "Group creation failed";
 
     //Delete Group
     public static final String DELETE_GROUP = "Enter Group Name To Delete: ";
@@ -93,26 +108,27 @@ public class ConstantStrings {
 
     //Update Group
     public static final String GROUP_PROPERTIES = "1 - Add User To Group\n2 - Delete User To " +
-            "Group\n3 - Set Password\n4 - View Group Details\n" + DEFAULT_MENU;
+            "Group\n3 - Set Password\n4 - View Group Details\n5 - Create sub group\n6 - View " +
+            "Sub group Details\n" + DEFAULT_MENU;
     public static final String GROUP_UPDATE = "Enter Group Code To Update: ";
+    public static final String NO_GROUPS_FOUND = "No groups found";
+    public static final String GROUP_NOT_FOUND = "Group not found\n" + FAILURE_MENU;
+    public static final String GROUP_NOT_FOUND_MESSAGE = "Group not found";
     public static final String GROUP_UPDATE_USER = "Enter User Name To Update: ";
     public static final String GROUP_UPDATE_PASSWORD = "Enter Group Password: ";
     public static final String GROUP_UPDATE_SUCCESSFUL = "Group Updated Successful";
     public static final String GROUP_UPDATE_FAILED = "Group Update Failed";
     public static final String GROUP_USER_PRESENT = "User already in group";
+    public static final String GROUP_USER_ABSENT_PARENT = "User not present in parent group";
     public static final String GROUP_USER_ABSENT = "User not in group";
     public static final String GROUP_USER_NO_PERMISSION = "You do not have permission to update " +
-            "the " +
-            "group";
+            "the group";
 
     //Circles
-    public static final String CIRCLE_MENU = "1 - Users following\n"
-            + "2 - Follow user\n" + DEFAULT_MENU;
-//    public static final String CIRCLE_MENU = "1 - Users following\n"
-//            + "2 - Users following you\n"
-//            + "3 - Users followed by another user\n"
-//            + "4 - Follow user\n"
-//            + "5 - Un-Follow user\n" + DEFAULT_MENU;
+    public static final String CIRCLE_MENU = "1 - Search Users\n" +
+            "2 - Users following\n"+
+            "3 - Follow user\n" +
+            "4 - Unfollow User\n" + DEFAULT_MENU;
     public static final String USERS_FOLLOWED_USER = "Enter user name: ";
     public static final String FOLLOW_SUCCESSFUL = "Success";
     public static final String FOLLOW_FAILED = "Failed";

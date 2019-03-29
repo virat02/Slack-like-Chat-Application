@@ -1,10 +1,17 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.user_group.Profile;
 
 import javax.persistence.*;
 import java.util.logging.Logger;
 
+/**
+ * All the jpa service methods for Profile
+ */
 public class ProfileJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileJPAService.class.getName());
@@ -36,28 +43,22 @@ public class ProfileJPAService {
     }
 
     /**
-     * Close the entity manager
-     *
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
-
-    /**
      * Creates a profile in the database
      * @param p
      */
-    public int createProfile(Profile p) {
+    public Profile createProfile(Profile p) throws ProfileNotPersistedException {
         try {
             beginTransaction();
             entityManager.persist(p);
+            entityManager.flush();
+            int profileId = p.getId();
             endTransaction();
-            return p.getId();
+            ChatLogger.info("Created profile with profile id : "+profileId);
+            return p;
         }
         catch (Exception e) {
-            LOGGER.info("JPA Could not persist the profile!");
-            return -1;
+            LOGGER.info("JPA Could not persist the profile with profile id : " + p.getId());
+            throw new ProfileNotPersistedException("JPA Could not persist the profile with profile id : " + p.getId());
         }
     }
 
@@ -65,16 +66,17 @@ public class ProfileJPAService {
      * Deletes a profile in the database
      * @param p
      */
-    public int deleteProfile(Profile p) {
+    public int deleteProfile(Profile p) throws ProfileNotDeletedException {
         try {
             beginTransaction();
             entityManager.remove(p);
             endTransaction();
+            LOGGER.info("Deleted profile : "+p.getId());
             return p.getId();
         }
         catch(Exception e){
-            LOGGER.info("This profile could not be deleted!");
-            return -1;
+            LOGGER.info("Profile with profile id: "+ p.getId()+", could not be deleted!");
+            throw new ProfileNotDeletedException("Profile with profile id: "+ p.getId()+", could not be deleted!");
         }
 
     }
@@ -83,19 +85,26 @@ public class ProfileJPAService {
      * Updates a profile in the database
      * @param p
      */
-    public boolean updateProfile(Profile p) {
+    public boolean updateProfile(Profile p) throws ProfileNotFoundException {
         beginTransaction();
         Profile thisProfile = entityManager.find(Profile.class, p.getId());
         if (thisProfile == null) {
             LOGGER.info("Can't find Profile for this ID");
-            throw new EntityNotFoundException("Can't find Profile for ID "
-                    + p.getId());
+            throw new ProfileNotFoundException("Can't find Profile for ID " + p.getId());
         }
 
         thisProfile.setImageUrl(p.getImageUrl());
         thisProfile.setEmail(p.getEmail());
         endTransaction();
-        return true;
+
+        if(thisProfile.toString().equals(p.toString())){
+            LOGGER.info("Updated profile with profile id : "+p.getId());
+            return true;
+        }
+        else {
+            LOGGER.info("Could not update profile with profile id : "+p.getId());
+            return false;
+        }
     }
 
     /**
@@ -103,7 +112,7 @@ public class ProfileJPAService {
      * @param id
      * @return
      */
-    public Profile getProfile(int id) {
+    public Profile getProfile(int id) throws ProfileNotFoundException {
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.id = ");
             queryString.append(id);
@@ -111,9 +120,18 @@ public class ProfileJPAService {
             TypedQuery<Profile> query = entityManager.createQuery(queryString.toString(), Profile.class);
             return query.getSingleResult();
         } catch (Exception e) {
-            LOGGER.info("Could not get any profile with id: " + id);
-            throw new NullPointerException("No profile found with id: " + id);
+            LOGGER.info("Could not get any profile with id : " + id);
+            throw new ProfileNotFoundException("No profile found with id: " + id);
         }
+    }
+
+    /**
+     * Close the entity manager
+     *
+     */
+    private void endTransaction() {
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
 }

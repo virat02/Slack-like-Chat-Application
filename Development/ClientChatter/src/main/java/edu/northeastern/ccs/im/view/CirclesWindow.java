@@ -1,6 +1,6 @@
 package edu.northeastern.ccs.im.view;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +24,10 @@ public class CirclesWindow extends AbstractTerminalWindow {
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 0) {
       if (inputString.equals("1")) {
-        List<User> usersList = UserConstants.getUserObj().getFollowing();
+        SearchWindow searchWindow = new SearchWindow(this, clientConnectionFactory, true);
+        searchWindow.runWindow();
+      } else if (inputString.equals("2")) {
+        List<User> usersList = getFollowers(UserConstants.getUserName());
         if (usersList.size() == 0) {
           printMessageInConsole("No followers");
         }
@@ -39,13 +42,13 @@ public class CirclesWindow extends AbstractTerminalWindow {
               printMessageInConsole("**********");
             }
             else {
-
-              if (user.getFollowing().size() == 0) {
+              List<User> nextLevelFollowers = getFollowers(user.getUsername());
+              if (nextLevelFollowers.size() == 0) {
                 printMessageInConsole("No Users Followed");
               }
               else {
                 printMessageInConsole("------");
-                for (User subUser : user.getFollowing()) {
+                for (User subUser : nextLevelFollowers) {
                   printMessageInConsole("|--User Name: " + subUser.getUsername());
                   printMessageInConsole("|--Email Address: " + subUser.getProfile().getEmail());
                   printMessageInConsole("|--Image URL: " + subUser.getProfile().getImageUrl());
@@ -57,19 +60,12 @@ public class CirclesWindow extends AbstractTerminalWindow {
           }
         }
         printInConsoleForProcess(0);
-//      } else if (inputString.equals("2")) {
-//        List<User> usersList = getUserFollowees();
-//        printMessageInConsole(usersList.toString());
-//        printInConsoleForProcess(0);
-//      } else if (inputString.equals("3")) {
-//        currentOperation = 3;
-//        printInConsoleForProcess(1);
-      } else if (inputString.equals("2")) {
+      } else if (inputString.equals("3")) {
         currentOperation = 4;
         printInConsoleForProcess(1);
-//      } else if (inputString.equals("5")) {
-//        currentOperation = 5;
-//        printInConsoleForProcess(1);
+      } else if (inputString.equals("4")) {
+        currentOperation = 5;
+        printInConsoleForProcess(1);
       } else if (inputString.equals("0")) {
         goBack();
       } else if (inputString.equals("*")) {
@@ -80,7 +76,6 @@ public class CirclesWindow extends AbstractTerminalWindow {
     }
     else if (getCurrentProcess() == 1) {
       if (currentOperation == 3) {
-        getUserFollowedByOtherUser();
         printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
         printInConsoleForProcess(0);
       } else if (currentOperation == 4) {
@@ -92,8 +87,12 @@ public class CirclesWindow extends AbstractTerminalWindow {
         }
         printInConsoleForProcess(0);
       } else if (currentOperation == 5) {
-        unfollowUser(inputString);
-        printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
+        if (unfollowUser(inputString)) {
+          printMessageInConsole(ConstantStrings.FOLLOW_SUCCESSFUL);
+        }
+        else {
+          printMessageInConsole(ConstantStrings.FOLLOW_FAILED);
+        }
         printInConsoleForProcess(0);
       }
       else {
@@ -104,43 +103,17 @@ public class CirclesWindow extends AbstractTerminalWindow {
     }
   }
 
-  private List<User> getUsersFollowed() {
+  private List<User> getFollowers(String userName) {
     NetworkResponse networkResponse;
     try {
       networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createGetUserFollowersList(UserConstants.getUserName()));
+              .createGetUserFollowersList(userName));
       return ResponseParser.parseFollowersList(networkResponse);
-    } catch (IOException | NetworkResponseFailureException e) {
-      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       printInConsoleForProcess(0);
     }
-    return null;
-  }
-
-  private List<User> getUserFollowees() {
-    NetworkResponse networkResponse;
-    try {
-      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-              .createGetUserFolloweesList(UserConstants.getUserName()));
-      return ResponseParser.parseFollowersList(networkResponse);
-    } catch (IOException | NetworkResponseFailureException e) {
-      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
-      printInConsoleForProcess(0);
-    }
-    return null;
-  }
-
-  private void getUserFollowedByOtherUser() {
-//    NetworkResponse networkResponse;
-//    try {
-//      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-//              .createGetUserFollowersList(UserConstants.getUserName()));
-//      return ResponseParser.parseFollowersList(networkResponse);
-//    } catch (IOException | NetworkResponseFailureException e) {
-//      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
-//      printInConsoleForProcess(0);
-//    }
-//    return null;
+    return Collections.emptyList();
   }
 
   private boolean followUser(String userName) {
@@ -149,14 +122,23 @@ public class CirclesWindow extends AbstractTerminalWindow {
       networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createSetUserFolloweresList(userName, UserConstants.getUserObj()));
       return ResponseParser.parseSetFollowersList(networkResponse);
-    } catch (IOException e) {
-      printMessageInConsole(ConstantStrings.FETCH_DATA_FAILED);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       printInConsoleForProcess(0);
     }
     return false;
   }
 
-  private void unfollowUser(String userName) {
-
+  private boolean unfollowUser(String userName) {
+    NetworkResponse networkResponse;
+    try {
+      networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createSetUserUnFolloweresList(userName, UserConstants.getUserObj()));
+      return ResponseParser.parseSetFollowersList(networkResponse);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
+      printInConsoleForProcess(0);
+    }
+    return false;
   }
 }

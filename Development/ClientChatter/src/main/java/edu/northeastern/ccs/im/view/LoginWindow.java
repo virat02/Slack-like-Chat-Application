@@ -44,8 +44,7 @@ public class LoginWindow extends AbstractTerminalWindow {
       userIdString = inputString;
       printInConsoleForNextProcess();
     } else if (getCurrentProcess() == 1) {
-      Base64.Encoder encoder = Base64.getEncoder();
-      passwordString = encoder.encodeToString(inputString.getBytes());
+      passwordString = inputString;
       int currentUser;
       if ((currentUser = loginUser()) != -1) {
         printMessageInConsole(ConstantStrings.LOGIN_SUCCESSFUL);
@@ -73,10 +72,7 @@ public class LoginWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createLoginRequest(userIdString, passwordString));
       return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
-    } catch (IOException exception) {
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
-    }
-    catch (NetworkResponseFailureException exception) {
+    } catch (NetworkResponseFailureException exception) {
       printMessageInConsole(exception.getMessage());
     }
     return -1;

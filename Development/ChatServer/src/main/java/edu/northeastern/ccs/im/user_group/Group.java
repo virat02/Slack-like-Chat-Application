@@ -1,27 +1,27 @@
-package edu.northeastern.ccs.im.user_group;
+    package edu.northeastern.ccs.im.user_group;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+    import java.util.ArrayList;
+    import java.util.Date;
+    import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+    import javax.persistence.Column;
+    import javax.persistence.JoinColumn;
+    import javax.persistence.Entity;
+    import javax.persistence.GeneratedValue;
+    import javax.persistence.GenerationType;
+    import javax.persistence.Id;
+    import javax.persistence.JoinTable;
+    import javax.persistence.OneToMany;
+    import javax.persistence.Table;
+    import javax.persistence.Temporal;
+    import javax.persistence.TemporalType;
 
-/**
- * The Class Group.
- */
-@Entity
-@Table(name="basegroup")
-public class Group implements IGroup {
+    /**
+    * The Class Group.
+    */
+    @Entity
+    @Table(name="basegroup")
+    public class Group implements IGroup {
 
     /** The id. */
     @Id
@@ -40,15 +40,15 @@ public class Group implements IGroup {
         inverseJoinColumns={ @JoinColumn(name="USER_ID", referencedColumnName="ID") }
     )
     private List<User> users = new ArrayList<>();
-    
-	@OneToMany(targetEntity=User.class)
+
+    @OneToMany(targetEntity=User.class)
     @JoinTable
     (
         name="basegroup_moderator",
         joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="MODERATOR_ID", referencedColumnName="ID") }
     )
-	private List<User> moderators= new ArrayList<>();
+    private List<User> moderators= new ArrayList<>();
 
     /** The msgs. */
     @OneToMany(targetEntity=Message.class)
@@ -59,44 +59,44 @@ public class Group implements IGroup {
         inverseJoinColumns={ @JoinColumn(name="MESSAGE_ID", referencedColumnName="ID") }
     )
     private List<Message> msgs = new ArrayList<>();
-    
-	/** The groups. */
-	@OneToMany(targetEntity=Group.class)
+
+    /** The groups. */
+    @OneToMany(targetEntity=Group.class)
     @JoinTable
     (
         name="basegroup_subgroup",
         joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="SUBGROUP_ID", referencedColumnName="ID") }
     )
-	private List<Group> groups = new ArrayList<>();
-    
-	@OneToMany(targetEntity=User.class)
+    private List<Group> groups = new ArrayList<>();
+
+    @OneToMany(targetEntity=User.class)
     @JoinTable
     (
         name="basegroup_follower",
         joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="FOLLOWER_ID", referencedColumnName="ID") }
     )
-	private List<User> followers = new ArrayList<>();
-	
+    private List<User> followers = new ArrayList<>();
+
     @JoinTable
     (
         name="basegroup_followee",
         joinColumns={ @JoinColumn(name="GROUP_ID", referencedColumnName="ID") },
         inverseJoinColumns={ @JoinColumn(name="FOLLOWEE_ID", referencedColumnName="ID") }
     )
-	private List<User> followees = new ArrayList<>();
-	
-	@Column(unique=true)
-	private String groupCode;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdOn;
-	
+    private List<User> followees = new ArrayList<>();
+
+    @Column(unique=true)
+    private String groupCode;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdOn;
+
     private String groupPassword;
 
 
-	/**
+    /**
      * Instantiates a new user_group.
      *
      * @param id the id
@@ -196,84 +196,89 @@ public class Group implements IGroup {
     public void setMsgs(List<Message> msgs) {
         this.msgs = msgs;
     }
-    
+
     public List<Group> getGroups() {
-		return groups;
-	}
+        return groups;
+    }
 
-	public void setGroups(List<Group> groups) {
-		this.groups = groups;
-	}
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
 
-	public void addGroup(Group group) {
-		this.groups.add(group);
-	}
+    public void addGroup(Group group) {
+        this.groups.add(group);
+    }
 
-	public List<User> getFollowers() {
-		return followers;
-	}
+    public List<User> getFollowers() {
+        return followers;
+    }
 
-	public void setFollowers(List<User> followers) {
-		this.followers = followers;
-	}
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
+    }
 
-	public void addFollower(User follower) {
-		this.followers.add(follower);
-	}
+    public void addFollower(User follower) {
+        this.followers.add(follower);
+    }
 
-	public List<User> getModerators() {
-		return moderators;
-	}
+    public List<User> getModerators() {
+        return moderators;
+    }
 
-	public void setModerators(List<User> moderators) {
-		this.moderators = moderators;
-	}
+    public void setModerators(List<User> moderators) {
+        this.moderators = moderators;
+        for(User u : moderators){
+            if(!this.users.contains(u))
+                this.addUser(u);
+        }
+    }
 
-	public void addModerator(User moderator) {
-		if(moderator instanceof User) {
-			this.addModerator(moderator);
-		}
-	}
-	
-	public String getGroupCode() {
-		return groupCode;
-	}
+    public void addModerator(User moderator) {
+            this.moderators.add(moderator);
+            if(!this.users.contains(moderator))
+                this.addUser(moderator);
+    }
 
-	public void setGroupCode(String groupCode) {
-		this.groupCode = groupCode;
-	}
+    public String getGroupCode() {
+        return groupCode;
+    }
 
-	public Date getCreatedOn() {
-		return createdOn;
-	}
+    public void setGroupCode(String groupCode) {
+        this.groupCode = groupCode;
+    }
 
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
-	
-	public List<User> getFollowees() {
-		return followees;
-	}
+    public Date getCreatedOn() {
+        return createdOn;
+    }
 
-	public void setFollowees(List<User> followees) {
-		this.followees = followees;
-	}
-	
-	public void addFollowee(User followee) {
-		this.followees.add(followee);
-	}
-	
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public List<User> getFollowees() {
+        return followees;
+    }
+
+    public void setFollowees(List<User> followees) {
+        this.followees = followees;
+    }
+
+    public void addFollowee(User followee) {
+        this.followees.add(followee);
+    }
+
     public String getGroupPassword() {
-		return groupPassword;
-	}
+        return groupPassword;
+    }
 
-	public void setGroupPassword(String groupPassword) {
-		this.groupPassword = groupPassword;
-	}
+    public void setGroupPassword(String groupPassword) {
+        this.groupPassword = groupPassword;
+    }
 
-	
-
-
-
+    @Override
+    public String toString(){
+        return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()
+                +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
+    }
 }
 

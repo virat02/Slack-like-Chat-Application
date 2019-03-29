@@ -4,10 +4,22 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
+import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 
 public class GroupController implements IController<Group>{
+
+	private static final String GROUP_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create the group!\"}";
+	private static final String GROUP_NOT_FOUND_JSON = "{\"message\" : \"The group you are trying to find does not exist!\"}";
+	private static final String USER_NOT_FOUND_JSON = "{\"message\" : \"The user you are trying to find does not exist!\"}";
+	private static final String GROUP_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the group!\"}";
+	private static final String MODERATOR_CANNOT_BE_DELETED = "{\"message\" : \"Given user is a moderator. Moderator cannot be deleted!\"}";
+
+
 	private GroupService groupService = new GroupService();
 
 	/**
@@ -29,9 +41,12 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.create(group))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
+		} catch (GroupNotPersistedException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(GROUP_NOT_PERSISTED_JSON));
 		}
 
 	}
@@ -45,9 +60,9 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
 		}
 	}
 
@@ -61,9 +76,9 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.update(group))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
 		}
 
 	}
@@ -78,9 +93,12 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.delete(group))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotDeletedException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_DELETED_JSON));
+		} catch (GroupNotFoundException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
 		}
 
 	}
@@ -96,9 +114,9 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.searchUsingCode(groupCode))));
-		} catch (Exception e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
 		}
 	}
 
@@ -111,9 +129,9 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJsonArray(groupService.searchUsingName(groupName))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
 		}
 	}
 
@@ -126,28 +144,34 @@ public class GroupController implements IController<Group>{
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
 					new PayloadImpl(CommunicationUtils.toJson(groupService.joinGroup(group))));
-		} catch (IllegalArgumentException e) {
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
+		} catch (UserNotFoundException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(USER_NOT_FOUND_JSON));
 		}
 	}
 
 	/**
-	 * removeUserFromGroup removes a user from a group by passing in the groupCode and userId
+	 * removeUserFromGroup removes a user from a group by passing in the groupCode and username
 	 * @param groupCode
-	 * @param userId
+	 * @param username
 	 * @return Network response with a failure or success and a payload
 	 */
-	public NetworkResponse removeUserFromGroup(String groupCode, int userId) {
+	public NetworkResponse removeUserFromGroup(String groupCode, String username) {
 		try {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-					new PayloadImpl(CommunicationUtils.toJson(groupService.removeUserFromGroup(groupCode, userId))));
-		} catch (IllegalArgumentException e) {
+					new PayloadImpl(CommunicationUtils.toJson(groupService.removeUserFromGroup(groupCode, username))));
+		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(null));
+					new PayloadImpl(GROUP_NOT_FOUND_JSON));
+		} catch (UserNotFoundException e) {
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(USER_NOT_FOUND_JSON));
+		} catch (IllegalArgumentException e){
+			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+					new PayloadImpl(MODERATOR_CANNOT_BE_DELETED));
 		}
 	}
-
-
-
 }

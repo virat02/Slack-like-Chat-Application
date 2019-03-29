@@ -1,5 +1,9 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.user_group.User;
 
 import javax.persistence.*;
@@ -30,14 +34,6 @@ public class UserJPAService {
             this.entityManager = entityManager;
         }
     }
-
-    /**
-     * A method to begin the transaction.
-     */
-    private void beginTransaction() {
-        entityManager.getTransaction().begin();
-    }
-
     /**
      * A private method that'll end the transaction.
      */
@@ -51,35 +47,43 @@ public class UserJPAService {
      * @param user being created in the database.
      * @return the id of the user in the database.
      */
-    public int createUser(User user) {
-        beginTransaction();
-        entityManager.persist(user);
-        entityManager.flush();
-        int id= user.getId();
-        endTransaction();
-        return id;
+    public int createUser(User user) throws UserNotPersistedException {
+        try {
+            beginTransaction();
+            entityManager.persist(user);
+//            entityManager.flush();
+            int id= user.getId();
+            endTransaction();
+            return id;
+        }
+        catch (Exception e) {
+            LOGGER.info("JPA could not persist the user!");
+            throw new UserNotPersistedException("JPA could not persist the user!");
+        }
+
     }
 
     /**
      * A method made to delete a user in the database.
      * @param user being deleted in the database.
      */
-    public void deleteUser(User user) {
-        beginTransaction();
-        entityManager.remove(user);
-        endTransaction();
+    public void deleteUser(User user) throws UserNotFoundException {
+        if(user == search(user.getUsername())) {
+            beginTransaction();
+            entityManager.remove(user);
+            endTransaction();
+        }
     }
 
     /**
      * Updating the User in the database with the given user credentials.
      * @param user being updated in the database.
      */
-    public void updateUser(User user) {
+    public void updateUser(User user) throws UserNotFoundException {
         beginTransaction();
         User thisUser = entityManager.find(User.class, user.getId());
         if (thisUser == null) {
-            throw new EntityNotFoundException("Can't find User for ID "
-                    + user.getId());
+            throw new UserNotFoundException("Can't find User for ID " + user.getId());
         }
         thisUser.setPassword(user.getPassword());
         thisUser.setFollowing(user.getFollowing());
@@ -97,11 +101,20 @@ public class UserJPAService {
      * @param username name of the user we are searching for.
      * @return User instance we are looking for.
      */
-    public User search(String username) {
-        String thisString = "SELECT u " + "FROM User u WHERE u.username ='" + username + "'";
-        beginTransaction();
-        TypedQuery<User> query = entityManager.createQuery(thisString, User.class);
-        return query.getSingleResult();
+    public User search(String username) throws UserNotFoundException {
+        try {
+            String thisString = "SELECT u " + "FROM User u WHERE u.username ='" + username + "'";
+            beginTransaction();
+            TypedQuery<User> query = entityManager.createQuery(thisString, User.class);
+            User result = query.getSingleResult();
+            endTransaction();
+            return result;
+        }
+        catch (Exception e) {
+            ChatLogger.error(e.getMessage());
+            throw new UserNotFoundException("User with username: "+username+ " not found! ");
+        }
+
     }
 
     /**
@@ -109,12 +122,19 @@ public class UserJPAService {
      * @param id of the user we are looking to get.
      * @return a User instance when we are trying to get a User.
      */
-    public User getUser(int id) {
-        StringBuilder queryString = new StringBuilder("SELECT u FROM User u WHERE u.id = ");
-        queryString.append(id);
-        beginTransaction();
-        TypedQuery<User> query = entityManager.createQuery(queryString.toString(), User.class);
-        return query.getSingleResult();
+    public User getUser(int id) throws UserNotFoundException {
+        try {
+            StringBuilder queryString = new StringBuilder("SELECT u FROM User u WHERE u.id = ");
+            queryString.append(id);
+            beginTransaction();
+            TypedQuery<User> query = entityManager.createQuery(queryString.toString(), User.class);
+            return query.getSingleResult();
+        }
+        catch (Exception e) {
+            LOGGER.info("Could not find User with user id: "+id);
+            throw new UserNotFoundException("Could not find User with user id: "+id);
+        }
+
     }
 
     /**
@@ -122,7 +142,7 @@ public class UserJPAService {
      * @param user trying to login to the database.
      * @return User instance after login.
      */
-    public User loginUser(User user) {
+    public User loginUser(User user) throws UserNotFoundException {
         String queryString =
                 "SELECT u FROM User u WHERE u.username ='" + user.getUsername() + "'";
         beginTransaction();
@@ -130,15 +150,15 @@ public class UserJPAService {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             User newUser = query.getSingleResult();
             if(!user.getUsername().equals(newUser.getUsername()) || !user.getPassword().equals(newUser.getPassword())) {
-                return null;
+                throw new UserNotFoundException("Wrong password");
             } else {
                 return newUser;
             }
         }
         catch (Exception e) {
             LOGGER.info(e.getMessage());
+            throw new UserNotFoundException("Could not find the user who wants to login!");
         }
-        return null;
     }
 
     /**
@@ -146,8 +166,9 @@ public class UserJPAService {
      * @param user we are getting the followers of.
      * @return The list of follower's of the given user
      */
-    public List<User> getFollowers(User user) {
-        String queryString = "SELECT u FROM user_follower u WHERE u.userID ='" + user.getId() + "'";
+    public List<User> getFollowers(User user) throws ListOfUsersNotFound {
+        String queryString =
+                "SELECT f FROM User u LEFT JOIN u.following f WHERE u.id = " + user.getId();
         beginTransaction();
         return getUsers(queryString);
     }
@@ -157,34 +178,41 @@ public class UserJPAService {
      * @param queryString the query we have made for the getUser.
      * @return
      */
-    private List<User> getUsers(String queryString) {
+    private List<User> getUsers(String queryString) throws ListOfUsersNotFound {
         try {
             TypedQuery<User> query = entityManager.createQuery(queryString, User.class);
             List<User> followerList = query.getResultList();
-
-            //Filter out users with no profile access
-            for (User u : followerList) {
-                if (!u.getProfileAccess()) {
-                    followerList.remove(u);
-                }
+            if (followerList.isEmpty() || followerList.contains(null)) {
+                throw new ListOfUsersNotFound("No users following!");
             }
-
             return followerList;
         }
         catch (Exception e) {
             LOGGER.info(e.getMessage());
+            throw new ListOfUsersNotFound("Could not fetch list of users!");
         }
-        return Collections.emptyList();
     }
 
     /**
      * @param user
      * @return The list of followee's of the given user
      */
-    public List<User> getFollowees(User user) {
-        String queryString =
-                "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
-        beginTransaction();
-        return getUsers(queryString);
+    public List<User> getFollowees(User user) throws UserNotFoundException, ListOfUsersNotFound {
+        if(user == search(user.getUsername())) {
+            String queryString =
+                    "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
+            beginTransaction();
+            return getUsers(queryString);
+        }
+
+        return Collections.emptyList();
     }
+
+    /**
+     * A method to begin the transaction.
+     */
+    private void beginTransaction() {
+        entityManager.getTransaction().begin();
+    }
+
 }

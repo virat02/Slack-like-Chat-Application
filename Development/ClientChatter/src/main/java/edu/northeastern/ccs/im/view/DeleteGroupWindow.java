@@ -53,9 +53,8 @@ public class DeleteGroupWindow extends AbstractTerminalWindow {
               .createDeleteGroupRequest(groupName,groupCode, UserConstants.getUserObj()));
 
       return ResponseParser.parseDeleteGroupResponse(networkResponse);
-    } catch (IOException exception) {
-      // TODO Provide some good custom message
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
       return false;
     }
   }

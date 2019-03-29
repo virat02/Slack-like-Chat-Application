@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.user_group.Profile;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,10 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -79,29 +79,29 @@ public class ProfileJPAServiceTest {
      * Test the create profile method for Profile JPA Service
      */
     @Test
-    public void testCreateProfileForProfileJPAService() {
+    public void testCreateProfileForProfileJPAService() throws ProfileNotPersistedException {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
-        assertNotEquals(-1, profileJPAService.createProfile(p1));
+        assertEquals(p1, profileJPAService.createProfile(p1));
     }
 
     /**
      * Test the create profile method for Profile JPA Service for an exception
      */
-    @Test
-    public void testCreateProfileForProfileJPAServiceForException() {
+    @Test(expected = ProfileNotPersistedException.class)
+    public void testCreateProfileNotPersistedException() throws ProfileNotPersistedException {
 
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
         doThrow(new IllegalArgumentException()).when(entityManager).persist(any(Profile.class));
-        assertEquals(-1, profileJPAService.createProfile(p1));
+        profileJPAService.createProfile(p1);
     }
 
     /**
      * Test the update profile method of ProfileJPAService
      */
     @Test
-    public void testUpdateProfileOfProfileJPA() {
+    public void testUpdateProfileOfProfileJPA() throws ProfileNotFoundException {
 
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
@@ -112,10 +112,10 @@ public class ProfileJPAServiceTest {
     }
 
     /**
-     * Test the update profile method of ProfileJPAService for a false update
+     * Test the update profile method of ProfileJPAService for a ProfileNotFound exception
      */
-    @Test(expected = EntityNotFoundException.class)
-    public void testFalseUpdateProfileOfProfileJPA() {
+    @Test(expected = ProfileNotFoundException.class)
+    public void testFalseUpdateProfileForProfileNotFoundException() throws ProfileNotFoundException{
 
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
@@ -124,22 +124,23 @@ public class ProfileJPAServiceTest {
     }
 
     /**
-     * Test the update profile method for non-existing profile
+     * Test the update profile method of ProfileJPAService for a false update
      */
-    @Test(expected = EntityNotFoundException.class)
-    public void testUpdateNonExistingProfile() {
+    @Test
+    public void testUpdateProfileForFalseUpdate() throws ProfileNotFoundException {
 
+        Profile p = mock(Profile.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenReturn(null);
-        profileJPAService.updateProfile(p1);
+        when(entityManager.find(any(), anyInt())).thenReturn(p);
+        assertFalse(profileJPAService.updateProfile(p2));
     }
 
     /**
      * Test the delete profile method
      */
     @Test
-    public void testDeleteProfile() {
+    public void testDeleteProfile() throws ProfileNotDeletedException {
 
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
@@ -151,8 +152,8 @@ public class ProfileJPAServiceTest {
     /**
      * Test the delete profile method for non existing profile
      */
-    @Test
-    public void testDeleteNonExistingMessage() {
+    @Test(expected = ProfileNotDeletedException.class)
+    public void testDeleteNonExistingProfile() throws ProfileNotDeletedException{
 
         Profile p4 = mock(Profile.class);
 
@@ -163,10 +164,10 @@ public class ProfileJPAServiceTest {
     }
 
     /**
-     * Test for getting a valid message
+     * Test for getting a valid profile
      */
     @Test
-    public void testGetProfileForProfileJPA() {
+    public void testGetProfileForProfileJPA() throws ProfileNotFoundException{
 
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
@@ -180,13 +181,14 @@ public class ProfileJPAServiceTest {
     /**
      * Test for getting a message which doesn't exist
      */
-    @Test(expected = NullPointerException.class)
-    public void testGetMessageForMessageJPAForException() {
+    @Test(expected = ProfileNotFoundException.class)
+    public void testGetMessageForMessageJPAForException() throws ProfileNotFoundException {
 
-        mock(TypedQuery.class);
+        TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
-
+        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+        when(mockedQuery.getSingleResult()).thenThrow(new NoResultException ());
         profileJPAService.getProfile(p1.getId());
     }
 

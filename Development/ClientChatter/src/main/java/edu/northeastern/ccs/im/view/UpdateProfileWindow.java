@@ -1,8 +1,7 @@
 package edu.northeastern.ccs.im.view;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
-
 import java.io.IOException;
+import java.util.Base64;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.ClientConnectionFactory;
@@ -12,11 +11,16 @@ import edu.northeastern.ccs.im.userGroup.Profile;
 
 public class UpdateProfileWindow extends AbstractTerminalWindow {
 
+  private String passwordString;
+
   public UpdateProfileWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
     super(caller, new HashMap<Integer, String>() {{
       put(0, ConstantStrings.UPDATE_PROFILE);
       put(1, ConstantStrings.UPDATE_PROFILE_EMAIL);
       put(2, ConstantStrings.UPDATE_PROFILE_IMAGEURL);
+      put(3, ConstantStrings.UPDATE_ENTER_OLD_PASSWORD);
+      put(4, ConstantStrings.UPDATE_ENTER_NEW_PASSWORD);
+      put(5, ConstantStrings.RE_ENTER_PASSWORD_STRING);
     }}, clientConnectionFactory);
   }
 
@@ -43,14 +47,35 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       }
       printInConsoleForProcess(0);
     }
-    else if (getCurrentProcess() == 2) {
-      if (updateUserProfile(userProfile == null ? "" : userProfile.getEmail(), inputString)) {
-        printMessageInConsole(ConstantStrings.UPDATE_PROFILE_SUCCESS);
+    else if (getCurrentProcess() == 3) {
+      String oldPasswordString = inputString;
+      if (oldPasswordString.equals(UserConstants.getUserObj().getPassword())) {
+        printInConsoleForProcess(4);
       }
       else {
-        printMessageInConsole(ConstantStrings.UPDATE_PROFILE_FAILED);
+        printMessageInConsole(ConstantStrings.UPDATE_OLD_PASSWORD_WRONG);
+        printInConsoleForProcess(0);
       }
-      printInConsoleForProcess(0);
+    }
+    else if (getCurrentProcess() == 4) {
+      passwordString = inputString;
+      printInConsoleForProcess(5);
+    }
+    else if (getCurrentProcess() == 5) {
+      if (passwordString.equals(inputString)) {
+        if (updateUserPassword() != -1) {
+          printMessageInConsole(ConstantStrings.UPDATE_PROFILE_SUCCESS);
+          printInConsoleForProcess(0);
+        }
+        else {
+          printMessageInConsole(ConstantStrings.UPDATE_PROFILE_FAILED);
+          printInConsoleForProcess(0);
+        }
+      }
+      else {
+        printMessageInConsole(ConstantStrings.PASSWORDS_DO_NOT_MATCH);
+        printInConsoleForProcess(0);
+      }
     }
     if (inputString.equals("1")) {
       printInConsoleForProcess(1);
@@ -76,6 +101,8 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
         printMessageInConsole("Is profile public : " + (UserConstants.getUserObj().getProfileAccess() ? "Yes" : "No"));
       }
       printInConsoleForProcess(0);
+    } else if (inputString.equals("5")) {
+      printInConsoleForProcess(3);
     } else if (inputString.equals("0")) {
       goBack();
     } else if (inputString.equals("*")) {
@@ -108,9 +135,8 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       else {
         printMessageInConsole(ConstantStrings.NETWORK_ERROR);
       }
-    } catch (IOException | NetworkResponseFailureException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
   }
@@ -120,10 +146,20 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
               .createUpdateProfileStatus(profileViewStatus, UserConstants.getUserObj()));
       return ResponseParser.parseUpdateUserObj(networkResponse);
-    } catch (IOException exception) {
-      /* TODO Provide some good custom message */
-      printMessageInConsole(ConstantStrings.NETWORK_ERROR);
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
     }
     return false;
+  }
+
+  private int updateUserPassword() {
+    try {
+      NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
+              .createUpdateUserCredentials(passwordString, UserConstants.getUserObj()));
+      return ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+    } catch (NetworkResponseFailureException exception) {
+      printMessageInConsole(exception.getMessage());
+    }
+    return -1;
   }
 }

@@ -3,14 +3,19 @@ package edu.northeastern.ccs.im.service;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
+import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.server.ClientRunnable;
 import edu.northeastern.ccs.im.server.ServerConstants;
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +23,8 @@ import java.util.stream.Collectors;
  * group
  */
 public class MessageBroadCastService implements BroadCastService {
+
+    private static final Logger LOGGER = Logger.getLogger(MessageBroadCastService.class.getName());
     private String groupCode;
     private ConcurrentLinkedQueue<ClientRunnable> active = new ConcurrentLinkedQueue<>();
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10);
@@ -31,13 +38,13 @@ public class MessageBroadCastService implements BroadCastService {
         this.messageService = messageService;
     }
 
-    private MessageService messageService = new MessageService();
+    private MessageService messageService;
 
     /**
      * Instantiates a new Message broad cast service.
      */
     public MessageBroadCastService() {
-
+        messageService = new MessageService();
     }
 
     /**
@@ -46,6 +53,7 @@ public class MessageBroadCastService implements BroadCastService {
      * @param groupCode the group code
      */
     public MessageBroadCastService(String groupCode) {
+        this();
         this.groupCode = groupCode;
     }
 
@@ -66,16 +74,28 @@ public class MessageBroadCastService implements BroadCastService {
     }
 
     @Override
-    public void broadcastMessage(Message message) {
-        if (message.isBroadcastMessage()
-                && messageService.createMessage(message.getText(), message.getName(), message.groupCode())) {
-            // Loop through all of our active threads
-            for (ClientRunnable tt : active) {
-                // Do not send the message if it's not ready to be send
-                if (tt.isInitialized()) {
-                    tt.enqueueMessage(message);
+    public void broadcastMessage(Message message){
+        try {
+            if (message.isBroadcastMessage()
+                    && messageService.createMessage(message.getText(), message.getName(), message.groupCode())) {
+                // Loop through all of our active threads
+                for (ClientRunnable tt : active) {
+                    // Do not send the message if it's not ready to be send
+                    if (tt.isInitialized()) {
+                        tt.enqueueMessage(message);
+                    }
                 }
             }
+        }
+        catch (MessageNotPersistedException e) {
+            LOGGER.info("Could not create the message!");
+            ChatLogger.info("Message could not be broadcast!");
+        } catch (UserNotFoundException e) {
+            LOGGER.info("Could not find the user!");
+            ChatLogger.info("Message will not be broadcast!");
+        } catch (GroupNotFoundException e) {
+            LOGGER.info("Could not find the group!");
+            ChatLogger.info("Message won't be broadcasted!");
         }
     }
 
@@ -94,8 +114,11 @@ public class MessageBroadCastService implements BroadCastService {
                     .stream()
                     .map(m -> Message.makeBroadcastMessage(m.getSender().getUsername(), m.getMessage(), m.getReceiver().getGroupCode()))
                     .collect(Collectors.toList());
-        } catch (NullPointerException e) {
-            ChatLogger.warning("Messages could not be retrieved for group having groupCode: " + groupCode);
+        } catch (NoResultException e) {
+            ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
+        }
+        catch (GroupNotFoundException e) {
+            ChatLogger.warning("Group with group unique key: "+groupCode+" trying to be accessed does not exist!");
         }
 
         return messages;
