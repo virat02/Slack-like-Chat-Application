@@ -73,11 +73,15 @@ public class ProfileService {
     public Profile createProfile(Profile pf)
             throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
-        //Check for validity of email
+        //Check for validity of email and Image URL
         if(!isValidEmail(pf.getEmail()) || !isValidImageURL(pf.getImageUrl())){
+
+            //check for valid email
             if(!isValidEmail(pf.getEmail())) {
                 throw new InvalidEmailException("Invalid email id entered!");
             }
+            
+            //check for valid image URL
             else if(!isValidImageURL(pf.getImageUrl())){
                 throw new InvalidImageURLException("Invalid image URL entered!");
             }
