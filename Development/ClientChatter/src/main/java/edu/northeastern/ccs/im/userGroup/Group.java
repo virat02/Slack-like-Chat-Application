@@ -287,12 +287,11 @@ public class Group implements IGroup {
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
     }
 
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
-    public void setDeleted(Boolean deleted) {
+    public void setIsDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
-
 }
 
