@@ -48,6 +48,11 @@ public class ProfileService {
         return pat.matcher(emailId).matches();
     }
 
+    public boolean isEmailAlreadyInUse(String emailId) throws ProfileNotPersistedException{
+        profileJPAService.setEntityManager(null);
+        return profileJPAService.checkIfEmailExists(emailId);
+    }
+
     /**
      * Returns true iff an image URL is valid
      * @param imageURL
@@ -85,6 +90,9 @@ public class ProfileService {
             else if(!isValidImageURL(pf.getImageUrl())){
                 throw new InvalidImageURLException("Invalid image URL entered!");
             }
+        }
+        if(isEmailAlreadyInUse(pf.getEmail())) {
+            throw new InvalidEmailException("The Email id is already in use");
         }
 
         profileJPAService.setEntityManager(null);

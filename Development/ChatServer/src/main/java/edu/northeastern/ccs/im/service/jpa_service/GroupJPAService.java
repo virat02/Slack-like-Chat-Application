@@ -200,7 +200,7 @@ public class GroupJPAService{
 		try {
 			beginTransaction();
 			Group group = entityManager.find(Group.class, currentGroup.getId());
-			group.setDeleted(true);
+			group.setIsDeleted(true);
 			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
 			endTransaction();
 		}

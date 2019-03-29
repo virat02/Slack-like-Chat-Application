@@ -377,7 +377,7 @@
      * returns the isDeleted attribute
      * @return
      */
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
@@ -385,7 +385,7 @@
      * Sets the boolean value for isDeleted attr
      * @param deleted
      */
-    public void setDeleted(Boolean deleted) {
+    public void setIsDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 }

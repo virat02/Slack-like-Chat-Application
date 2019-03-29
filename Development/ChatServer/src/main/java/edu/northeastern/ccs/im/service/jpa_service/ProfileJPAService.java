@@ -125,6 +125,23 @@ public class ProfileJPAService {
         }
     }
 
+    public boolean checkIfEmailExists(String email) throws ProfileNotPersistedException{
+        try {
+            StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
+            queryString.append("'" + email + "'");
+            beginTransaction();
+            TypedQuery<Profile> query = entityManager.createQuery(queryString.toString(), Profile.class);
+            Profile profile = query.getSingleResult();
+            endTransaction();
+            if (profile.getId() > -1)
+                return true;
+            return false;
+        }
+        catch (Exception e){
+            throw new ProfileNotPersistedException("No profile found with email id: " + email);
+        }
+    }
+
     /**
      * Close the entity manager
      *
