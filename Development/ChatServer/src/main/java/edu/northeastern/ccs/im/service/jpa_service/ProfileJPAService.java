@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.user_group.Profile;
 
 import javax.persistence.*;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 
 /**
@@ -122,6 +123,23 @@ public class ProfileJPAService {
         } catch (Exception e) {
             LOGGER.info("Could not get any profile with id : " + id);
             throw new ProfileNotFoundException("No profile found with id: " + id);
+        }
+    }
+
+    public boolean checkIfEmailExists(String email) throws ProfileNotPersistedException{
+        try {
+            StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
+            queryString.append("'" + email + "'");
+            beginTransaction();
+            TypedQuery<Profile> query = entityManager.createQuery(queryString.toString(), Profile.class);
+            Profile profile = query.getSingleResult();
+            endTransaction();
+            if (profile.getId() > -1)
+                return true;
+            return false;
+        }
+        catch (Exception e){
+            throw new ProfileNotPersistedException("No profile found with email id: " + email);
         }
     }
 

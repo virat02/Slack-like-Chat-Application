@@ -1,9 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
@@ -50,6 +47,11 @@ public class ProfileService {
         return pat.matcher(emailId).matches();
     }
 
+    public boolean isEmailAlreadyInUse(String emailId) throws ProfileNotPersistedException{
+        profileJPAService.setEntityManager(null);
+        return profileJPAService.checkIfEmailExists(emailId);
+    }
+
     /**
      * Creates a profile if the respective inputs are valid
      */
@@ -59,6 +61,9 @@ public class ProfileService {
         //Check for validity of email
         if(!isValidEmail(pf.getEmail())){
          throw new InvalidEmailException("Invalid email id entered!");
+        }
+        if(isEmailAlreadyInUse(pf.getEmail())) {
+            throw new InvalidEmailException("The Email id is already in use");
         }
 
         profileJPAService.setEntityManager(null);

@@ -41,6 +41,7 @@ public class User implements IUser {
     private List<User> following = new ArrayList<>();
 
     /** The name. */
+    @Column(unique=true)
     private String username;
 
     /** The password. */

@@ -15,6 +15,7 @@ public class Profile {
     private int id;
 
     /** The email. */
+    @Column(unique=true)
     private String email;
 
     /** The image url. */
