@@ -7,7 +7,6 @@ import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.user_group.Profile;
 
 import javax.persistence.*;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.logging.Logger;
 
 /**
