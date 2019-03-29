@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.customexceptions;
 
+/**
+ * Exception thrown when an invite is not added
+ */
 public class InviteNotAddedException extends Exception {
 
     /**

@@ -252,12 +252,21 @@ public class User implements IUser {
         this.profileAccess = access;
     }
 
+    /**
+     * equals method to check equality only on username field of a user
+     * @param obj
+     * @return
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof User
                 && ((User) obj).username.equals(this.username);
     }
 
+    /**
+     * Hashcode of a user
+     * @return
+     */
     @Override
     public int hashCode() {
         return this.username.hashCode();

@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.customexceptions;
 
+/**
+ * Exception thrown when an Invite is not found
+ */
 public class InviteNotFoundException extends Exception{
 
     /**

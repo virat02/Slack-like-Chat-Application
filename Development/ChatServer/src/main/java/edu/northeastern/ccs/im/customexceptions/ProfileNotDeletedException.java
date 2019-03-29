@@ -1,8 +1,14 @@
 package edu.northeastern.ccs.im.customexceptions;
 
+/**
+ * Exception thrown when JPA is unable to delete a profile
+ */
 public class ProfileNotDeletedException extends Exception{
 
-    // Constructor that accepts a message
+    /**
+     * Constructor for ProfileNotDeletedException
+     * @param message
+     */
     public ProfileNotDeletedException(String message)
     {
         super(message);
