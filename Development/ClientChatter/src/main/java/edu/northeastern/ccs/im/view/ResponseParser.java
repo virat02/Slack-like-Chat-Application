@@ -184,9 +184,7 @@ public class ResponseParser {
   }
 
   public static void parseNetworkResponse(NetworkResponse networkResponse) throws IOException, NetworkResponseFailureException {
-    if (networkResponse.status() == NetworkResponse.STATUS.FAILED)
-      throwErrorIfResponseFailed(networkResponse);
-
+    throwErrorIfResponseFailed(networkResponse);
     JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkResponse.payload().jsonString());
     if (jsonNode.has("message")) {
       ViewConstants.getOutputStream().println(jsonNode.get("message").asText());
@@ -194,9 +192,7 @@ public class ResponseParser {
   }
 
   public static List<Invite> parseInvitationsList(NetworkResponse networkResponse) throws IOException, NetworkResponseFailureException {
-    if (networkResponse.status() == NetworkResponse.STATUS.FAILED)
-      throwErrorIfResponseFailed(networkResponse);
-
+    throwErrorIfResponseFailed(networkResponse);
     return CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(), new TypeReference<ArrayList<Invite>>() {
     });
   }

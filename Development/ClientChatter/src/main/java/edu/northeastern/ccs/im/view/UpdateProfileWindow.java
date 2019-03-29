@@ -49,8 +49,7 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
     }
     else if (getCurrentProcess() == 3) {
       String oldPasswordString = inputString;
-      Base64.Encoder encoder = Base64.getEncoder();
-      if (encoder.encodeToString(oldPasswordString.getBytes()).equals(UserConstants.getUserObj().getPassword())) {
+      if (oldPasswordString.equals(UserConstants.getUserObj().getPassword())) {
         printInConsoleForProcess(4);
       }
       else {
