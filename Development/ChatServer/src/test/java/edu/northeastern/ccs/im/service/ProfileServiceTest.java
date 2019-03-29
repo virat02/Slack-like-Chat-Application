@@ -1,9 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.Profile;
@@ -68,22 +65,22 @@ public class ProfileServiceTest {
     }
 
     /**
-     *Test for able to create profile in ProfileService
+     * Test for able to create profile in ProfileService
      */
     @Test
-    public void testCreateProfile() throws ProfileNotPersistedException, InvalidEmailException {
+    public void testCreateProfile() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
         when(profileJPAService.createProfile(any(Profile.class))).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
 
-        assertEquals(p1,profileService.createProfile(p1));
+        assertEquals(p1, profileService.createProfile(p1));
     }
 
     /**
-     *Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
+     * Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
      */
     @Test(expected = ProfileNotPersistedException.class)
-    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException, InvalidEmailException {
+    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
         when(profileJPAService.createProfile(any(Profile.class))).thenThrow(new ProfileNotPersistedException("Could not persist the profile!"));
         profileService.setProfileJPAService(profileJPAService);
@@ -92,11 +89,11 @@ public class ProfileServiceTest {
     }
 
     /**
-     *Test for unable to create profile in ProfileService for throwing InvalidEmailException
+     * Test for unable to create profile in ProfileService for throwing InvalidEmailException
      */
     @Test(expected = InvalidEmailException.class)
     public void testCreateProfileForInvalidEmailException()
-            throws ProfileNotPersistedException, InvalidEmailException {
+            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
         Profile p = new Profile();
         p.setEmail("abcd");
@@ -105,11 +102,11 @@ public class ProfileServiceTest {
     }
 
     /**
-     *Test for unable to create profile in ProfileService for throwing InvalidEmailException for null email id
+     * Test for unable to create profile in ProfileService for throwing InvalidEmailException for null email id
      */
     @Test(expected = InvalidEmailException.class)
     public void testCreateProfileForInvalidEmailExceptionForNullEmailId()
-            throws ProfileNotPersistedException, InvalidEmailException {
+            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
         Profile p = new Profile();
         p.setEmail(null);
@@ -121,7 +118,7 @@ public class ProfileServiceTest {
      * Test successful update profile method
      */
     @Test
-    public void testUpdateProfileService() throws ProfileNotFoundException{
+    public void testUpdateProfileService() throws ProfileNotFoundException {
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenReturn(true);
         profileService.setProfileJPAService(profileJPAService);
@@ -186,7 +183,7 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is not deleted
      */
     @Test
-    public void testDeleteProfileFalse() throws ProfileNotDeletedException{
+    public void testDeleteProfileFalse() throws ProfileNotDeletedException {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(-1);
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
@@ -196,9 +193,42 @@ public class ProfileServiceTest {
      * Test the delete profile method to throw ProfileNotDeletedException
      */
     @Test(expected = ProfileNotDeletedException.class)
-    public void testDeleteProfileForProfileNotDeletedException() throws ProfileNotDeletedException{
+    public void testDeleteProfileForProfileNotDeletedException() throws ProfileNotDeletedException {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenThrow(new ProfileNotDeletedException("Could not delete profile!"));
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
+    }
+
+    /**
+     * Test for a valid Image URL entered by User
+     *
+     * @throws ProfileNotPersistedException
+     * @throws InvalidImageURLException
+     * @throws InvalidEmailException
+     */
+    @Test
+    public void testValidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+        Profile p = new Profile();
+        p.setEmail("virat@gmail.com");
+        p.setImageUrl("http://virat.com");
+        profileService.setProfileJPAService(profileJPAService);
+        when(profileJPAService.createProfile(any())).thenReturn(p);
+        assertEquals(p, profileService.createProfile(p));
+    }
+
+    /**
+     * Test for a Invalid Image URL entered by User
+     *
+     * @throws ProfileNotPersistedException
+     * @throws InvalidImageURLException
+     * @throws InvalidEmailException
+     */
+    @Test(expected = InvalidImageURLException.class)
+    public void testInvlidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+        Profile p = new Profile();
+        p.setEmail("virat@gmail.com");
+        p.setImageUrl("virat.com");
+
+        assertEquals(p, profileService.createProfile(p));
     }
 }
