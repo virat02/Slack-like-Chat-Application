@@ -179,7 +179,16 @@ public class GroupService implements IService {
      */
     public Group update(Group group) throws GroupNotFoundException{
         groupJPA.setEntityManager(null);
-        groupJPA.updateGroup(group);
+        Group groupUpdating = groupJPA.searchUsingCode(group.getGroupCode());
+
+        if (groupUpdating.getGroups().size() != group.getGroups().size()) {
+            groupJPA.setEntityManager(null);
+            groupJPA.addSubGroupToGroup(group);
+        }
+        else {
+            groupJPA.setEntityManager(null);
+            groupJPA.updateGroup(group);
+        }
         groupJPA.setEntityManager(null);
         return groupJPA.getGroup(group.getId());
     }

@@ -164,6 +164,7 @@ public class GroupServiceTest {
 	@Test
 	public void testUpdateGroup() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.update(groupOne);
@@ -178,6 +179,7 @@ public class GroupServiceTest {
 	@Test
 	public void testUpdateGroupForFalse() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupTwo);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(false);
 		groupService.setJPAService(groupJPAService);
 		assertNotEquals(groupOne,groupService.update(groupOne));
@@ -189,6 +191,7 @@ public class GroupServiceTest {
 	@Test(expected = GroupNotFoundException.class)
 	public void testUpdateGroupForGroupNotFoundException() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenThrow(new GroupNotFoundException("Could not find group"));
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
 		groupService.update(groupOne);
