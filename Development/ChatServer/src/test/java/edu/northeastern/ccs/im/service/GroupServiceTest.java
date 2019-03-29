@@ -164,6 +164,7 @@ public class GroupServiceTest {
 	@Test
 	public void testUpdateGroup() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.update(groupOne);
@@ -178,6 +179,7 @@ public class GroupServiceTest {
 	@Test
 	public void testUpdateGroupForFalse() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupTwo);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(false);
 		groupService.setJPAService(groupJPAService);
 		assertNotEquals(groupOne,groupService.update(groupOne));
@@ -189,6 +191,7 @@ public class GroupServiceTest {
 	@Test(expected = GroupNotFoundException.class)
 	public void testUpdateGroupForGroupNotFoundException() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenThrow(new GroupNotFoundException("Could not find group"));
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
 		groupService.update(groupOne);
@@ -207,16 +210,6 @@ public class GroupServiceTest {
 		assertEquals(groupOne,newGroup);
 	}
 
-	/**
-	 * Testing the delete group method for throwing GroupNotFoundException
-	 */
-	@Test(expected = GroupNotFoundException.class)
-	public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException, GroupNotDeletedException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
-		doThrow(new GroupNotFoundException("Group not found")).when(groupJPAService).deleteGroup(any());
-		groupService.setJPAService(groupJPAService);
-		groupService.delete(groupOne);
-	}
 
 	/**
 	 * Testing the delete group method for throwing GroupNotDeletedException

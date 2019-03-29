@@ -12,6 +12,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
     private String userName;
     private String passwordString;
     private String emailAddress;
+    private String imageURL;
     private TerminalWindow chatTerminalWindow;
 
     SignUpWindow(TerminalWindow caller, ClientConnectionFactory clientConnectionFactory) {
@@ -20,7 +21,8 @@ public class SignUpWindow extends AbstractTerminalWindow {
             put(1, ConstantStrings.USER_NAME_STRING);
             put(2, ConstantStrings.PASSWORD_STRING);
             put(3, ConstantStrings.RE_ENTER_PASSWORD_STRING);
-            put(4, ConstantStrings.SIGN_UP_FAILED);
+            put(4, ConstantStrings.UPDATE_PROFILE_IMAGEURL);
+            put(5, ConstantStrings.SIGN_UP_FAILED);
         }}, clientConnectionFactory);
     }
 
@@ -48,13 +50,16 @@ public class SignUpWindow extends AbstractTerminalWindow {
                 printInConsoleForProcess(2);
             } else {
                 passwordString = inputString;
-                int id = createUserAndFetchId();
-                if (id == -1) {
-                    printInConsoleForProcess(4);
-                } else {
-                    printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
-                    getChatTerminalWindow().runWindow();
-                }
+                printInConsoleForNextProcess();
+            }
+        } else if (getCurrentProcess() == 4) {
+            imageURL = inputString;
+            int id = createUserAndFetchId();
+            if (id == -1) {
+                printInConsoleForProcess(5);
+            } else {
+                printMessageInConsole(ConstantStrings.SIGN_UP_SUCCESSFUL);
+                getChatTerminalWindow().runWindow();
             }
         } else {
             if (inputString.equals("1")) {
@@ -72,7 +77,7 @@ public class SignUpWindow extends AbstractTerminalWindow {
     private int createUserAndFetchId() {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
-                    .createUserProfile(emailAddress, ""));
+                    .createUserProfile(emailAddress, imageURL));
             Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);
             networkResponse = sendNetworkConnection(new NetworkRequestFactory()
                     .createUserRequest(userName, passwordString));

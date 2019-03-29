@@ -1,15 +1,15 @@
 package edu.northeastern.ccs.im.customexceptions;
 
 /**
- * Exception for an invalid email
+ * Exception thrown when URL entered is Invalid
  */
-public class InvalidEmailException extends Exception {
+public class InvalidImageURLException extends Exception {
 
     /**
      * Constructor for InvalidEmailException
      * @param message
      */
-    public InvalidEmailException(String message)
+    public InvalidImageURLException(String message)
     {
         super(message);
     }

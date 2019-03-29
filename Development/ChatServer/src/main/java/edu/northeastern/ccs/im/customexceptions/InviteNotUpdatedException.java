@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.customexceptions;
 
+/**
+ * Exception thrown when an Invite is not updated
+ */
 public class InviteNotUpdatedException extends Exception{
     /**
      * Exception when an Invite is not updated.

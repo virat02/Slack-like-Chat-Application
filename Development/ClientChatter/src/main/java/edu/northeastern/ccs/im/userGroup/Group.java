@@ -95,6 +95,8 @@ public class Group implements IGroup {
 
     private String groupPassword;
 
+    private boolean isDeleted;
+
 
     /**
      * Instantiates a new user_group.
@@ -106,6 +108,7 @@ public class Group implements IGroup {
         super();
         this.id = id;
         this.name = name;
+        this.isDeleted=false;
     }
 
     /**
@@ -113,6 +116,7 @@ public class Group implements IGroup {
      */
     public Group() {
         super();
+        this.isDeleted=false;
     }
 
     /**
@@ -283,5 +287,11 @@ public class Group implements IGroup {
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
     }
 
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+    public void setIsDeleted(Boolean deleted) {
+        isDeleted = deleted;
+    }
 }
 

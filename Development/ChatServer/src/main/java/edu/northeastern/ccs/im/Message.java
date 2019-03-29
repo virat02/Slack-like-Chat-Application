@@ -63,13 +63,6 @@ public class Message {
     }
 
     /**
-     * Instantiates a new Message.
-     */
-    public Message() {
-
-    }
-
-    /**
      * Create a new message that contains a command sent the server that requires a
      * single argument. This message contains the given handle and the single
      * argument.

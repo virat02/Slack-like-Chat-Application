@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 /***
- *
+ * The interface for a Group, represents the Group entity
  */
 public interface IGroup extends IUserGroup {
     /**

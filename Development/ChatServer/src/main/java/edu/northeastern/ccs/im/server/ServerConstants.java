@@ -22,14 +22,8 @@ public class ServerConstants {
 	/** Amount of time we should wait for a signal to arrive. */
 	protected static final int DELAY_IN_MS = 50;
 
-	/** Number of threads available in our thread pool. */
-	protected static final int THREAD_POOL_SIZE = 20;
-
 	/** Delay between times the thread pool runs the client check. */
 	public static final int CLIENT_CHECK_DELAY = 200;
-
-	/** Name of the private user who broadcasts interesting responses. */
-	protected static final String SERVER_NAME = "Prattle";
 
 	/** Name of the private user who handles bad requests. */
 	protected static final String BOUNCER_ID = "Bouncer";
@@ -38,5 +32,4 @@ public class ServerConstants {
 	private ServerConstants() {
 		/* does nothing. */
 	}
-
 }

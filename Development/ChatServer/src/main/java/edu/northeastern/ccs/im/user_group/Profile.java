@@ -15,6 +15,7 @@ public class Profile {
     private int id;
 
     /** The email. */
+    @Column(unique=true)
     private String email;
 
     /** The image url. */
@@ -93,6 +94,10 @@ public class Profile {
         this.imageUrl = imageUrl;
     }
 
+    /**
+     * toString method of Profile
+     * @return
+     */
     @Override
     public String toString() {
         return "Email: "+getEmail()+"\nImage URL: "+ getImageUrl();
