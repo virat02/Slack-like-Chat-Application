@@ -197,34 +197,66 @@
         this.msgs = msgs;
     }
 
+    /**
+     * Gets the groups
+     * @return
+     */
     public List<Group> getGroups() {
         return groups;
     }
 
+    /**
+     * Sets the groups
+     * @param groups
+     */
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
 
+    /**
+     * Add a group
+     * @param group
+     */
     public void addGroup(Group group) {
         this.groups.add(group);
     }
 
+    /**
+     * Get the list of followers
+     * @return
+     */
     public List<User> getFollowers() {
         return followers;
     }
 
+    /**
+     * Set the list of followers
+     * @return
+     */
     public void setFollowers(List<User> followers) {
         this.followers = followers;
     }
 
+    /**
+     * Add a follower to the followers list
+     * @param follower
+     */
     public void addFollower(User follower) {
         this.followers.add(follower);
     }
 
+    /**
+     * Get the moderators of the group
+     * @return
+     */
     public List<User> getModerators() {
         return moderators;
     }
 
+    /**
+     * Set the moderators of the group
+     * @return
+     */
     public void setModerators(List<User> moderators) {
         this.moderators = moderators;
         for(User u : moderators){
@@ -233,48 +265,92 @@
         }
     }
 
+    /**
+     * Add a moderator to the current list of moderators
+     * @param moderator
+     */
     public void addModerator(User moderator) {
             this.moderators.add(moderator);
             if(!this.users.contains(moderator))
                 this.addUser(moderator);
     }
 
+    /**
+     * Get the Group code
+     * @return
+     */
     public String getGroupCode() {
         return groupCode;
     }
 
+    /**
+     * Set the Group code
+     * @return
+     */
     public void setGroupCode(String groupCode) {
         this.groupCode = groupCode;
     }
 
+    /**
+     * Get the created on Date
+     * @return
+     */
     public Date getCreatedOn() {
         return createdOn;
     }
 
+    /**
+     * Set the created on Date
+     * @param createdOn
+     */
     public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
 
+    /**
+     * Get the list of followees
+     * @return
+     */
     public List<User> getFollowees() {
         return followees;
     }
 
+    /**
+     * Set the list of followees
+     * @return
+     */
     public void setFollowees(List<User> followees) {
         this.followees = followees;
     }
 
+    /**
+     * Add a followee
+     * @param followee
+     */
     public void addFollowee(User followee) {
         this.followees.add(followee);
     }
 
+    /**
+     * Get the group password
+     * @return
+     */
     public String getGroupPassword() {
         return groupPassword;
     }
 
+    /**
+     * Set the group password
+     * @return
+     */
     public void setGroupPassword(String groupPassword) {
         this.groupPassword = groupPassword;
     }
 
+    /**
+     * toString method for Group
+     * @return
+     */
     @Override
     public String toString(){
         return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()

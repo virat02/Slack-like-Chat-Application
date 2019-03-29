@@ -93,6 +93,10 @@ public class Profile {
         this.imageUrl = imageUrl;
     }
 
+    /**
+     * toString method of Profile
+     * @return
+     */
     @Override
     public String toString() {
         return "Email: "+getEmail()+"\nImage URL: "+ getImageUrl();

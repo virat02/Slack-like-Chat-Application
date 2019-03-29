@@ -5,7 +5,10 @@ package edu.northeastern.ccs.im.customexceptions;
  */
 public class InvalidEmailException extends Exception {
 
-    // Constructor that accepts a message
+    /**
+     * Constructor for InvalidEmailException
+     * @param message
+     */
     public InvalidEmailException(String message)
     {
         super(message);

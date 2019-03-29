@@ -1,5 +1,8 @@
 package edu.northeastern.ccs.im.customexceptions;
 
+/**
+ * Exception thrown when an Invite is not deleted
+ */
 public class InviteNotDeletedException extends Exception {
     /**
      * Exception when an Invite is not deleted.
