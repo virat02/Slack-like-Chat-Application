@@ -88,7 +88,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
 
     /***
      * Returns an ascii encoded buffer representation of the characters.
-     * @param byteBuffer
+     * @param byteBuffer Stores the byte representation of messages.
      * @return Returns an ascii encoded buffer representation of the characters.
      */
     private ByteBuffer charDecoder(ByteBuffer byteBuffer) {
