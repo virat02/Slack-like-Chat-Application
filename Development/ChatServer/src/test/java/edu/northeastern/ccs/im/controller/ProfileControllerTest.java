@@ -88,6 +88,18 @@ public class ProfileControllerTest {
     }
 
     /**
+     * Test for unsuccessful create Profile in Profile Controller
+     */
+    @Test
+    public void testUnsuccessfulCreateProfileForInvalidEmailException() throws ProfileNotPersistedException, InvalidEmailException {
+
+        when(profileService.createProfile(any())).thenThrow(new InvalidEmailException("Invalid Email!"));
+        profileController.setProfileService(profileService);
+        NetworkResponse networkResponse = profileController.addEntity(profileOne);
+        Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+    }
+
+    /**
      * Test for successful get Profile in Profile Controller
      */
     @Test

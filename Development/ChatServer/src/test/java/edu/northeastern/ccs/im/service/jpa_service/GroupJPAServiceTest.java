@@ -292,6 +292,29 @@ public class GroupJPAServiceTest {
     }
 
     /**
+     * Testing the remove user from group method for UserNotFoundException
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testRemoveUserFromGroupForIllegalAccessException() throws UserNotFoundException{
+
+        Group g = mock(Group.class);
+        User u1 = mock(User.class);
+
+        List<User> userList = new ArrayList<>();
+        userList.add(u1);
+        userList.add(userOne);
+
+
+        UserJPAService userJPA = mock(UserJPAService.class);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        groupJPAService.setEntityManager(entityManager);
+        groupJPAService.setUserJPAService(userJPA);
+        when(g.getModerators()).thenReturn(userList);
+        when(userJPA.search(anyString())).thenReturn(userOne);
+        groupJPAService.removeUserFromGroup(g, userOne.getUsername());
+    }
+
+    /**
      * Testing the remove user from group method for not being able to remove a user
      */
     @Test
