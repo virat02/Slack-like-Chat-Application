@@ -45,7 +45,7 @@ public class ProfileController implements IController<Profile> {
                     new PayloadImpl(PROFILE_NOT_PERSISTED_JSON));
         }
         catch (InvalidEmailException e){
-            if(e.getMessage()=="The Email id is already in use"){
+            if(e.getMessage().equals("The Email id is already in use")){
                 return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                         new PayloadImpl(EMAIL_ALREADY_IN_USE_JSON));
             }
