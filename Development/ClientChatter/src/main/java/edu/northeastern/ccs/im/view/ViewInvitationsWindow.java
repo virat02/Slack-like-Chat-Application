@@ -6,7 +6,6 @@ import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.userGroup.Invite;
 import edu.northeastern.ccs.im.userGroup.Status;
 
-import javax.swing.text.View;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.List;
@@ -65,8 +64,10 @@ public class ViewInvitationsWindow extends AbstractTerminalWindow {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequest);
             ResponseParser.parseNetworkResponse(networkResponse);
+            ViewConstants.getOutputStream().println("Invitation update successful");
             printInConsoleForProcess(1);
         } catch (IOException | NetworkResponseFailureException e) {
+            ViewConstants.getOutputStream().println(e.getMessage());
             printInConsoleForProcess(2);
         }
 
