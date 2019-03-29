@@ -373,18 +373,18 @@
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
     }
 
-        /**
-         * returns the isDeleted attribute
-         * @return
-         */
+    /**
+     * returns the isDeleted attribute
+     * @return
+     */
     public Boolean getDeleted() {
         return isDeleted;
     }
 
-        /**
-         * Sets the boolean value for isDeleted attr
-         * @param deleted
-         */
+    /**
+     * Sets the boolean value for isDeleted attr
+     * @param deleted
+     */
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
