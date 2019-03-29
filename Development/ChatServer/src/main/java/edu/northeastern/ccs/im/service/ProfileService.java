@@ -1,12 +1,10 @@
 package edu.northeastern.ccs.im.service;
 
-import edu.northeastern.ccs.im.customexceptions.InvalidEmailException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
+import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
+import java.net.URL;
 import java.util.regex.Pattern;
 
 /**
@@ -51,14 +49,38 @@ public class ProfileService {
     }
 
     /**
+     * Returns true iff an image URL is valid
+     * @param imageURL
+     * @return
+     */
+    public boolean isValidImageURL(String imageURL) {
+        /* Try creating a valid URL */
+        try {
+            new URL(imageURL).toURI();
+            return true;
+        }
+
+        // If there was an Exception
+        // while creating URL object
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
      * Creates a profile if the respective inputs are valid
      */
     public Profile createProfile(Profile pf)
-            throws ProfileNotPersistedException, InvalidEmailException {
+            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
 
         //Check for validity of email
-        if(!isValidEmail(pf.getEmail())){
-         throw new InvalidEmailException("Invalid email id entered!");
+        if(!isValidEmail(pf.getEmail()) || !isValidImageURL(pf.getImageUrl())){
+            if(!isValidEmail(pf.getEmail())) {
+                throw new InvalidEmailException("Invalid email id entered!");
+            }
+            else if(!isValidImageURL(pf.getImageUrl())){
+                throw new InvalidImageURLException("Invalid image URL entered!");
+            }
         }
 
         profileJPAService.setEntityManager(null);
