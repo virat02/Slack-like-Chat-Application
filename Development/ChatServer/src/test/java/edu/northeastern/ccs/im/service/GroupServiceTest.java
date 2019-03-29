@@ -164,6 +164,7 @@ public class GroupServiceTest {
 	@Test
 	public void testUpdateGroup() throws GroupNotFoundException {
 		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
 		Group newGroup = groupService.update(groupOne);
