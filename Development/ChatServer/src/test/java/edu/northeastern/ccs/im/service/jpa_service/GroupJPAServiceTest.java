@@ -153,33 +153,6 @@ public class GroupJPAServiceTest {
     }
 
     /**
-     * Testing the delete group method for throwing GroupNotFound custom exception
-     */
-    @Test(expected = GroupNotFoundException.class)
-    public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException, GroupNotDeletedException {
-        TypedQuery mockedQuery = mock(TypedQuery.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenThrow(new NoResultException());
-        groupJPAService.setEntityManager(entityManager);
-        groupJPAService.deleteGroup(groupOne);
-    }
-
-    /**
-     * Testing the delete group method for throwing GroupNotFound custom exception
-     */
-    @Test(expected = GroupNotDeletedException.class)
-    public void testDeleteGroupForGroupNotDeletedException() throws GroupNotFoundException, GroupNotDeletedException {
-        TypedQuery mockedQuery = mock(TypedQuery.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(groupTwo);
-        when(entityManager.find(any(), anyInt())).thenThrow(new EntityNotFoundException());
-        groupJPAService.setEntityManager(entityManager);
-        groupJPAService.deleteGroup(groupOne);
-    }
-
-    /**
      * Testing the add user to a group method
      */
     @Test

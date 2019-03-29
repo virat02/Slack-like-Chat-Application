@@ -95,6 +95,8 @@
 
     private String groupPassword;
 
+    private Boolean isDeleted;
+
 
     /**
      * Instantiates a new user_group.
@@ -106,6 +108,7 @@
         super();
         this.id = id;
         this.name = name;
+        this.isDeleted=false;
     }
 
     /**
@@ -113,6 +116,7 @@
      */
     public Group() {
         super();
+        this.isDeleted=false;
     }
 
     /**
@@ -279,6 +283,13 @@
     public String toString(){
         return "group id : "+this.id+" group name : "+this.name+" group code : "+ this.groupCode + " number of moderators : "+this.moderators.size()
                 +" number of users : "+this.users.size()+" number of followers : "+this.followees.size();
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }
 

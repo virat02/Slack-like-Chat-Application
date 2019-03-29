@@ -159,7 +159,7 @@ public class GroupJPAService{
      */
 	public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
 		try {
-			String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"'";
+			String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"' AND g.isDeleted = false";
 			beginTransaction();
 			TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
 			return query.getResultList();
@@ -178,7 +178,7 @@ public class GroupJPAService{
      */
 	public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
 		try {
-			String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "'";
+			String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "' AND g.isDeleted = false";
 			beginTransaction();
 			TypedQuery<Group> query = entityManager.createQuery(queryString, Group.class);
 			Group group = query.getSingleResult();
@@ -195,13 +195,12 @@ public class GroupJPAService{
      * deletes a group from database based on the id of the group
      * @param currentGroup
      */
-	public void deleteGroup(Group currentGroup) throws GroupNotFoundException, GroupNotDeletedException {
-		Group retrievedGroup = searchUsingCode(currentGroup.getGroupCode());
+	public void deleteGroup(Group currentGroup) throws GroupNotDeletedException {
 
 		try {
 			beginTransaction();
-			Group group = entityManager.find(Group.class, retrievedGroup.getId());
-			entityManager.remove(group);
+			Group group = entityManager.find(Group.class, currentGroup.getId());
+			group.setDeleted(true);
 			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
 			endTransaction();
 		}
