@@ -4,6 +4,9 @@ public class NetworkResponseImpl implements NetworkResponse {
     private STATUS status;
     private Payload payload;
 
+    /***
+     * Default constructor. Used by jackson for serialization/deserialization.
+     */
     public NetworkResponseImpl()    {
     }
     public NetworkResponseImpl(STATUS status, Payload payload)   {

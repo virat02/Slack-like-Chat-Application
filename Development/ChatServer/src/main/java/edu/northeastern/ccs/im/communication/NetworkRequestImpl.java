@@ -8,7 +8,7 @@ public class NetworkRequestImpl implements NetworkRequest {
     private NetworkRequestType networkRequestType;
 
     /***
-     * Default constructor
+     * Default constructor. Used for the purposes of jackson serialization/ deserialization.
      */
     public NetworkRequestImpl() {
 
