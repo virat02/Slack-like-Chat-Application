@@ -3,7 +3,7 @@ package edu.northeastern.ccs.im.user_group;
 import java.util.List;
 
 /**
- * The interface for User
+ * The interface for User, represents the User entity
  */
 public interface IUser extends IUserGroup {
     /**
