@@ -125,7 +125,7 @@ public class ProfileJPAService {
         }
     }
 
-    public boolean checkIfEmailExists(String email) throws ProfileNotPersistedException{
+    public boolean checkIfEmailExists(String email) {
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
             queryString.append("'" + email + "'");
@@ -136,7 +136,7 @@ public class ProfileJPAService {
             return profile.getId() > -1;
         }
         catch (Exception e){
-            throw new ProfileNotPersistedException("No profile found with email id: " + email);
+            return false;
         }
     }
 
