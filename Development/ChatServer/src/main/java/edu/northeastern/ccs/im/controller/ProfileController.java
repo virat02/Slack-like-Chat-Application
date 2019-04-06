@@ -15,9 +15,9 @@ public class ProfileController implements IController<Profile> {
 
     private ProfileService profileService = new ProfileService();
 
-    private static final String PROFILE_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
+    private static final String INTERNAL_ERROR_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
     private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist!\"}";
-    private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
+    //private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
     private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
     private static final String EMAIL_ALREADY_IN_USE_JSON = "{\"message\" : \"The email id is already in use. Please try again with different email id!\"}";
     private static final String INVALID_IMAGEURL_JSON = "{\"message\" : \"The imageURL you entered is invalid. Please try again! (Eg. http://* or https://* )\"}";
@@ -37,12 +37,16 @@ public class ProfileController implements IController<Profile> {
      */
     public NetworkResponse addEntity(Profile pf) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(profileService.createProfile(pf))));
-        }
-        catch (ProfileNotPersistedException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PROFILE_NOT_PERSISTED_JSON));
+            if(profileService.createProfile(pf)) {
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(pf)));
+            }
+
+            //If createProfile returns false, some SQL error occurred
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(INTERNAL_ERROR_JSON));
+            }
         }
         catch (InvalidEmailException e){
             if(e.getMessage().equals("The Email id is already in use")){
@@ -98,14 +102,12 @@ public class ProfileController implements IController<Profile> {
      * @return a NetworkResponse
      */
     public NetworkResponse deleteEntity(Profile pf) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(profileService.deleteProfile(pf))));
-        }
-        catch (ProfileNotDeletedException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PROFILE_NOT_DELETED_JSON));
-        }
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                new PayloadImpl(CommunicationUtils.toJson(profileService.deleteProfile(pf))));
+//        catch (ProfileNotDeletedException e) {
+//            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+//                    new PayloadImpl(PROFILE_NOT_DELETED_JSON));
+//        }
     }
 
     /**

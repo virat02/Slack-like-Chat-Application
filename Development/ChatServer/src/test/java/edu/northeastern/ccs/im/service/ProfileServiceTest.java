@@ -1,13 +1,16 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.Profile;
 import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -22,10 +25,16 @@ import static org.mockito.Mockito.when;
 /**
  * Class to test the profile service methods
  */
+
+@RunWith(MockitoJUnitRunner.class)
 public class ProfileServiceTest {
 
     private ProfileService profileService = new ProfileService();
+
+    private AllJPAService jpaService;
+
     private ProfileJPAService profileJPAService;
+
     private UserService userService;
 
     @Mock
@@ -35,7 +44,7 @@ public class ProfileServiceTest {
     private Message m1 = new Message();
 
     private User u = new User();
-    private Profile p1 = new Profile();
+    private Profile p1;
 
     private static final String P1_EMAIL = "p1@gmail.com";
     private static final String P1_IMAGE_URL = "https://p1.com";
@@ -46,6 +55,7 @@ public class ProfileServiceTest {
     @Before
     public void setUp() {
 
+        jpaService = mock(AllJPAService.class);
         profileJPAService = mock(ProfileJPAService.class);
         userService = mock(UserService.class);
 
@@ -65,27 +75,27 @@ public class ProfileServiceTest {
     }
 
     /**
-     * Test for able to create profile in ProfileService
+     * Test for successful create profile in ProfileService
      */
     @Test
-    public void testCreateProfile() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public void testCreateProfile() throws InvalidEmailException, InvalidImageURLException {
 
-        when(profileJPAService.createProfile(any(Profile.class))).thenReturn(p1);
-        profileService.setProfileJPAService(profileJPAService);
-
-        assertEquals(p1, profileService.createProfile(p1));
+        //AllJPAService mjpaService = mock(AllJPAService.class);
+        profileService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any())).thenReturn(true);
+        assertTrue(profileService.createProfile(p1));
     }
 
     /**
      * Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
      */
-    @Test(expected = ProfileNotPersistedException.class)
-    public void testCreateProfileForProfileNotPersistedException() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    @Test
+    public void testCreateProfileForFalse() throws InvalidEmailException, InvalidImageURLException {
 
-        when(profileJPAService.createProfile(any(Profile.class))).thenThrow(new ProfileNotPersistedException("Could not persist the profile!"));
-        profileService.setProfileJPAService(profileJPAService);
-
-        profileService.createProfile(p1);
+        //AllJPAService jpaService = mock(AllJPAService.class);
+        profileService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any(Profile.class))).thenReturn(false);
+        assertFalse(profileService.createProfile(p1));
     }
 
     /**
@@ -93,7 +103,7 @@ public class ProfileServiceTest {
      */
     @Test(expected = InvalidEmailException.class)
     public void testCreateProfileForInvalidEmailException()
-            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+            throws InvalidEmailException, InvalidImageURLException {
 
         Profile p = new Profile();
         p.setEmail("abcd");
@@ -106,7 +116,7 @@ public class ProfileServiceTest {
      */
     @Test(expected = InvalidEmailException.class)
     public void testCreateProfileForInvalidEmailExceptionForNullEmailId()
-            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+            throws InvalidEmailException, InvalidImageURLException {
 
         Profile p = new Profile();
         p.setEmail(null);
@@ -173,7 +183,7 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is deleted
      */
     @Test
-    public void testDeleteProfile() throws ProfileNotDeletedException {
+    public void testDeleteProfile() {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(1);
         profileService.setProfileJPAService(profileJPAService);
         assertTrue(profileService.deleteProfile(p1));
@@ -183,7 +193,7 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is not deleted
      */
     @Test
-    public void testDeleteProfileFalse() throws ProfileNotDeletedException {
+    public void testDeleteProfileFalse() {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(-1);
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
@@ -192,8 +202,8 @@ public class ProfileServiceTest {
     /**
      * Test the delete profile method to throw ProfileNotDeletedException
      */
-    @Test(expected = ProfileNotDeletedException.class)
-    public void testDeleteProfileForProfileNotDeletedException() throws ProfileNotDeletedException {
+    @Test
+    public void testDeleteProfileForProfileNotDeletedException() {
         when(profileJPAService.deleteProfile(any(Profile.class))).thenThrow(new ProfileNotDeletedException("Could not delete profile!"));
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
@@ -202,12 +212,11 @@ public class ProfileServiceTest {
     /**
      * Test for a valid Image URL entered by User
      *
-     * @throws ProfileNotPersistedException
      * @throws InvalidImageURLException
      * @throws InvalidEmailException
      */
     @Test
-    public void testValidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+    public void testValidImageURL() throws InvalidImageURLException, InvalidEmailException {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("http://virat.com");
@@ -219,12 +228,11 @@ public class ProfileServiceTest {
     /**
      * Test for a Invalid Image URL entered by User
      *
-     * @throws ProfileNotPersistedException
      * @throws InvalidImageURLException
      * @throws InvalidEmailException
      */
     @Test(expected = InvalidImageURLException.class)
-    public void testInvlidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+    public void testInvlidImageURL() throws InvalidImageURLException, InvalidEmailException {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("virat.com");
