@@ -12,10 +12,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.persistence.NoResultException;
+
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -163,8 +164,8 @@ public class ProfileServiceTest {
     @Test
     public void testGetProfile() throws ProfileNotFoundException {
 
-        when(profileJPAService.getProfile(anyInt())).thenReturn(p1);
-        profileService.setProfileJPAService(profileJPAService);
+        when(jpaService.getEntity( anyString(), anyInt())).thenReturn(p1);
+        profileService.setAllJPAService(jpaService);
         assertEquals(p1, profileService.get(2));
     }
 
@@ -174,8 +175,8 @@ public class ProfileServiceTest {
     @Test(expected = ProfileNotFoundException.class)
     public void testGetProfileForProfileNotFoundException() throws ProfileNotFoundException {
 
-        when(profileJPAService.getProfile(anyInt())).thenThrow(new ProfileNotFoundException("Could not find profile!"));
-        profileService.setProfileJPAService(profileJPAService);
+        when(jpaService.getEntity(anyString(), anyInt())).thenThrow(new NoResultException());
+        profileService.setAllJPAService(jpaService);
         profileService.get(2);
     }
 

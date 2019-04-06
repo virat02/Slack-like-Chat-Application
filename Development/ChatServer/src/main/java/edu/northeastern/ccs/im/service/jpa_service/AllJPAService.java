@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service.jpa_service;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import java.util.logging.Logger;
 
 public class AllJPAService {
@@ -67,5 +68,21 @@ public class AllJPAService {
 
         //If reached here, all went well
         return true;
+    }
+
+    /**
+     * Generic meethod to get a particular entity from the DB
+     * @param object
+     * @param id
+     * @return
+     */
+    public Object getEntity(String object, int id) {
+        StringBuilder queryString = new StringBuilder("SELECT o FROM ");
+        queryString.append(object);
+        queryString.append(" o WHERE o.id = ");
+        queryString.append(id);
+        beginTransaction();
+        TypedQuery<Object> query = entityManager.createQuery(queryString.toString(), Object.class);
+        return query.getSingleResult();
     }
 }

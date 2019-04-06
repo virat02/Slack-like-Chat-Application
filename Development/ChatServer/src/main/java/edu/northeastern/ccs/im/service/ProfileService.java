@@ -5,6 +5,7 @@ import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
+import javax.persistence.NoResultException;
 import java.net.URL;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -144,8 +145,14 @@ public class ProfileService {
      * @return
      */
     public Profile get(int id) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.getProfile(id);
+        try {
+            jpaService.setEntityManager(null);
+            return (Profile) jpaService.getEntity("Profile", id);
+        }
+        catch (NoResultException e) {
+            LOGGER.info("Could not find profile for profile id: "+id);
+            throw new ProfileNotFoundException("Could not find profile for profile id: "+id);
+        }
     }
 
     /**
