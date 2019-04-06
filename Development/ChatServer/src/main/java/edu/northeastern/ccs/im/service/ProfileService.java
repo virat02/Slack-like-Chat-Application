@@ -160,7 +160,7 @@ public class ProfileService {
      * Deletes a profile
      */
     public Boolean deleteProfile(Profile pf) {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.deleteProfile(pf) != -1;
+        jpaService.setEntityManager(null);
+        return jpaService.deleteEntity(pf);
     }
 }

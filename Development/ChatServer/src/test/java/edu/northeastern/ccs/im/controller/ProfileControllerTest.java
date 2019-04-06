@@ -168,7 +168,7 @@ public class ProfileControllerTest {
      */
     @Test
     public void testUnsuccessfulDeleteProfile() {
-        when(profileService.deleteProfile(any())).thenThrow(ProfileNotDeletedException.class);
+        when(profileService.deleteProfile(any())).thenReturn(false);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());

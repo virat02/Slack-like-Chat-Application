@@ -54,4 +54,18 @@ public class AllJPAService {
         endTransaction();
         return true;
     }
+
+    /**
+     * Generic method to delete an object from DB
+     * @param obj
+     * @return
+     */
+    public boolean deleteEntity(Object obj) {
+        beginTransaction();
+        entityManager.remove(obj);
+        endTransaction();
+
+        //If reached here, all went well
+        return true;
+    }
 }

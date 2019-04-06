@@ -15,7 +15,8 @@ public class ProfileController implements IController<Profile> {
 
     private ProfileService profileService = new ProfileService();
 
-    private static final String INTERNAL_ERROR_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
+    private static final String INTERNAL_ERROR_CREATE_PROFILE_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
+    private static final String INTERNAL_ERROR_DELETE_PROFILE_JSON = "{\"message\" : \"Sorry, could not delete your profile!\"}";
     private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist!\"}";
     //private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
     private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
@@ -45,7 +46,7 @@ public class ProfileController implements IController<Profile> {
             //If createProfile returns false, some SQL error occurred
             else{
                 return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                        new PayloadImpl(INTERNAL_ERROR_JSON));
+                        new PayloadImpl(INTERNAL_ERROR_CREATE_PROFILE_JSON));
             }
         }
         catch (InvalidEmailException e){
@@ -102,12 +103,15 @@ public class ProfileController implements IController<Profile> {
      * @return a NetworkResponse
      */
     public NetworkResponse deleteEntity(Profile pf) {
-        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                new PayloadImpl(CommunicationUtils.toJson(profileService.deleteProfile(pf))));
-//        catch (ProfileNotDeletedException e) {
-//            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-//                    new PayloadImpl(PROFILE_NOT_DELETED_JSON));
-//        }
+        if(profileService.deleteProfile(pf)){
+            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                    new PayloadImpl(CommunicationUtils.toJson(pf)));
+        }
+        else{
+            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                    new PayloadImpl(INTERNAL_ERROR_DELETE_PROFILE_JSON));
+        }
+
     }
 
     /**
