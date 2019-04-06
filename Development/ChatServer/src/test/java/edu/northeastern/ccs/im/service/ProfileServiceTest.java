@@ -184,8 +184,8 @@ public class ProfileServiceTest {
      */
     @Test
     public void testDeleteProfile() {
-        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(1);
-        profileService.setProfileJPAService(profileJPAService);
+        when(jpaService.deleteEntity(any(Profile.class))).thenReturn(true);
+        profileService.setAllJPAService(jpaService);
         assertTrue(profileService.deleteProfile(p1));
     }
 
@@ -194,18 +194,8 @@ public class ProfileServiceTest {
      */
     @Test
     public void testDeleteProfileFalse() {
-        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(-1);
-        profileService.setProfileJPAService(profileJPAService);
-        assertFalse(profileService.deleteProfile(p1));
-    }
-
-    /**
-     * Test the delete profile method to throw ProfileNotDeletedException
-     */
-    @Test
-    public void testDeleteProfileForProfileNotDeletedException() {
-        when(profileJPAService.deleteProfile(any(Profile.class))).thenThrow(new ProfileNotDeletedException("Could not delete profile!"));
-        profileService.setProfileJPAService(profileJPAService);
+        when(jpaService.deleteEntity(any(Profile.class))).thenReturn(false);
+        profileService.setAllJPAService(jpaService);
         assertFalse(profileService.deleteProfile(p1));
     }
 
@@ -232,7 +222,7 @@ public class ProfileServiceTest {
      * @throws InvalidEmailException
      */
     @Test(expected = InvalidImageURLException.class)
-    public void testInvlidImageURL() throws InvalidImageURLException, InvalidEmailException {
+    public void testInvalidImageURL() throws InvalidImageURLException, InvalidEmailException {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("virat.com");
