@@ -65,8 +65,8 @@ public class ProfileControllerTest {
      * Test for successful create Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
-        when(profileService.createProfile(any())).thenReturn(profileOne);
+    public void testSuccessfulCreateProfile() throws InvalidEmailException, InvalidImageURLException {
+        when(profileService.createProfile(any())).thenReturn(true);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
@@ -76,9 +76,9 @@ public class ProfileControllerTest {
      * Test for unsuccessful create Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulCreateProfile() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public void testUnsuccessfulCreateProfile() throws InvalidEmailException, InvalidImageURLException {
 
-        when(profileService.createProfile(any())).thenThrow(new ProfileNotPersistedException("Could not persist profile!"));
+        when(profileService.createProfile(any())).thenReturn(false);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.addEntity(profileOne);
         Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -88,7 +88,7 @@ public class ProfileControllerTest {
      * Test for unsuccessful create Profile in Profile Controller for InvalidEmailException
      */
     @Test
-    public void testUnsuccessfulCreateProfileForInvalidEmailException() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public void testUnsuccessfulCreateProfileForInvalidEmailException() throws InvalidEmailException, InvalidImageURLException {
 
         when(profileService.createProfile(any())).thenThrow(new InvalidEmailException("Invalid Email!"));
         profileController.setProfileService(profileService);
@@ -100,7 +100,7 @@ public class ProfileControllerTest {
      * Test for unsuccessful create Profile in Profile Controller for InvalidImageURLException
      */
     @Test
-    public void testUnsuccessfulCreateProfileForInvalidImageURLException() throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public void testUnsuccessfulCreateProfileForInvalidImageURLException() throws InvalidEmailException, InvalidImageURLException {
 
         when(profileService.createProfile(any())).thenThrow(new InvalidImageURLException("Invalid Image URL!"));
         profileController.setProfileService(profileService);
@@ -156,7 +156,7 @@ public class ProfileControllerTest {
      * Test for successful delete Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulDeleteProfile() throws ProfileNotDeletedException {
+    public void testSuccessfulDeleteProfile() {
         when(profileService.deleteProfile(any())).thenReturn(true);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
@@ -167,7 +167,7 @@ public class ProfileControllerTest {
      * Test for unsuccessful delete Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulDeleteProfile() throws ProfileNotDeletedException {
+    public void testUnsuccessfulDeleteProfile() {
         when(profileService.deleteProfile(any())).thenThrow(ProfileNotDeletedException.class);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);

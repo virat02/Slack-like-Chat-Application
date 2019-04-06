@@ -1,9 +1,7 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.ProfileNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.ProfileNotPersistedException;
 import edu.northeastern.ccs.im.user_group.Profile;
 
 import javax.persistence.*;
@@ -46,55 +44,30 @@ public class ProfileJPAService {
      * Creates a profile in the database
      * @param p
      */
-    public Profile createProfile(Profile p) throws ProfileNotPersistedException {
-        try {
-            beginTransaction();
-            entityManager.persist(p);
-            entityManager.flush();
-            int profileId = p.getId();
-            endTransaction();
-            ChatLogger.info("Created profile with profile id : "+profileId);
-            return p;
-        }
-        catch (Exception e) {
-            LOGGER.info("JPA Could not persist the profile with profile id : " + p.getId());
-            throw new ProfileNotPersistedException("JPA Could not persist the profile with profile id : " + p.getId());
-        }
+    public Profile createProfile(Profile p) {
+        beginTransaction();
+        entityManager.persist(p);
+        entityManager.flush();
+        int profileId = p.getId();
+        endTransaction();
+
+        //If reached here, all went well and profile was persisted in DB
+        ChatLogger.info("Created profile with profile id : "+profileId);
+        return p;
     }
 
     /**
      * Deletes a profile in the database
      * @param p
      */
-    public boolean deleteProfile(Profile p) throws ProfileNotDeletedException {
-        try {
-            beginTransaction();
-            int pid = p.getId();
-            Profile thisProfile = entityManager.find(Profile.class, pid);
-            if (thisProfile == null) {
-                LOGGER.info("Can't find Profile for this ID");
-                throw new ProfileNotFoundException("Can't find Profile for ID " + p.getId());
-            }
-            if (!entityManager.contains(p)) {
-                p = entityManager.merge(p);
-            }
-            entityManager.remove(p);
-            endTransaction();
-            LOGGER.info("Deleted profile : " + pid);
-            return true;
-        }
-        catch(Exception e) {
-            if (p == null) {
-                LOGGER.info("Empty profile");
-                throw new ProfileNotDeletedException("Profile with profile id: null, could not be deleted!");
-            }
-            else {
-                LOGGER.info("Profile with profile id: " + p.getId() + ", could not be deleted!");
-                throw new ProfileNotDeletedException("Profile with profile id: " + p.getId()
-                        + ", could not be deleted!");
-            }
-        }
+    public int deleteProfile(Profile p) {
+        beginTransaction();
+        entityManager.remove(p);
+        endTransaction();
 
+        //If reached here, all went well and profile was deleted from DB
+        LOGGER.info("Deleted profile : "+p.getId());
+        return p.getId();
     }
 
     /**
@@ -141,7 +114,12 @@ public class ProfileJPAService {
         }
     }
 
-    public boolean checkIfEmailExists(String email){
+    /**
+     * Returns true iff the email id already exists in the db
+     * @param email
+     * @return
+     */
+    public boolean ifEmailExists(String email) {
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
             queryString.append("'" + email + "'");
@@ -152,6 +130,7 @@ public class ProfileJPAService {
             return profile.getId() > -1;
         }
         catch (Exception e){
+            LOGGER.info(e.getMessage());
             return false;
         }
     }
