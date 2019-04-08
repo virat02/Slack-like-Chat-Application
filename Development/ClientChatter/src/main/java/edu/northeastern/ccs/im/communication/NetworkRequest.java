@@ -47,5 +47,6 @@ public interface NetworkRequest {
         UPDATE_INVITE,
         FETCH_INVITE,
         SET_UNFOLLOWERS,
+        EXIT_CHATROOM,
     }
 }

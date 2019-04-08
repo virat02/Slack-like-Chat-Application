@@ -49,4 +49,6 @@ public interface BroadCastService {
      * @return the recent messages
      */
     List<Message> getRecentMessages();
+
+    List<Message> getUnreadMessages(String userName);
 }

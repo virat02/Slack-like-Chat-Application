@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
@@ -7,9 +8,11 @@ import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -312,8 +315,29 @@ public final class UserService implements IService {
             InviteNotFoundException, UserNotFoundException {
         userJPAService.setEntityManager(null);
         User retrievedUser = userJPAService.search(username);
-
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.searchInviteByGroupCode(groupCode , retrievedUser);
+    }
+
+    /***
+     * This method is used to log the user logging off times for different groups.
+     * @param userName -> The username of the user trying to log off/ exit from the chatroom.
+     * @param groupUniqueCode -> The unique code of the group
+     */
+    public void userGroupEvent(String userName,String groupUniqueCode)   {
+        final String errorMsg = "This is an unexpected situation, Generally codeflow should not reach this exception block";
+        userJPAService.setEntityManager(null);
+        groupJPAService.setEntityManager(null);
+        try {
+            User user = userJPAService.search(userName);
+            Group group = groupJPAService.searchUsingCode(groupUniqueCode);
+            UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent(user.getId(), group.getId(), new Date());
+            userJPAService.saveOrUpdateJoinGroupEvent(userChatRoomLogOffEvent);
+        } catch (UserNotFoundException | GroupNotFoundException e) {
+            // There is something wrong in the control flow of the application
+            // for this use case, if the flow reaches here.
+            ChatLogger.error(errorMsg);
+            throw new UnsupportedOperationException(errorMsg);
+        }
     }
 }

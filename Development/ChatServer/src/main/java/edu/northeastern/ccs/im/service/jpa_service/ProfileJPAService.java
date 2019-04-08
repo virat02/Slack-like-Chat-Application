@@ -57,6 +57,7 @@ public class ProfileJPAService {
             return p;
         }
         catch (Exception e) {
+            e.printStackTrace();
             LOGGER.info("JPA Could not persist the profile with profile id : " + p.getId());
             throw new ProfileNotPersistedException("JPA Could not persist the profile with profile id : " + p.getId());
         }
@@ -125,7 +126,7 @@ public class ProfileJPAService {
         }
     }
 
-    public boolean checkIfEmailExists(String email) throws ProfileNotPersistedException{
+    public boolean checkIfEmailExists(String email){
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
             queryString.append("'" + email + "'");
@@ -136,7 +137,7 @@ public class ProfileJPAService {
             return profile.getId() > -1;
         }
         catch (Exception e){
-            throw new ProfileNotPersistedException("No profile found with email id: " + email);
+            return false;
         }
     }
 

@@ -177,7 +177,7 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
                 () -> "{" +
                         "\"groupCode\":\"" + groupCode + "\"" + "," +
-                         "\"userName\":\"" + userName + "\"" + "," +
+                        "\"userName\":\"" + userName + "\"" + "," +
                         "\"isPrivate\":\"" + isPrivate + "\""
                         + "}");
     }
@@ -267,17 +267,18 @@ public class NetworkRequestFactory {
                 });
     }
 
-  public NetworkRequest createSetUserFolloweresList(String userName, User user) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
-            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                    "\n" + userName);
-  }
+    public NetworkRequest createSetUserFolloweresList(String userName, User user) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                        "\n" + userName);
+    }
 
-  public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
-            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                    "\n" + userName);
-  }
+    public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                        "\n" + userName);
+    }
+
     /***
      * Creates a group invite request.
      * @param invitee -> The user whom has been invited to join the group
@@ -335,5 +336,24 @@ public class NetworkRequestFactory {
                 .append("\"")
                 .append("}")
                 .toString());
+    }
+
+    public NetworkRequest createLogOffFromChatRoomRequest(String userName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.EXIT_CHATROOM,
+                () -> new StringBuilder()
+                        .append("{")
+                        .append("\"userName\"")
+                        .append(":")
+                        .append("\"")
+                        .append(userName)
+                        .append("\"")
+                        .append(",")
+                        .append("\"groupCode\"")
+                        .append(":")
+                        .append("\"")
+                        .append(groupCode)
+                        .append("\"")
+                        .append("}")
+                        .toString());
     }
 }
