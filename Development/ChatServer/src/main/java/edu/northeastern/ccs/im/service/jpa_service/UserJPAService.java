@@ -30,6 +30,22 @@ public class UserJPAService {
     public UserJPAService() {}
 
     /**
+     * The Bill Pugh Singleton Implementation. A private class meant to serve as our instance of the
+     * UserJPAService.
+     */
+    private static class UserJPASingleTon {
+        private static final UserJPAService INSTANCE = new UserJPAService();
+    }
+
+    /**
+     * A Method to get the instance of the UserJPAService.
+     * @return UserJPAService instance.
+     */
+    public static UserJPAService getInstance() {
+        return UserJPASingleTon.INSTANCE;
+    }
+
+    /**
      * A function made to setup the entity manager for this class to make the class more testable.
      * @param entityManager The entity manager for this class.
      */

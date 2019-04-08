@@ -32,7 +32,7 @@ public final class UserService implements IService {
      * Constructor for this class.
      */
     public UserService() {
-        userJPAService = new UserJPAService();
+        userJPAService = UserJPAService.getInstance();
         inviteJPAService = new InviteJPAService();
         groupJPAService = new GroupJPAService();
     }
@@ -50,6 +50,10 @@ public final class UserService implements IService {
         this.userJPAService.setEntityManager(null);
     }
 
+    /**
+     * Sets the inviteJPA Service, mostly userful in testing.
+     * @param inviteJPAService is the jpa service we plan on initializing.
+     */
     public void setInviteJPAService(InviteJPAService inviteJPAService){
         if(inviteJPAService == null) {
             this.inviteJPAService = new InviteJPAService();
@@ -59,6 +63,10 @@ public final class UserService implements IService {
         this.inviteJPAService.setEntityManager(null);
     }
 
+    /**
+     * Sets the GroupJPAService, mostly used in testing.
+     * @param groupJPAService the group JPA service we plan initializing.
+     */
     public void setGroupJPAService(GroupJPAService groupJPAService){
         if(groupJPAService == null) {
             this.groupJPAService = new GroupJPAService();
@@ -72,42 +80,17 @@ public final class UserService implements IService {
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
      */
-    public User addUser(User user) throws UserNotFoundException, UserNotPersistedException,
-            UsernameTooSmallException, UsernameDoesNotContainNumberException,
-            UsernameDoesNotContainUppercaseException, UsernameDoesNotContainLowercaseException,
-            PasswordDoesNotContainLowercaseException, PasswordTooSmallException,
-            PasswordDoesNotContainUppercaseException, PasswordDoesNotContainNumberException, PasswordTooLargeException, UsernameTooLongException {
-        if(user.getUsername().length() < 4) {
-            throw new UsernameTooSmallException("Username needs to be at least 4 letters long.");
-        }
-        if(user.getUsername().length() > 20) {
-            throw new UsernameTooLongException("Username can't be more than 20 letters long!");
-        }
+    public User addUser(User user) throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
         HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
-        if(!usernameCheck.get("low")) {
-            throw new UsernameDoesNotContainLowercaseException("Username must contain at least one lowercase letter.");
-        }
-        if(!usernameCheck.get("cap")) {
-            throw new UsernameDoesNotContainUppercaseException("Username must contain at least one capital letter!");
-        }
-        if(!usernameCheck.get("num")) {
-            throw new UsernameDoesNotContainNumberException("Username must contain at least one number!");
-        }
-        if(user.getPassword().length() < 4) {
-            throw new PasswordTooSmallException("Password needs to be at least 4 letters long.");
-        }
-        if(user.getPassword().length() > 20) {
-            throw new PasswordTooLargeException("Password can't be more than 20 letters long!");
+        if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
+                user.getUsername().length() < 4) {
+            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter," +
+                    "one lowercase letter and one number.");
         }
         HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
-        if(!passwordCheck.get("low")) {
-            throw new PasswordDoesNotContainLowercaseException("Password must contain at least one lowercase letter.");
-        }
-        if(!passwordCheck.get("cap")) {
-            throw new PasswordDoesNotContainUppercaseException("Password must contain at least one capital letter!");
-        }
-        if(!passwordCheck.get("num")) {
-            throw new PasswordDoesNotContainNumberException("Password must contain at least one number!");
+        if(user.getPassword().length() < 4 || user.getPassword().length() > 20
+                || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
+            throw new PasswordInvalidException("Password needs to be at least 4 letters long.");
         }
         userJPAService.setEntityManager(null);
         int id = userJPAService.createUser(user);
