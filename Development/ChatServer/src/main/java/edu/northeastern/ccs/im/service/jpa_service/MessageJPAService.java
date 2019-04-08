@@ -8,12 +8,14 @@ import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
+import org.hibernate.Session;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +29,7 @@ public class MessageJPAService {
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
     private EntityManager entityManager;
     private GroupService groupService = new GroupService();
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+
     /**
      * Set a group service
      *
@@ -35,10 +37,6 @@ public class MessageJPAService {
      */
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
-    }
-
-    private void setEntityManagerUtil(EntityManagerUtil entityManagerUtil)  {
-        this.entityManagerUtil = entityManagerUtil;
     }
 
     /**
@@ -161,27 +159,6 @@ public class MessageJPAService {
         return msgList;
     }
 
-    /**
-     * Gets all the messages given a group unique key.
-     *
-     * @param groupUniqueKey the group id for which the messages must be fetched
-     * @return list of messages that are fetched
-     * @throws GroupNotFoundException thrown when the given group does not exist
-     */
-    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
-
-        //Get the group based on the group unique key
-        Group g = groupService.searchUsingCode(groupUniqueKey);
-
-        String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
-        beginTransaction();
-        TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
-        List<Message> msgList = query.getResultList();
-        msgList.sort(Comparator.comparing(Message::getId));
-        ChatLogger.info("All messages for a group: " + groupUniqueKey + " retrieved!");
-        return msgList;
-    }
-
     /***
      * Returns a list of messages after the timestamp.
      *
@@ -193,7 +170,7 @@ public class MessageJPAService {
      * @return -> A list of Messages.
      */
     public List<Message> getMessagesAfterThisTimestamp(Date loggedOut, int groupId) {
-        EntityManager em = entityManagerUtil.getEntityManager();
+        EntityManager em = EntityManagerUtil.getEntityManagerFactory().createEntityManager();
         em.getTransaction().begin();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
