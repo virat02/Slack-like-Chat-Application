@@ -32,7 +32,7 @@ public final class UserService implements IService {
      * Constructor for this class.
      */
     public UserService() {
-        userJPAService = UserJPAService.getInstance();
+        userJPAService = new UserJPAService();
         inviteJPAService = new InviteJPAService();
         groupJPAService = new GroupJPAService();
     }
