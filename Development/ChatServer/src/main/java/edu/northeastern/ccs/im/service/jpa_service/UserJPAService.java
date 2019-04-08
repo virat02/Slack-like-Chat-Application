@@ -9,9 +9,7 @@ import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -242,7 +240,10 @@ public class UserJPAService {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UserChatRoomLogOffEvent> cq = cb.createQuery(UserChatRoomLogOffEvent.class);
         Root<UserChatRoomLogOffEvent> root = cq.from(UserChatRoomLogOffEvent.class);
-        cq.where(cb.and(cb.equal(root.get("compositeObject").get("userId"), userId), cb.equal(root.get("compositeObject").get("groupId"), groupId)));
+        Predicate predicate1 = cb.equal(root.get("compositeObject").get("userId"), userId);
+        Predicate predicate2 = cb.equal(root.get("compositeObject").get("groupId"), groupId);
+        Predicate predicate = cb.and(predicate1, predicate2);
+        cq.where(predicate);
         TypedQuery<UserChatRoomLogOffEvent> query = em.createQuery(cq);
         try {
             UserChatRoomLogOffEvent userChatRoomLogOffEvent = query.getSingleResult();
