@@ -8,14 +8,12 @@ import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
-import org.hibernate.Session;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
