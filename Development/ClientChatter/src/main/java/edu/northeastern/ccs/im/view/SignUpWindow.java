@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.view;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.*;
