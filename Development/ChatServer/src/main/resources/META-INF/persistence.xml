@@ -8,6 +8,7 @@
         <class>edu.northeastern.ccs.im.user_group.Profile</class>
         <class>edu.northeastern.ccs.im.user_group.Group</class>
         <class>edu.northeastern.ccs.im.user_group.Invite</class>
+        <class>edu.northeastern.ccs.im.user_group.converter.CryptoConverter</class>
         <properties>
             <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.ddl-generation" value="create-tables"/>
