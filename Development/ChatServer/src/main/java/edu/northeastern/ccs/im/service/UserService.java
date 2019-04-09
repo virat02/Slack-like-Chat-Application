@@ -98,7 +98,6 @@ public final class UserService implements IService {
         if(id == 0) {
             return null;
         }
-        userJPAService.setEntityManager(null);
         return userJPAService.getUser(id);
     }
 
