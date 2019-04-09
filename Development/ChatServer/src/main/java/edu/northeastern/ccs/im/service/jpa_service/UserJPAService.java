@@ -24,10 +24,11 @@ public class UserJPAService {
     //The entity manager for this class.
     private EntityManager entityManager;
 
+    private EntityManagerUtil entityManagerUtil;
 
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
-
-    public UserJPAService() {}
+    public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+        this.entityManagerUtil = entityManagerUtil;
+    }
 
     /**
      * A function made to setup the entity manager for this class to make the class more testable.
@@ -227,7 +228,7 @@ public class UserJPAService {
      * from the chatroom.
      */
     public void saveOrUpdateJoinGroupEvent(UserChatRoomLogOffEvent userChatRoomLogOffEvent)  {
-        EntityManager em = EntityManagerUtil.getEntityManagerFactory().createEntityManager();
+        EntityManager em = entityManagerUtil.getEntityManager();
         em.getTransaction().begin();
         em.merge(userChatRoomLogOffEvent);
         em.getTransaction().commit();
@@ -235,7 +236,7 @@ public class UserJPAService {
     }
 
     public UserChatRoomLogOffEvent getLogOffEvent(int userId, int groupId) throws FirstTimeUserLoggedInException {
-        EntityManager em = EntityManagerUtil.getEntityManagerFactory().createEntityManager();
+        EntityManager em = entityManagerUtil.getEntityManager();
         em.getTransaction().begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UserChatRoomLogOffEvent> cq = cb.createQuery(UserChatRoomLogOffEvent.class);
