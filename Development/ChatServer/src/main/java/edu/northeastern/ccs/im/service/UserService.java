@@ -32,7 +32,7 @@ public final class UserService implements IService {
      * Constructor for this class.
      */
     public UserService() {
-        userJPAService = new UserJPAService();
+        userJPAService = UserJPAService.getInstance();
         inviteJPAService = new InviteJPAService();
         groupJPAService = new GroupJPAService();
     }
@@ -84,13 +84,14 @@ public final class UserService implements IService {
         HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
         if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
                 user.getUsername().length() < 4) {
-            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter," +
+            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
         HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
         if(user.getPassword().length() < 4 || user.getPassword().length() > 20
                 || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
-            throw new PasswordInvalidException("Password needs to be at least 4 letters long.");
+            throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
+                    "one lowercase letter and one number.");
         }
         userJPAService.setEntityManager(null);
         int id = userJPAService.createUser(user);
@@ -98,7 +99,7 @@ public final class UserService implements IService {
             return null;
         }
         userJPAService.setEntityManager(null);
-        return userJPAService.getUser(user.getId());
+        return userJPAService.getUser(id);
     }
 
     /**
@@ -176,8 +177,8 @@ public final class UserService implements IService {
 
     /**
      * Get a list of followers for this user
-     * @param username
-     * @return
+     * @param username the username of the person we are trying to get their followers for.
+     * @return a list of users following a particular user.
      */
     public List<User> getFollowers(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
@@ -193,8 +194,8 @@ public final class UserService implements IService {
 
     /**
      * Get a list of followees for this user
-     * @param username
-     * @return
+     * @param username of the user we are trying to get the followees of.
+     * @return list of users a particular user is following.
      */
     public List<User> getFollowees(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);

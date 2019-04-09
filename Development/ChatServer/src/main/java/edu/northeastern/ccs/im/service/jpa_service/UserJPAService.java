@@ -235,6 +235,9 @@ public class UserJPAService {
      * A method to begin the transaction.
      */
     private void beginTransaction() {
+        if(entityManager == null) {
+            throw new IllegalArgumentException("HEY LISTEN");
+        }
         entityManager.getTransaction().begin();
     }
 
