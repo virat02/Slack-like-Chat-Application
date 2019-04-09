@@ -249,6 +249,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    public NetworkRequest deleteUserProfile(Profile profile) {
+      return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_PROFILE,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(profile));
+    }
+
     public NetworkRequest createGetUserFollowersList(String userName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWERS,
                 () -> {

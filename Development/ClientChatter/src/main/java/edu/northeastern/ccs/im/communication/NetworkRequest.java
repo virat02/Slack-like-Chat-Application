@@ -38,6 +38,7 @@ public interface NetworkRequest {
         SEND_MESSAGE,
         CREATE_PROFILE,
         UPDATE_PROFILE,
+        DELETE_PROFILE,
         UPDATE_USERPROFILE,
         UPDATE_PASSWORD,
         GET_FOLLOWEES,

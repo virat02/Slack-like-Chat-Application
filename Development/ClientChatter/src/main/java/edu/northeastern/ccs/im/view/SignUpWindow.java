@@ -89,6 +89,10 @@ public class SignUpWindow extends AbstractTerminalWindow {
                     UserConstants.getUserObj().setProfile(profile);
                     return userId;
                 }
+                else {
+                    sendNetworkConnection(new NetworkRequestFactory()
+                            .deleteUserProfile(UserConstants.getUserObj().getProfile()));
+                }
             }
         } catch (NetworkResponseFailureException exception) {
             printMessageInConsole(exception.getMessage());
