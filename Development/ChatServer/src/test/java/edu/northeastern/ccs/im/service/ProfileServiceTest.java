@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Message;
@@ -8,6 +9,7 @@ import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -16,8 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Class to test the profile service methods
@@ -224,11 +225,33 @@ public class ProfileServiceTest {
      * @throws InvalidEmailException
      */
     @Test(expected = InvalidImageURLException.class)
-    public void testInvlidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+    public void testInvalidImageURL() throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("virat.com");
 
         assertEquals(p, profileService.createProfile(p));
+    }
+
+    /**
+     * Test for throwing an invalid email exception when user tries to sign up with an email id which is already in use!
+     * @throws ProfileNotPersistedException
+     * @throws InvalidImageURLException
+     * @throws InvalidEmailException
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testEmailIDAlreadyExistsException()
+            throws ProfileNotPersistedException, InvalidImageURLException, InvalidEmailException {
+        Profile p = new Profile();
+        p.setEmail("abcd@gmail.com");
+        p.setImageUrl("http://abcd.com");
+
+        ProfileService profileServiceMocked = Mockito.spy(profileService);
+
+        doReturn(true).when(profileServiceMocked).isEmailAlreadyInUse(anyString());
+        doReturn(true).when(profileServiceMocked).isValidImageURL(anyString());
+        doReturn(true).when(profileServiceMocked).isValidEmail(anyString());
+
+        profileServiceMocked.createProfile(p);
     }
 }

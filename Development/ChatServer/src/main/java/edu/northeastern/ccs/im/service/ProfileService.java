@@ -48,7 +48,12 @@ public class ProfileService {
         return pat.matcher(emailId).matches();
     }
 
-    public boolean isEmailAlreadyInUse(String emailId) throws ProfileNotPersistedException{
+    /**
+     * Returns true iff Email id already is in use by some other user
+     * @param emailId
+     * @return
+     */
+    public boolean isEmailAlreadyInUse(String emailId) {
         profileJPAService.setEntityManager(null);
         return profileJPAService.checkIfEmailExists(emailId);
     }

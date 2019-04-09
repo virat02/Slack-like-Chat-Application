@@ -130,7 +130,7 @@ public class ProfileJPAService {
         }
     }
 
-    public boolean checkIfEmailExists(String email) throws ProfileNotPersistedException{
+    public boolean checkIfEmailExists(String email) {
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
             queryString.append("'" + email + "'");
