@@ -63,7 +63,7 @@ public class UserJPAService {
      */
     private void endTransaction() {
         entityManager.getTransaction().commit();
-        entityManager.clear();
+        entityManager.close();
     }
 
     /**
