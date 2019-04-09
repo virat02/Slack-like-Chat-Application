@@ -168,5 +168,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.5</version>
         </dependency>
+        <!-- For CryptoConverter: https://mvnrepository.com/artifact/
+        com.sun.xml.security/xml-security-impl -->
+        <dependency>
+            <groupId>com.sun.xml.security</groupId>
+            <artifactId>xml-security-impl</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

@@ -14,9 +14,17 @@ import java.security.Key;
  */
 @Converter
 public class CryptoConverter implements AttributeConverter<String, String> {
+    // Algorithm used by the Cipher
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    //Unique Key that is used in Converting the given attribute
     private static final byte[] KEY = "CS5500ProjectSecurityKey".getBytes();
 
+    /**
+     *  convertToDatabaseColumn encrypts the given attribute and
+     *  returns this encrypted string which will be stored in teh database
+     * @param password
+     * @return an encrypted string of the password using the Cipher
+     */
     @Override
     public String convertToDatabaseColumn(String password) {
         Key key = new SecretKeySpec(KEY, "AES");
@@ -29,6 +37,12 @@ public class CryptoConverter implements AttributeConverter<String, String> {
         }
     }
 
+    /**
+     *  convertToEntityAtrribute fetched the encrypted data from the database and
+     *  decrypts it to the original String to be stored in the Attribute of an Entity.
+     * @param dbData data fetched from database
+     * @return decrypted String of the fetched database column value
+     */
     @Override
     public String convertToEntityAttribute(String dbData) {
         Key key = new SecretKeySpec(KEY, "AES");
