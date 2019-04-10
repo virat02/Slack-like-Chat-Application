@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.view;
 
 import edu.northeastern.ccs.im.Message;
+import edu.northeastern.ccs.im.MessageWrapper;
 import edu.northeastern.ccs.im.communication.MessageClientConnection;
 
 import java.io.IOException;
@@ -10,18 +11,21 @@ public class MessageSocketListener implements Runnable, Listener {
 
     private final MessageClientConnection clientConnection;
     private boolean isRunning;
+    private MessageWrapper messageWrapper;
 
-    public MessageSocketListener(MessageClientConnection clientConnection) {
+    public MessageSocketListener(MessageClientConnection clientConnection, MessageWrapper messageWrapper) {
         this.clientConnection = clientConnection;
         isRunning = true;
+        this.messageWrapper = messageWrapper;
     }
 
     @Override
     public void run() {
         while (isRunning) {
             List<Message> messages = clientConnection.readMessages();
+            messageWrapper.addMessageToList(messages);
             messages.stream()
-                    .map(m -> messageFormatter().formatMessage(m))
+                    .map(m -> ((messageWrapper.getIndexOfObject(m) + 1) + ")" + messageFormatter().formatMessage(m)))
                     .forEach(ViewConstants.getOutputStream()::println);
         }
     }

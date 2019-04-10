@@ -173,7 +173,7 @@ public class ResponseParser {
     try {
       throwErrorIfResponseFailed(networkResponse);
       List<Message> messages = CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(),new TypeReference<ArrayList<Message>>() {});
-      messages.stream().map(m -> MessageSocketListener.messageFormatter().formatMessage(m)).filter(m -> !m.equals(""))
+      messages.stream().map(m -> (messages.indexOf(m) + 1) + ")" + MessageSocketListener.messageFormatter().formatMessage(m)).filter(m -> !m.equals(""))
               .forEach(ViewConstants.getOutputStream()::println);
 
       return messages;
@@ -195,5 +195,10 @@ public class ResponseParser {
     throwErrorIfResponseFailed(networkResponse);
     return CommunicationUtils.getObjectMapper().readValue(networkResponse.payload().jsonString(), new TypeReference<ArrayList<Invite>>() {
     });
+  }
+
+  public static boolean parseDeleteMessageResponse(NetworkResponse networkResponse) {
+
+    return networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL);
   }
 }

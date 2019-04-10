@@ -115,4 +115,15 @@ public class MessageService implements IService{
         messageJPAService.setEntityManager(null);
         return messageJPAService.getTop15Messages(groupUniqueKey);
     }
+
+    /**
+     * Returns the all the messages given a group unique key.
+     * @param groupUniqueKey the unique group for which the messages must be fetched
+     * @return the list of fetched messages
+     * @throws GroupNotFoundException thrown when the given group is not found
+     */
+    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
+        messageJPAService.setEntityManager(null);
+        return messageJPAService.getAllMessages(groupUniqueKey);
+    }
 }
