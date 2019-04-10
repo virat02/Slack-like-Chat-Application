@@ -3,8 +3,11 @@ package edu.northeastern.ccs.im.view;
 import java.io.IOException;
 import java.util.HashMap;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.communication.*;
+
+import javax.swing.text.View;
 
 public class MessageWindow extends AbstractTerminalWindow implements MessageListerner {
 
@@ -31,7 +34,6 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
             messageClientConnection.connect();
             messageClientConnection.sendRequest(networkRequest);
             NetworkResponse networkResponse = messageClientConnection.readResponse();
-            ResponseParser.throwErrorIfResponseFailed(networkResponse);
             ResponseParser.readRecentMessagesAndPrintInScreen(networkResponse);
             messageSocketListener = new MessageSocketListener(messageClientConnection);
             Thread threadObject = new Thread((Runnable) messageSocketListener);
@@ -45,27 +47,40 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
         goBack();
     }
 
-  @Override
-  protected void getInputFromUser() {
-    String input;
-    try {
-      while((input = ViewConstants.getInputStream().readLine()) != null) {
-        if (input.trim().equals("")) {
-          printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
-          printInConsoleForCurrentProcess();
-          continue;
+    @Override
+    protected void getInputFromUser() {
+        String input;
+        try {
+            while ((input = ViewConstants.getInputStream().readLine()) != null) {
+                if (input.trim().equals("")) {
+                    printMessageInConsole(ConstantStrings.INVALID_INPUT_STRING);
+                    printInConsoleForCurrentProcess();
+                } else if ((input.equals("exit")) || (input.equals("/.."))) {
+                    logOffUserFromGroup();
+                    goBack();
+                    return;
+                } else
+                    inputFetchedFromUser(input);
+            }
+        } catch (IOException e) {
+            getInputFromUser();
         }
-        else if ((input.equals("exit")) || (input.equals("/.."))) {
-          goBack();
-          return;
-        }
-        else
-          inputFetchedFromUser(input);
-      }
-    } catch (IOException e) {
-      getInputFromUser();
     }
-  }
+
+    private void logOffUserFromGroup() {
+        messageClientConnection.sendMessage(Message.makeQuitMessage(UserConstants.getUserName(), groupCode));
+        if (messageSocketListener != null)
+            messageSocketListener.shouldStopListening();
+        NetworkRequest networkRequest = networkRequestFactory.
+                createLogOffFromChatRoomRequest(UserConstants.getUserName(), groupCode);
+        try {
+            NetworkResponse networkResponse = sendNetworkConnection(networkRequest);
+            ResponseParser.parseNetworkResponse(networkResponse);
+        } catch (NetworkResponseFailureException | IOException e) {
+            ViewConstants.getOutputStream().println(e.getMessage());
+            goBack();
+        }
+    }
 
     @Override
     void inputFetchedFromUser(String inputString) {
@@ -75,8 +90,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
     @Override
     public void goBack() {
-        if (messageSocketListener != null)
-            messageSocketListener.shouldStopListening();
+
         super.goBack();
     }
 

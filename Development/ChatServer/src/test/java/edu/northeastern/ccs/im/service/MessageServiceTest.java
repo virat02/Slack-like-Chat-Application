@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
@@ -24,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -33,6 +35,7 @@ public class MessageServiceTest {
     private MessageJPAService messageJPAService;
     private UserService userService;
     private GroupService groupService;
+    private AllJPAService jpaService;
 
     @Mock
     private Message m = new Message();
@@ -58,6 +61,7 @@ public class MessageServiceTest {
         messageJPAService = mock(MessageJPAService.class);
         userService = mock(UserService.class);
         groupService = mock(GroupService.class);
+        jpaService = mock(AllJPAService.class);
 
         m = mock(Message.class);
         m1 = mock(Message.class);
@@ -86,35 +90,21 @@ public class MessageServiceTest {
      *Test for able to create message
      */
     @Test
-    public void testCreateMessage() throws MessageNotPersistedException {
+    public void testCreateMessage() {
 
-        when(messageJPAService.createMessage(any(Message.class))).thenReturn(1);
-        messageService.setMessageJPAService(messageJPAService);
-
+        messageService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any())).thenReturn(true);
         assertTrue(messageService.createMessage(m));
     }
 
     /**
-     *Test for able to create message for throwing MessageNotPersistedException
-     */
-    @Test(expected = MessageNotPersistedException.class)
-    public void testCreateMessageForMessageNotPersistedException() throws MessageNotPersistedException {
-
-        when(messageJPAService.createMessage(any(Message.class))).thenThrow(new MessageNotPersistedException("Could not persist message!"));
-        messageService.setMessageJPAService(messageJPAService);
-
-        messageService.createMessage(m);
-    }
-
-    /**
-     *Test for unable to create message
+     *Test for able to create message for false
      */
     @Test
-    public void testCreateMessageFalse() throws MessageNotPersistedException {
+    public void testCreateMessageForFalse() {
 
-        when(messageJPAService.createMessage(any(Message.class))).thenReturn(-1);
-        messageService.setMessageJPAService(messageJPAService);
-
+        messageService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any())).thenReturn(false);
         assertFalse(messageService.createMessage(m));
     }
 
@@ -126,7 +116,7 @@ public class MessageServiceTest {
 
         when(userService.search(anyString())).thenReturn(u);
         when(groupService.searchUsingCode(anyString())).thenReturn(g);
-        when(messageJPAService.createMessage(any(Message.class))).thenReturn(1);
+        when(jpaService.createEntity(any(Message.class))).thenReturn(true);
 
         messageService.setMessageJPAService(messageJPAService);
         messageService.setJPAServices(userService, groupService);
@@ -186,7 +176,7 @@ public class MessageServiceTest {
     @Test
     public void testGetMessage() throws MessageNotFoundException{
 
-        when(messageJPAService.getMessage(anyInt())).thenReturn(m);
+        when(jpaService.getEntity(anyString(), anyInt())).thenReturn(m);
         messageService.setMessageJPAService(messageJPAService);
         assertEquals(m, messageService.get(2));
     }
@@ -197,7 +187,7 @@ public class MessageServiceTest {
     @Test
     public void testGetMessageNullMessage() throws MessageNotFoundException{
 
-        when(messageJPAService.getMessage(anyInt())).thenReturn(null);
+        when(jpaService.getEntity(anyString(), anyInt())).thenReturn(null);
         messageService.setMessageJPAService(messageJPAService);
         assertNull(messageService.get(1));
     }

@@ -74,7 +74,7 @@ public class MessageBroadCastService implements BroadCastService {
     }
 
     @Override
-    public void broadcastMessage(Message message){
+    public void broadcastMessage(Message message) {
         try {
             if (message.isBroadcastMessage()
                     && messageService.createMessage(message.getText(), message.getName(), message.groupCode())) {
@@ -86,10 +86,6 @@ public class MessageBroadCastService implements BroadCastService {
                     }
                 }
             }
-        }
-        catch (MessageNotPersistedException e) {
-            LOGGER.info("Could not create the message!");
-            ChatLogger.info("Message could not be broadcast!");
         } catch (UserNotFoundException e) {
             LOGGER.info("Could not find the user!");
             ChatLogger.info("Message will not be broadcast!");
@@ -116,9 +112,30 @@ public class MessageBroadCastService implements BroadCastService {
                     .collect(Collectors.toList());
         } catch (NoResultException e) {
             ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
+        } catch (GroupNotFoundException e) {
+            ChatLogger.warning("Group with group unique key: " + groupCode + " trying to be accessed does not exist!");
         }
-        catch (GroupNotFoundException e) {
-            ChatLogger.warning("Group with group unique key: "+groupCode+" trying to be accessed does not exist!");
+
+        return messages;
+    }
+
+    @Override
+    public List<Message> getUnreadMessages(String userName) {
+        final String userNotFoundError = "User could not be found for the error";
+        final String noResultFoundError = "Messages could not be retrieved for group having group unique key: " + groupCode;
+        final String groupNotFoundError = "Group with group unique key: " + groupCode + " trying to be accessed does not exist!";
+        List<Message> messages = new ArrayList<>();
+        try {
+            return messageService.getUnreadMessages(userName, groupCode)
+                    .stream()
+                    .map(m -> Message.makeBroadcastMessage(m.getSender().getUsername(), m.getMessage(), m.getReceiver().getGroupCode()))
+                    .collect(Collectors.toList());
+        } catch (NoResultException e) {
+            ChatLogger.error(noResultFoundError);
+        } catch (GroupNotFoundException e) {
+            ChatLogger.error(groupNotFoundError);
+        } catch (UserNotFoundException e) {
+            ChatLogger.error(userNotFoundError);
         }
 
         return messages;

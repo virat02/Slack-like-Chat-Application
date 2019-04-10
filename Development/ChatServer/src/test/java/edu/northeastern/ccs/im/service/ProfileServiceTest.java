@@ -32,6 +32,7 @@ public class ProfileServiceTest {
 
     private ProfileService profileService = new ProfileService();
 
+    @Mock
     private AllJPAService jpaService;
 
     private ProfileJPAService profileJPAService;
@@ -211,9 +212,10 @@ public class ProfileServiceTest {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("http://virat.com");
-        profileService.setProfileJPAService(profileJPAService);
-        when(profileJPAService.createProfile(any())).thenReturn(p);
-        assertEquals(p, profileService.createProfile(p));
+        //profileService.setProfileJPAService(profileJPAService);
+        profileService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any())).thenReturn(true);
+        assertTrue(profileService.createProfile(p));
     }
 
     /**

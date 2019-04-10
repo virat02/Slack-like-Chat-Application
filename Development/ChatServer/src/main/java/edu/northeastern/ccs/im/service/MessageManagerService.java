@@ -21,6 +21,12 @@ public class MessageManagerService {
 
     private GroupService groupService = new GroupService();
 
+    private UserService userService = new UserService();
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
     }
@@ -53,9 +59,9 @@ public class MessageManagerService {
      */
     public BroadCastService getService(String groupUniqueKey, String username, Boolean flag)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
-
         //Check if the group with the given unique identifier exists
         groupService.createIfNotPresent(groupUniqueKey, username, flag);
+//        userService.userGroupEvent(username, groupUniqueKey);
         if (!hmap.containsKey(groupUniqueKey))
             hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
         return hmap.get(groupUniqueKey);

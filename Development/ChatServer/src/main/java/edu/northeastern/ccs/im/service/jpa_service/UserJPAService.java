@@ -1,12 +1,15 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.ChatLogger;
+import edu.northeastern.ccs.im.customexceptions.FirstTimeUserLoggedInException;
 import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
-
 import javax.persistence.*;
+import javax.persistence.criteria.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +23,16 @@ public class UserJPAService {
 
     //The entity manager for this class.
     private EntityManager entityManager;
+
+    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+
+    /**
+     * Set the entityManagerUtil
+     * @param entityManagerUtil
+     */
+    public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+        this.entityManagerUtil = entityManagerUtil;
+    }
 
     /**
      * A function made to setup the entity manager for this class to make the class more testable.
@@ -214,4 +227,35 @@ public class UserJPAService {
         entityManager.getTransaction().begin();
     }
 
+    /***
+     * Creates or updates a join group event whenever a user logs in / logs off
+     * from the chatroom.
+     */
+    public void saveOrUpdateJoinGroupEvent(UserChatRoomLogOffEvent userChatRoomLogOffEvent)  {
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+        em.merge(userChatRoomLogOffEvent);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    public UserChatRoomLogOffEvent getLogOffEvent(int userId, int groupId) throws FirstTimeUserLoggedInException {
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<UserChatRoomLogOffEvent> cq = cb.createQuery(UserChatRoomLogOffEvent.class);
+        Root<UserChatRoomLogOffEvent> root = cq.from(UserChatRoomLogOffEvent.class);
+        Predicate predicate1 = cb.equal(root.get("compositeObject").get("userId"), userId);
+        Predicate predicate2 = cb.equal(root.get("compositeObject").get("groupId"), groupId);
+        Predicate predicate = cb.and(predicate1, predicate2);
+        cq.where(predicate);
+        TypedQuery<UserChatRoomLogOffEvent> query = em.createQuery(cq);
+        try {
+            UserChatRoomLogOffEvent userChatRoomLogOffEvent = query.getSingleResult();
+            em.close();
+            return userChatRoomLogOffEvent;
+        } catch (NoResultException e)  {
+            throw new FirstTimeUserLoggedInException("User has logged in the first time, no log off event found for this group");
+        }
+    }
 }

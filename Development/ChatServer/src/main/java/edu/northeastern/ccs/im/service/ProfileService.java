@@ -39,7 +39,6 @@ public class ProfileService {
         else {
             this.profileJPAService = profileJPAService;
         }
-        this.profileJPAService.setEntityManager(null);
     }
 
     /**
@@ -53,7 +52,6 @@ public class ProfileService {
         else {
             this.jpaService = jpaService;
         }
-        this.jpaService.setEntityManager(null);
     }
 
     /**
@@ -81,7 +79,6 @@ public class ProfileService {
      * @return
      */
     public boolean isEmailAlreadyInUse(String emailId){
-        profileJPAService.setEntityManager(null);
         return profileJPAService.ifEmailExists(emailId);
     }
 
@@ -128,7 +125,6 @@ public class ProfileService {
         }
 
         try {
-            jpaService.setEntityManager(null);
             return jpaService.createEntity(pf);
         }
         catch (Exception e) {
@@ -146,7 +142,6 @@ public class ProfileService {
      */
     public Profile get(int id) throws ProfileNotFoundException {
         try {
-            jpaService.setEntityManager(null);
             return (Profile) jpaService.getEntity("Profile", id);
         }
         catch (NoResultException e) {
@@ -159,7 +154,6 @@ public class ProfileService {
      * Updates an existing profile if the respective inputs are valid
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
         return profileJPAService.updateProfile(pf);
     }
 
@@ -167,7 +161,6 @@ public class ProfileService {
      * Deletes a profile
      */
     public Boolean deleteProfile(Profile pf) {
-        jpaService.setEntityManager(null);
         return jpaService.deleteEntity(pf);
     }
 }

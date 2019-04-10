@@ -112,170 +112,170 @@ public class MessageJPAServiceTest {
         messageJPAService = new MessageJPAService();
     }
 
-    /**
-     * Test the create message for Message JPA Service
-     */
-    @Test
-    public void testCreateMessageForMessageJPAService() throws MessageNotPersistedException {
-
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        messageJPAService.createMessage(m1);
-    }
-
-    /**
-     * Test the create message for Message JPA Service for throwing the MessageNotPersistedException
-     */
-    @Test(expected = MessageNotPersistedException.class)
-    public void testCreateMessageForMessageNotPersistedException()
-            throws MessageNotPersistedException {
-
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        doThrow(new EntityNotFoundException()).when(entityManager).persist(any(Message.class));
-        messageJPAService.createMessage(m1);
-    }
-
-    /**
-     * Test the update message method of MessageJPAService for successful update
-     */
-    @Test
-    public void testUpdateMessageForTrue() throws MessageNotFoundException {
-
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenReturn(m2);
-
-        assertTrue(messageJPAService.updateMessage(m3));
-    }
-
-    /**
-     * Test the update message method of MessageJPAService for a false update
-     */
-    @Test(expected = MessageNotFoundException.class)
-    public void testFalseUpdateMessageForMessageNotFoundException() throws MessageNotFoundException{
-
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenReturn(null);
-        assertFalse(messageJPAService.updateMessage(m3));
-    }
-
-    /**
-     * Test the update message method of MessageJPAService for unable to update
-     */
-    @Test
-    public void testUpdateMessageForFalse() throws MessageNotFoundException {
-        String str1 = "string1";
-        Message m = mock(Message.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenReturn(m);
-        when(m.toString()).thenReturn(str1);
-        assertFalse(messageJPAService.updateMessage(m3));
-    }
-
-    /**
-     * Test the delete message method
-     */
-    @Test
-    public void testDeleteMessage() throws MessageNotFoundException {
-
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-
-        m2.setDeleted(true);
-        when(entityManager.find(any(), anyInt())).thenReturn(m2);
-
-        messageJPAService.updateMessage(m2);
-        assertTrue(m2.isDeleted());
-
-    }
-
-    /**
-     * Test the delete message method for non existing message
-     */
-    @Test(expected = MessageNotFoundException.class)
-    public void testDeleteNonExistingMessage() throws MessageNotFoundException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-
-        m2.setDeleted(true);
-        when(entityManager.find(any(), anyInt())).thenReturn(null);
-
-        messageJPAService.updateMessage(m2);
-    }
-//
 //    /**
-//     * Test get top 15 messages for throwing an exception
+//     * Test the create message for Message JPA Service
 //     */
 //    @Test
-//    public void testGetTop15Messages() {
-//        List<Message> msgList = new ArrayList<>(Arrays.asList(m1,m2,m3));
+//    public void testCreateMessageForMessageJPAService() throws MessageNotPersistedException {
 //
-//        when(groupService.searchUsingCode(anyString())).thenReturn(group);
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//        messageJPAService.createMessage(m1);
+//    }
+//
+//    /**
+//     * Test the create message for Message JPA Service for throwing the MessageNotPersistedException
+//     */
+//    @Test(expected = MessageNotPersistedException.class)
+//    public void testCreateMessageForMessageNotPersistedException()
+//            throws MessageNotPersistedException {
+//
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//        doThrow(new EntityNotFoundException()).when(entityManager).persist(any(Message.class));
+//        messageJPAService.createMessage(m1);
+//    }
+//
+//    /**
+//     * Test the update message method of MessageJPAService for successful update
+//     */
+//    @Test
+//    public void testUpdateMessageForTrue() throws MessageNotFoundException {
+//
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//        when(entityManager.find(any(), anyInt())).thenReturn(m2);
+//
+//        assertTrue(messageJPAService.updateMessage(m3));
+//    }
+//
+//    /**
+//     * Test the update message method of MessageJPAService for a false update
+//     */
+//    @Test(expected = MessageNotFoundException.class)
+//    public void testFalseUpdateMessageForMessageNotFoundException() throws MessageNotFoundException{
+//
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//        when(entityManager.find(any(), anyInt())).thenReturn(null);
+//        assertFalse(messageJPAService.updateMessage(m3));
+//    }
+//
+//    /**
+//     * Test the update message method of MessageJPAService for unable to update
+//     */
+//    @Test
+//    public void testUpdateMessageForFalse() throws MessageNotFoundException {
+//        String str1 = "string1";
+//        Message m = mock(Message.class);
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//        when(entityManager.find(any(), anyInt())).thenReturn(m);
+//        when(m.toString()).thenReturn(str1);
+//        assertFalse(messageJPAService.updateMessage(m3));
+//    }
+//
+//    /**
+//     * Test the delete message method
+//     */
+//    @Test
+//    public void testDeleteMessage() throws MessageNotFoundException {
+//
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//
+//        m2.setDeleted(true);
+//        when(entityManager.find(any(), anyInt())).thenReturn(m2);
+//
+//        messageJPAService.updateMessage(m2);
+//        assertTrue(m2.isDeleted());
+//
+//    }
+//
+//    /**
+//     * Test the delete message method for non existing message
+//     */
+//    @Test(expected = MessageNotFoundException.class)
+//    public void testDeleteNonExistingMessage() throws MessageNotFoundException {
+//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+//        messageJPAService.setEntityManager(entityManager);
+//
+//        m2.setDeleted(true);
+//        when(entityManager.find(any(), anyInt())).thenReturn(null);
+//
+//        messageJPAService.updateMessage(m2);
+//    }
+////
+////    /**
+////     * Test get top 15 messages for throwing an exception
+////     */
+////    @Test
+////    public void testGetTop15Messages() {
+////        List<Message> msgList = new ArrayList<>(Arrays.asList(m1,m2,m3));
+////
+////        when(groupService.searchUsingCode(anyString())).thenReturn(group);
+////        TypedQuery mockedQuery = mock(TypedQuery.class);
+////        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+////        messageJPAService.setEntityManager(entityManager);
+////        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+////        when(group.getGroupCode()).thenReturn("ABC");
+////        when(group.getId()).thenReturn(1);
+////        when(mockedQuery.setMaxResults(anyInt())).thenReturn(mockedQuery);
+////        when(mockedQuery.getResultList()).thenReturn(msgList);
+////        messageJPAService.setGroupService(groupService);
+////        messageJPAService.getTop15Messages(group.getGroupCode());
+////    }
+////
+////    /**
+////     * Test get top 15 messages for throwing an exception
+////     */
+////    @Test(expected = NullPointerException.class)
+////    public void testGetTop15MessagesForException1() {
+////        when(groupService.searchUsingCode(anyString())).thenReturn(null);
+////        messageJPAService.setEntityManager(entityManager);
+////        when(group.getGroupCode()).thenReturn("ABC");
+////        when(group.getId()).thenReturn(1);
+////        messageJPAService.setGroupService(groupService);
+////        messageJPAService.getTop15Messages(group.getGroupCode());
+////    }
+////
+////    /**
+////     * Test get top 15 messages for throwing an exception
+////     */
+////    @Test(expected = NullPointerException.class)
+////    public void testGetTop15MessagesForException() {
+////
+////        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+////        messageJPAService.setEntityManager(entityManager);
+////
+////        messageJPAService.getTop15Messages(group.getGroupCode());
+////    }
+////
+//    /**
+//     * Test for getting a valid message
+//     */
+//    @Test
+//    public void testGetMessageForMessageJPA() throws MessageNotFoundException{
+//
 //        TypedQuery mockedQuery = mock(TypedQuery.class);
 //        when(entityManager.getTransaction()).thenReturn(entityTransaction);
 //        messageJPAService.setEntityManager(entityManager);
 //        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-//        when(group.getGroupCode()).thenReturn("ABC");
-//        when(group.getId()).thenReturn(1);
-//        when(mockedQuery.setMaxResults(anyInt())).thenReturn(mockedQuery);
-//        when(mockedQuery.getResultList()).thenReturn(msgList);
-//        messageJPAService.setGroupService(groupService);
-//        messageJPAService.getTop15Messages(group.getGroupCode());
+//        when(mockedQuery.getSingleResult()).thenReturn(m1);
+//        assertEquals(m1,messageJPAService.getMessage(group.getId()));
 //    }
 //
 //    /**
-//     * Test get top 15 messages for throwing an exception
+//     * Test for getting a message which doesn't exist
 //     */
-//    @Test(expected = NullPointerException.class)
-//    public void testGetTop15MessagesForException1() {
-//        when(groupService.searchUsingCode(anyString())).thenReturn(null);
-//        messageJPAService.setEntityManager(entityManager);
-//        when(group.getGroupCode()).thenReturn("ABC");
-//        when(group.getId()).thenReturn(1);
-//        messageJPAService.setGroupService(groupService);
-//        messageJPAService.getTop15Messages(group.getGroupCode());
-//    }
+//    @Test(expected = MessageNotFoundException.class)
+//    public void testGetMessageForMessageNotFoundException() throws MessageNotFoundException {
 //
-//    /**
-//     * Test get top 15 messages for throwing an exception
-//     */
-//    @Test(expected = NullPointerException.class)
-//    public void testGetTop15MessagesForException() {
-//
+//        TypedQuery mockedQuery = mock(TypedQuery.class);
 //        when(entityManager.getTransaction()).thenReturn(entityTransaction);
 //        messageJPAService.setEntityManager(entityManager);
-//
-//        messageJPAService.getTop15Messages(group.getGroupCode());
+//        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
+//        when(mockedQuery.getSingleResult()).thenThrow(new EntityNotFoundException());
+//        messageJPAService.getMessage(group.getId());
 //    }
-//
-    /**
-     * Test for getting a valid message
-     */
-    @Test
-    public void testGetMessageForMessageJPA() throws MessageNotFoundException{
-
-        TypedQuery mockedQuery = mock(TypedQuery.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(m1);
-        assertEquals(m1,messageJPAService.getMessage(group.getId()));
-    }
-
-    /**
-     * Test for getting a message which doesn't exist
-     */
-    @Test(expected = MessageNotFoundException.class)
-    public void testGetMessageForMessageNotFoundException() throws MessageNotFoundException {
-
-        TypedQuery mockedQuery = mock(TypedQuery.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        messageJPAService.setEntityManager(entityManager);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenThrow(new EntityNotFoundException());
-        messageJPAService.getMessage(group.getId());
-    }
 }

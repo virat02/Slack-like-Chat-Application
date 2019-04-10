@@ -1,11 +1,16 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.User;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,10 +20,12 @@ import java.util.logging.Logger;
 public class MessageService implements IService{
 
     private static final Logger LOGGER = Logger.getLogger(MessageService.class.getName());
+    private AllJPAService jpaService = new AllJPAService();
 
     private MessageJPAService messageJPAService = new MessageJPAService();
     private UserService userService = new UserService();
     private GroupService groupService = new GroupService();
+    private UserJPAService userJPAService = new UserJPAService();
 
     /**
      * Set a message JPA Service
@@ -31,7 +38,19 @@ public class MessageService implements IService{
         else {
             this.messageJPAService = messageJPAService;
         }
-        this.messageJPAService.setEntityManager(null);
+    }
+
+    /**
+     * Set a profile JPA Service
+     * @param jpaService
+     */
+    public void setAllJPAService(AllJPAService jpaService) {
+        if(jpaService == null) {
+            this.jpaService = new AllJPAService();
+        }
+        else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
@@ -49,9 +68,15 @@ public class MessageService implements IService{
      * @param message the message object generated from the client input
      * @return
      */
-    public boolean createMessage(Message message) throws MessageNotPersistedException {
-        messageJPAService.setEntityManager(null);
-        return messageJPAService.createMessage(message)!= -1;
+    public boolean createMessage(Message message) {
+        try{
+            return jpaService.createEntity(message);
+        }
+        catch (Exception e) {
+            LOGGER.info("Could not persist message with message id: "+message.getId());
+            LOGGER.info(e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -62,7 +87,7 @@ public class MessageService implements IService{
      * @return
      */
     public Boolean createMessage(String messageBody, String userName, String groupCode)
-            throws MessageNotPersistedException, UserNotFoundException, GroupNotFoundException {
+            throws UserNotFoundException, GroupNotFoundException {
 
         Message message = new Message();
         User user = userService.search(userName);
@@ -72,6 +97,7 @@ public class MessageService implements IService{
         message.setReceiver(group);
 
         return createMessage(message);
+
     }
 
     /**
@@ -79,9 +105,14 @@ public class MessageService implements IService{
      * @param id
      * @return
      */
-    public Message get(int id) throws MessageNotFoundException{
-        messageJPAService.setEntityManager(null);
-        return messageJPAService.getMessage(id);
+    public Message get(int id) throws MessageNotFoundException {
+        try {
+            return (Message) jpaService.getEntity("Message", id);
+        }
+        catch (NoResultException e) {
+            LOGGER.info("Could not find profile for profile id: "+id);
+            throw new MessageNotFoundException("Could not find message for message id: "+id);
+        }
     }
 
     /**
@@ -89,7 +120,6 @@ public class MessageService implements IService{
      * @param msg
      */
     public boolean updateMessage(Message msg) throws MessageNotFoundException {
-        messageJPAService.setEntityManager(null);
         return messageJPAService.updateMessage(msg);
     }
 
@@ -112,7 +142,21 @@ public class MessageService implements IService{
      * @param groupUniqueKey
      */
     public List<Message> getTop15Messages(String groupUniqueKey) throws GroupNotFoundException{
-        messageJPAService.setEntityManager(null);
         return messageJPAService.getTop15Messages(groupUniqueKey);
+    }
+
+    public List<Message> getUnreadMessages(String userName, String groupCode) throws UserNotFoundException, GroupNotFoundException {
+        userJPAService.setEntityManager(null);
+        User user = userJPAService.search(userName);
+        Group group = groupService.searchUsingCode(groupCode);
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = null;
+        try {
+            userChatRoomLogOffEvent = userJPAService.getLogOffEvent(user.getId(), group.getId());
+        } catch (FirstTimeUserLoggedInException e) {
+            ChatLogger.info(e.getMessage() + " Return the recent 15 messages");
+            return getTop15Messages(groupCode);
+        }
+
+        return messageJPAService.getMessagesAfterThisTimestamp(userChatRoomLogOffEvent.getLoggedOutTime(), group.getId());
     }
 }
