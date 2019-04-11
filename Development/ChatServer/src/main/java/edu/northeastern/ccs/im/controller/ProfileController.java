@@ -18,7 +18,6 @@ public class ProfileController implements IController<Profile> {
     private static final String INTERNAL_ERROR_CREATE_PROFILE_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
     private static final String INTERNAL_ERROR_DELETE_PROFILE_JSON = "{\"message\" : \"Sorry, could not delete your profile!\"}";
     private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist!\"}";
-    //private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
     private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
     private static final String EMAIL_ALREADY_IN_USE_JSON = "{\"message\" : \"The email id is already in use. Please try again with different email id!\"}";
     private static final String INVALID_IMAGEURL_JSON = "{\"message\" : \"The imageURL you entered is invalid. Please try again! (Eg. http://* or https://* )\"}";
