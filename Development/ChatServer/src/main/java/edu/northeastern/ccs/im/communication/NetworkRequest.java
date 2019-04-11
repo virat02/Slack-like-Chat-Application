@@ -36,6 +36,7 @@ public interface NetworkRequest {
         SELECT_CHAT,
         JOIN_GROUP,
         SEND_MESSAGE,
+        DELETE_MESSAGE,
         CREATE_PROFILE,
         UPDATE_PROFILE,
         DELETE_PROFILE,

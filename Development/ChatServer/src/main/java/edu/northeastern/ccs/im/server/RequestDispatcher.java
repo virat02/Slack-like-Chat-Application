@@ -66,7 +66,8 @@ public class RequestDispatcher {
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.SET_FOLLOWERS, handleSetFollowers()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.SET_UNFOLLOWERS, handleSetUnFollowers()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.INVITE_USER, handleInvitationRequest()),
-                        new AbstractMap.SimpleEntry<>(NetworkRequestType.FETCH_INVITE, handleFetchInvitationsRequest())
+                        new AbstractMap.SimpleEntry<>(NetworkRequestType.FETCH_INVITE, handleFetchInvitationsRequest()),
+                        new AbstractMap.SimpleEntry<>(NetworkRequestType.DELETE_MESSAGE, handleDeleteMessageRequest())
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
@@ -214,7 +215,6 @@ public class RequestDispatcher {
      * @param socketChannel -> The channel over which transaction is being performed.
      * @return NetworkResponse response from the server.
      */
-
     private NetworkResponse handleJoinGroupRequest(NetworkRequest networkRequest, SocketChannel socketChannel) {
         final String IOError = "{\"message\" : \"Some error happened while processing the request. Please try later.\"}";
         final String userNotPresentInGroup = "{\"message\" : \"You are not a participant of the group\"}";
@@ -496,6 +496,32 @@ public class RequestDispatcher {
                 Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
                 return groupController.updateEntity(group);
             } catch (IOException e) {
+                return networkResponseFactory.createFailedResponse();
+            }
+        };
+    }
+
+    /**
+     * Delete a message from the group.
+     * @return RequestStrategy handling the request
+     */
+    private RequestStrategy handleDeleteMessageRequest() {
+        return networkRequest -> {
+            try {
+                JsonNode jsonNode = CommunicationUtils
+                        .getObjectMapper().readTree(networkRequest.payload().jsonString());
+                String groupCode = jsonNode.get("groupCode").asText();
+                String userName = jsonNode.get("userName").asText();
+                boolean flag = jsonNode.get("isPrivate").asBoolean();
+                int messageIndex = jsonNode.get("messageIndex").asInt();
+
+                BroadCastService messageService = messageManagerService.getService(groupCode,
+                        userName, flag);
+                messageService.deleteMessage(groupCode, messageIndex);
+
+                return networkResponseFactory.createSuccessfulResponse();
+            } catch (IOException | GroupNotFoundException | UserNotFoundException |
+                    UserNotPresentInTheGroup | GroupNotPersistedException e) {
                 return networkResponseFactory.createFailedResponse();
             }
         };
