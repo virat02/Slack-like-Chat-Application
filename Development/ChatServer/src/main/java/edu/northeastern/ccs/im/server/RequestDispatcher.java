@@ -67,6 +67,7 @@ public class RequestDispatcher {
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.SET_UNFOLLOWERS, handleSetUnFollowers()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.INVITE_USER, handleInvitationRequest()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.FETCH_INVITE, handleFetchInvitationsRequest()),
+                        new AbstractMap.SimpleEntry<>(NetworkRequestType.EXIT_CHATROOM, handleExitChatRoomRequest()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.DELETE_MESSAGE, handleDeleteMessageRequest())
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
@@ -228,7 +229,7 @@ public class RequestDispatcher {
             String userName = jsonNode.get("userName").asText();
             boolean flag = jsonNode.get("isPrivate").asBoolean();
             BroadCastService messageService = messageManagerService.getService(groupCode, userName, flag);
-            List<Message> messages = messageService.getRecentMessages();
+            List<Message> messages = messageService.getUnreadMessages(userName);
             messageService.addConnection(socketChannel);
             return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
         } catch (IOException | GroupNotPersistedException e) {
@@ -495,6 +496,23 @@ public class RequestDispatcher {
             try {
                 Group group = objectMapper.readValue(networkRequest.payload().jsonString(), Group.class);
                 return groupController.updateEntity(group);
+            } catch (IOException e) {
+                return networkResponseFactory.createFailedResponse();
+            }
+        };
+    }
+
+    /***
+     * A Request to exit out the chatroom. Logs in the user log out time in the db.
+     * @return
+     */
+    private RequestStrategy handleExitChatRoomRequest() {
+        return networkRequest -> {
+            try {
+                JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
+                String userName = jsonNode.get("userName").asText();
+                String groupCode = jsonNode.get("groupCode").asText();
+                return userController.exitChatRoom(groupCode, userName);
             } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
             }

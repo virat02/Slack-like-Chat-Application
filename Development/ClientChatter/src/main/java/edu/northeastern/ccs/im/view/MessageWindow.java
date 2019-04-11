@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.MessageWrapper;
 import edu.northeastern.ccs.im.communication.*;
@@ -84,11 +85,26 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
     }
   }
 
-  @Override
-  void inputFetchedFromUser(String inputString) {
-    Message message = Message.makeBroadcastMessage(UserConstants.getUserName(), inputString, groupCode);
-    messageClientConnection.sendMessage(message);
-  }
+    private void logOffUserFromGroup() {
+        messageClientConnection.sendMessage(Message.makeQuitMessage(UserConstants.getUserName(), groupCode));
+        if (messageSocketListener != null)
+            messageSocketListener.shouldStopListening();
+        NetworkRequest networkRequest = networkRequestFactory.
+                createLogOffFromChatRoomRequest(UserConstants.getUserName(), groupCode);
+        try {
+            NetworkResponse networkResponse = sendNetworkConnection(networkRequest);
+            ResponseParser.parseNetworkResponse(networkResponse);
+        } catch (NetworkResponseFailureException | IOException e) {
+            ViewConstants.getOutputStream().println(e.getMessage());
+            goBack();
+        }
+    }
+
+    @Override
+    void inputFetchedFromUser(String inputString) {
+        Message message = Message.makeBroadcastMessage(UserConstants.getUserName(), inputString, groupCode);
+        messageClientConnection.sendMessage(message);
+    }
 
   @Override
   public void goBack() {

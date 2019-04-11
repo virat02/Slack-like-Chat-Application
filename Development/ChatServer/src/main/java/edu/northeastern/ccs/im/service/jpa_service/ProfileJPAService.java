@@ -94,6 +94,7 @@ public class ProfileJPAService {
                         + ", could not be deleted!");
             }
         }
+
     }
 
     /**
@@ -140,7 +141,7 @@ public class ProfileJPAService {
         }
     }
 
-    public boolean checkIfEmailExists(String email) {
+    public boolean checkIfEmailExists(String email){
         try {
             StringBuilder queryString = new StringBuilder("SELECT p FROM Profile p WHERE p.email = ");
             queryString.append("'" + email + "'");
