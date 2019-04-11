@@ -1,5 +1,7 @@
 package edu.northeastern.ccs.im.user_group;
 
+import edu.northeastern.ccs.im.user_group.converter.CryptoConverter;
+
 import javax.persistence.*;
 
 /**
@@ -16,6 +18,7 @@ public class Profile {
 
     /** The email. */
     @Column(unique=true)
+    @Convert(converter = CryptoConverter.class)
     private String email;
 
     /** The image url. */

@@ -2,6 +2,7 @@ package edu.northeastern.ccs.im.user_group;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.northeastern.ccs.im.customexceptions.UnfollowNotFollowingUserException;
+import edu.northeastern.ccs.im.user_group.converter.CryptoConverter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class User implements IUser {
     private String username;
 
     /** The password. */
+    @Convert(converter = CryptoConverter.class)
     private String password;
 
     /** The profile. */
