@@ -26,6 +26,7 @@ public class ProfileJPAServiceTest {
     @Mock
     private ProfileJPAService profileJPAService;
 
+    @Mock
     private EntityTransaction entityTransaction;
 
     private AllJPAService allJPAService;
@@ -96,7 +97,7 @@ public class ProfileJPAServiceTest {
      * Test the create profile method for Profile JPA Service for an exception
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateProfileNotPersistedException() {
+    public void testCreateProfileForIllegalArgumentException() {
 
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
@@ -192,7 +193,7 @@ public class ProfileJPAServiceTest {
      * Test for getting a message which doesn't exist
      */
     @Test(expected = NoResultException.class)
-    public void testGetMessageForMessageJPAForException() {
+    public void testGetMessageForNoResultException() {
 
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
