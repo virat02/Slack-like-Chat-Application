@@ -111,7 +111,8 @@ public class MessageServiceTest {
      * Test the create message method from client
      */
     @Test
-    public void testCreateMessageBody() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+    public void testCreateMessageBody()
+            throws UserNotFoundException, GroupNotFoundException {
 
         when(userService.search(anyString())).thenReturn(u);
         when(groupService.searchUsingCode(anyString())).thenReturn(g);
@@ -141,7 +142,8 @@ public class MessageServiceTest {
      * Test the create message method from client for throwing GroupNotFound Exception
      */
     @Test(expected = GroupNotFoundException.class)
-    public void testCreateMessageBodyForGroupNotFoundException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+    public void testCreateMessageBodyForGroupNotFoundException()
+            throws UserNotFoundException, GroupNotFoundException {
 
         when(groupService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
         messageService.setJPAServices(userService, groupService);

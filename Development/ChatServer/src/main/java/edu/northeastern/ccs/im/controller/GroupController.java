@@ -6,6 +6,7 @@ import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
