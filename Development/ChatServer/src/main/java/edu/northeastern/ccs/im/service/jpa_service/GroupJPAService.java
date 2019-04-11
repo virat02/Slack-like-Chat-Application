@@ -10,6 +10,7 @@ import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -25,6 +26,23 @@ public class GroupJPAService{
 
 	//The entity manager for this class.
 	private EntityManager entityManager;
+
+	private EntityManagerUtil entityManagerUtil;
+
+	/**
+	 * Constructor for UserJPAService to setup the EntityManagerUtil
+	 */
+	public GroupJPAService() {
+		entityManagerUtil = new EntityManagerUtil();
+	}
+
+	/**
+	 * A function made to setup the entity manager util for this class to make the class more testable.
+	 * @param entityManagerUtil The entity manager for this class.
+	 */
+	public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+		this.entityManagerUtil = entityManagerUtil;
+	}
 
 	/**
 	 * A function made to setup the entity manager for this class to make the class more testable.
@@ -50,14 +68,14 @@ public class GroupJPAService{
     /**
      * A method to begin the transaction.
      */
-	private void beginTransaction() {
+	private void beginTransaction(EntityManager entityManager) {
 		entityManager.getTransaction().begin();
 	}
 
     /**
      * A private method that'll end the transaction.
      */
-	private void endTransaction() {
+	private void endTransaction(EntityManager entityManager) {
 		entityManager.getTransaction().commit();
 		entityManager.close();
 	}
@@ -69,10 +87,11 @@ public class GroupJPAService{
      */
 	public int createGroup(Group group) throws GroupNotPersistedException {
 		try {
-			beginTransaction();
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
+			beginTransaction(entityManager);
 			entityManager.persist(group);
 			entityManager.flush();
-			endTransaction();
+			endTransaction(entityManager);
 			LOGGER.info("Successfully created a group with group unique key: "+group.getGroupCode());
 			return group.getId();
 		}
@@ -90,8 +109,11 @@ public class GroupJPAService{
      */
 	public Group getGroup(int id) throws GroupNotFoundException {
 		try {
-			beginTransaction();
-			return entityManager.find(Group.class, id);
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
+			beginTransaction(entityManager);
+			Group fetchedGroup = entityManager.find(Group.class, id);
+			endTransaction(entityManager);
+			return fetchedGroup;
 		}
 		catch (Exception e) {
 			LOGGER.info("Could not find a Group with group id: "+id);
@@ -104,7 +126,8 @@ public class GroupJPAService{
      * @param currentGroup
      */
 	public Boolean updateGroup(Group currentGroup) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, currentGroup.getId());
 
 		if (group == null) {
@@ -122,7 +145,7 @@ public class GroupJPAService{
 		group.setCreatedOn(currentGroup.getCreatedOn());
 		group.setMsgs(currentGroup.getMsgs());
 		group.setGroupPassword(currentGroup.getGroupPassword());
-		endTransaction();
+		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){
 			LOGGER.info("Updated Group : "+currentGroup.getId());
@@ -141,7 +164,8 @@ public class GroupJPAService{
      * @param user
      */
 	public void addUserToGroup(int id, User user) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, id);
 
 		if (group == null) {
@@ -149,7 +173,7 @@ public class GroupJPAService{
 		}
 
 		group.addUser(user);
-		endTransaction();
+		endTransaction(entityManager);
 	}
 
 	/**
@@ -159,7 +183,8 @@ public class GroupJPAService{
 	 * @throws GroupNotFoundException thrown when the group is not found
 	 */
 	public Boolean addSubGroupToGroup(Group currentGroup) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, currentGroup.getId());
 
 		if (group == null) {
@@ -168,14 +193,14 @@ public class GroupJPAService{
 		}
 
 		group.setGroups(currentGroup.getGroups());
-		endTransaction();
+		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){
-			LOGGER.info("Updated Group : "+currentGroup.getId());
+			LOGGER.info("Updated Group with sub group : "+currentGroup.getId());
 			return true;
 		}
 		else {
-			LOGGER.info("Could not update group : "+currentGroup.getId());
+			LOGGER.info("Could not update group with sub group: "+currentGroup.getId());
 			return false;
 		}
 	}
@@ -188,10 +213,13 @@ public class GroupJPAService{
      */
 	public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
 		try {
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
 			String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"' AND g.isDeleted = false";
-			beginTransaction();
+			beginTransaction(entityManager);
 			TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
-			return query.getResultList();
+			List<Group> searchedGroups = query.getResultList();
+			endTransaction(entityManager);
+			return searchedGroups;
 		}
 		catch (Exception e) {
 			LOGGER.info("Can't find Group with name: " + groupName);
@@ -207,11 +235,12 @@ public class GroupJPAService{
      */
 	public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
 		try {
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
 			String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "' AND g.isDeleted = false";
-			beginTransaction();
+			beginTransaction(entityManager);
 			TypedQuery<Group> query = entityManager.createQuery(queryString, Group.class);
 			Group group = query.getSingleResult();
-			endTransaction();
+			endTransaction(entityManager);
 			return group;
 		}
 		catch (Exception e) {
@@ -225,13 +254,13 @@ public class GroupJPAService{
      * @param currentGroup
      */
 	public void deleteGroup(Group currentGroup) throws GroupNotDeletedException {
-
 		try {
-			beginTransaction();
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
+			beginTransaction(entityManager);
 			Group group = entityManager.find(Group.class, currentGroup.getId());
 			group.setIsDeleted(true);
 			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
-			endTransaction();
+			endTransaction(entityManager);
 		}
 		catch(Exception e) {
 			LOGGER.info("Can't delete Group with code: " + currentGroup.getGroupCode());
@@ -247,8 +276,8 @@ public class GroupJPAService{
      * @return 1 for success , 0 for failure
      */
 	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
-		beginTransaction();
-		userJPA.setEntityManager(null);
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		User u = userJPA.search(username);
 		boolean isModerator=false;
 		int userId = u.getId();
@@ -264,7 +293,7 @@ public class GroupJPAService{
 					" AND group_id=" + currentGroup.getId()).executeUpdate();
 			int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id=" + userId +
 					" AND groups_id=" + currentGroup.getId()).executeUpdate();
-			endTransaction();
+			endTransaction(entityManager);
 			if(result==1 && result2==1) {
 				ChatLogger.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
 				return 1;
