@@ -27,7 +27,7 @@ public class MessageJPAService {
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
     private EntityManager entityManager;
     private GroupService groupService = new GroupService();
-
+    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
     /**
      * Set a group service
      *
@@ -35,6 +35,10 @@ public class MessageJPAService {
      */
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
+    }
+
+    private void setEntityManagerUtil(EntityManagerUtil entityManagerUtil)  {
+        this.entityManagerUtil = entityManagerUtil;
     }
 
     /**
@@ -189,7 +193,7 @@ public class MessageJPAService {
      * @return -> A list of Messages.
      */
     public List<Message> getMessagesAfterThisTimestamp(Date loggedOut, int groupId) {
-        EntityManager em = EntityManagerUtil.getEntityManagerFactory().createEntityManager();
+        EntityManager em = entityManagerUtil.getEntityManager();
         em.getTransaction().begin();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
