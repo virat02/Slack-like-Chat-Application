@@ -87,13 +87,12 @@ public class ConstantStrings {
     public static final String UPDATE_ENTER_NEW_PASSWORD = "Enter new password: ";
 
     //Group
-    public static final String GROUP_MAIN_COMMAND = "1 - View Groups\n"
-            + "2 - Search Groups\n"
-            + "3 - Create Group\n"
-            + "4 - Invite User to your group\n"
-            + "5 - Delete Group\n"
-            + "6 - Group Details\n"
-            + "7 - View list of invitations\n" + DEFAULT_MENU;
+    public static final String GROUP_MAIN_COMMAND = "1 - Search Groups\n"
+            + "2 - Create Group\n"
+            + "3 - Invite User to your group\n"
+            + "4 - Delete Group\n"
+            + "5 - Group Details\n"
+            + "6 - View list of invitations\n" + DEFAULT_MENU;
 
     //Create Group
     public static final String CREATE_GROUP = "Enter Group Name: ";
