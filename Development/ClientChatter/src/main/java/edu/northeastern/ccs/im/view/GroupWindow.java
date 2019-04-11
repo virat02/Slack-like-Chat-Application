@@ -67,4 +67,9 @@ public class GroupWindow extends AbstractTerminalWindow {
       invalidInputPassed();
     }
   }
+
+  @Override
+  protected String helpCommand() {
+    return "Access the different operations that can eb performed on a chat group";
+  }
 }

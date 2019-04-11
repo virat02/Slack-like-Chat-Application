@@ -47,4 +47,9 @@ public class ChatTerminalWindow extends AbstractTerminalWindow {
             invalidInputPassed();
         }
     }
+
+    @Override
+    protected String helpCommand() {
+        return "Access the different features that you can enjoy";
+    }
 }

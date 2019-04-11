@@ -98,6 +98,11 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
   }
 
   @Override
+  protected String helpCommand() {
+    return "Enter the message which you want to send to the group";
+  }
+
+  @Override
   public void exitWindow() {
     messageSocketListener.shouldStopListening();
     messageWrapper.clearMessages();

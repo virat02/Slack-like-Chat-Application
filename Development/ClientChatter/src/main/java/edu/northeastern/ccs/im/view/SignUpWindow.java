@@ -74,6 +74,13 @@ public class SignUpWindow extends AbstractTerminalWindow {
         }
     }
 
+    @Override
+    protected String helpCommand() {
+        return "Create an account by specifying your user Id, password, email address and profile" +
+                " image url\n\tThe user Id and password must contain upper case, lower case " +
+                "characters and numerals.";
+    }
+
     private int createUserAndFetchId() {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()

@@ -103,6 +103,11 @@ public class CirclesWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Follow and get connected to other users";
+  }
+
   private List<User> getFollowers(String userName) {
     NetworkResponse networkResponse;
     try {
