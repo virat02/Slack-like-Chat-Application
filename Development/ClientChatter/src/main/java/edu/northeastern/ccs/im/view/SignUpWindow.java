@@ -1,7 +1,5 @@
 package edu.northeastern.ccs.im.view;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 
 import edu.northeastern.ccs.im.communication.*;
@@ -81,14 +79,20 @@ public class SignUpWindow extends AbstractTerminalWindow {
             Profile profile = ResponseParser.parseUpdateUserProfile(networkResponse);
             networkResponse = sendNetworkConnection(new NetworkRequestFactory()
                     .createUserRequest(userName, passwordString));
-            int userId = ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
-            if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL) && userId != -1) {
+            if (networkResponse.status().equals(NetworkResponse.STATUS.SUCCESSFUL)) {
+                int userId = ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
                 networkResponse = sendNetworkConnection(new NetworkRequestFactory()
                         .createUpdateUserProfile(profile, UserConstants.getUserObj()));
                 if (networkResponse.status() == NetworkResponse.STATUS.SUCCESSFUL) {
                     UserConstants.getUserObj().setProfile(profile);
                     return userId;
                 }
+                else {
+                    sendNetworkConnection(new NetworkRequestFactory().deleteUserProfile(profile));
+                }
+            }
+            else {
+                sendNetworkConnection(new NetworkRequestFactory().deleteUserProfile(profile));
             }
         } catch (NetworkResponseFailureException exception) {
             printMessageInConsole(exception.getMessage());

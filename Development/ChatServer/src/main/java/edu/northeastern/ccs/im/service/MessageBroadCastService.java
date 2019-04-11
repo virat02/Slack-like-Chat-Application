@@ -4,6 +4,7 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
+import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.server.ClientRunnable;
@@ -74,7 +75,7 @@ public class MessageBroadCastService implements BroadCastService {
     }
 
     @Override
-    public void broadcastMessage(Message message){
+    public void broadcastMessage(Message message) {
         try {
             if (message.isBroadcastMessage()
                     && messageService.createMessage(message.getText(), message.getName(), message.groupCode())) {
@@ -86,8 +87,7 @@ public class MessageBroadCastService implements BroadCastService {
                     }
                 }
             }
-        }
-        catch (MessageNotPersistedException e) {
+        } catch (MessageNotPersistedException e) {
             LOGGER.info("Could not create the message!");
             ChatLogger.info("Message could not be broadcast!");
         } catch (UserNotFoundException e) {
@@ -112,15 +112,53 @@ public class MessageBroadCastService implements BroadCastService {
         try {
             return messageService.getTop15Messages(groupCode)
                     .stream()
+                    .filter(m -> !m.isDeleted())
                     .map(m -> Message.makeBroadcastMessage(m.getSender().getUsername(), m.getMessage(), m.getReceiver().getGroupCode()))
                     .collect(Collectors.toList());
         } catch (NoResultException e) {
             ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
-        }
-        catch (GroupNotFoundException e) {
-            ChatLogger.warning("Group with group unique key: "+groupCode+" trying to be accessed does not exist!");
+        } catch (GroupNotFoundException e) {
+            ChatLogger.warning("Group with group unique key: " + groupCode + " trying to be accessed does not exist!");
         }
 
         return messages;
+    }
+
+    @Override
+    public List<Message> getUnreadMessages(String userName) {
+        final String userNotFoundError = "User could not be found for the error";
+        final String noResultFoundError = "Messages could not be retrieved for group having group unique key: " + groupCode;
+        final String groupNotFoundError = "Group with group unique key: " + groupCode + " trying to be accessed does not exist!";
+        List<Message> messages = new ArrayList<>();
+        try {
+            return messageService.getUnreadMessages(userName, groupCode)
+                    .stream()
+                    .map(m -> Message.makeBroadcastMessage(m.getSender().getUsername(), m.getMessage(), m.getReceiver().getGroupCode()))
+                    .collect(Collectors.toList());
+        } catch (NoResultException e) {
+            ChatLogger.error(noResultFoundError);
+        } catch (GroupNotFoundException e) {
+            ChatLogger.error(groupNotFoundError);
+        } catch (UserNotFoundException e) {
+            ChatLogger.error(userNotFoundError);
+        }
+
+        return messages;
+    }
+
+    @Override
+    public boolean deleteMessage(String groupId, int messageIndex) {
+        try {
+            List<edu.northeastern.ccs.im.user_group.Message> messageList =
+                    messageService.getAllMessages(groupCode).stream()
+                            .filter(m -> !m.isDeleted()).collect(Collectors.toList());
+            messageService.deleteMessage(messageList.get(messageList.size() - messageIndex - 1));
+            return true;
+        } catch (NoResultException e) {
+            ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
+        } catch (GroupNotFoundException | MessageNotFoundException e) {
+            ChatLogger.warning("Group with group unique key: "+groupCode+" trying to be accessed does not exist!");
+        }
+        return false;
     }
 }

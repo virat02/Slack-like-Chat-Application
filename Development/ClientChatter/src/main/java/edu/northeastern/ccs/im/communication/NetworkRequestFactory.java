@@ -155,19 +155,19 @@ public class NetworkRequestFactory {
                 });
     }
 
-    /***
-     * Creates a message request for sending a message.
-     * @param messageBody
-     * @return
-     */
-    public NetworkRequest createMessageRequest(String messageBody) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEND_MESSAGE,
-                () -> {
-                    Message message = new Message();
-                    message.setMessage(messageBody);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(message);
-                });
-    }
+  /***
+   * Creates a message request for sending a message.
+   * @param messageBody
+   * @return
+   */
+  public NetworkRequest createMessageRequest(String messageBody) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEND_MESSAGE,
+            () -> {
+              Message message = new Message();
+              message.setMessage(messageBody);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(message);
+            });
+  }
 
     /***
      * Creates a request for joining a group.
@@ -177,7 +177,7 @@ public class NetworkRequestFactory {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.JOIN_GROUP,
                 () -> "{" +
                         "\"groupCode\":\"" + groupCode + "\"" + "," +
-                         "\"userName\":\"" + userName + "\"" + "," +
+                        "\"userName\":\"" + userName + "\"" + "," +
                         "\"isPrivate\":\"" + isPrivate + "\""
                         + "}");
     }
@@ -249,6 +249,11 @@ public class NetworkRequestFactory {
                 });
     }
 
+    public NetworkRequest deleteUserProfile(Profile profile) {
+      return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_PROFILE,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(profile));
+    }
+
     public NetworkRequest createGetUserFollowersList(String userName) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWERS,
                 () -> {
@@ -267,40 +272,41 @@ public class NetworkRequestFactory {
                 });
     }
 
-  public NetworkRequest createSetUserFolloweresList(String userName, User user) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
-            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                    "\n" + userName);
-  }
+    public NetworkRequest createSetUserFolloweresList(String userName, User user) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                        "\n" + userName);
+    }
 
   public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
     return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
             () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
                     "\n" + userName);
   }
-    /***
-     * Creates a group invite request.
-     * @param invitee -> The user whom has been invited to join the group
-     * @param inviter -> The user whom invites another user to join the group
-     * @param groupCode -> The group code of the group under consideration
-     * @return An instance of Network Request representing the transaction.
-     */
-    public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
-                () -> {
-                    Invite invite = new Invite();
-                    User inviterUser = new User();
-                    inviterUser.setUsername(inviter);
-                    User inviteeUser = new User();
-                    inviteeUser.setUsername(invitee);
-                    Group group = new Group();
-                    group.setGroupCode(groupCode);
-                    invite.setSender(inviterUser);
-                    invite.setReceiver(inviteeUser);
-                    invite.setGroup(group);
-                    return CommunicationUtils.toJson(invite);
-                });
-    }
+
+  /***
+   * Creates a group invite request.
+   * @param invitee -> The user whom has been invited to join the group
+   * @param inviter -> The user whom invites another user to join the group
+   * @param groupCode -> The group code of the group under consideration
+   * @return An instance of Network Request representing the transaction.
+   */
+  public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
+            () -> {
+              Invite invite = new Invite();
+              User inviterUser = new User();
+              inviterUser.setUsername(inviter);
+              User inviteeUser = new User();
+              inviteeUser.setUsername(invitee);
+              Group group = new Group();
+              group.setGroupCode(groupCode);
+              invite.setSender(inviterUser);
+              invite.setReceiver(inviteeUser);
+              invite.setGroup(group);
+              return CommunicationUtils.toJson(invite);
+            });
+  }
 
     /***
      * Creates a invite update request
@@ -318,6 +324,18 @@ public class NetworkRequestFactory {
                 });
     }
 
+  /**
+   *
+   */
+  public NetworkRequest createDeleteMessageRequest(String groupId, String userName,
+                                                   int messageNumber, boolean isPrivate) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_MESSAGE,
+            () -> "{" + "\"groupCode\":\"" + groupId + "\"" + "," +
+                    "\"userName\":\"" + userName + "\"" + "," +
+                    "\"messageIndex\":\"" + messageNumber + "\"" + "," +
+                    "\"isPrivate\":\"" + isPrivate + "\""
+                    + "}");
+  }
 
     public NetworkRequest fetchInvitationRequest(String userName, String groupCode) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.FETCH_INVITE, () -> new StringBuilder()
@@ -335,5 +353,24 @@ public class NetworkRequestFactory {
                 .append("\"")
                 .append("}")
                 .toString());
+    }
+
+    public NetworkRequest createLogOffFromChatRoomRequest(String userName, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.EXIT_CHATROOM,
+                () -> new StringBuilder()
+                        .append("{")
+                        .append("\"userName\"")
+                        .append(":")
+                        .append("\"")
+                        .append(userName)
+                        .append("\"")
+                        .append(",")
+                        .append("\"groupCode\"")
+                        .append(":")
+                        .append("\"")
+                        .append(groupCode)
+                        .append("\"")
+                        .append("}")
+                        .toString());
     }
 }

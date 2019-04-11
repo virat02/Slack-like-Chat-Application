@@ -1,5 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
@@ -7,9 +8,11 @@ import edu.northeastern.ccs.im.service.jpa_service.Status;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -47,6 +50,10 @@ public final class UserService implements IService {
         this.userJPAService.setEntityManager(null);
     }
 
+    /**
+     * Sets the inviteJPA Service, mostly userful in testing.
+     * @param inviteJPAService is the jpa service we plan on initializing.
+     */
     public void setInviteJPAService(InviteJPAService inviteJPAService){
         if(inviteJPAService == null) {
             this.inviteJPAService = new InviteJPAService();
@@ -56,6 +63,10 @@ public final class UserService implements IService {
         this.inviteJPAService.setEntityManager(null);
     }
 
+    /**
+     * Sets the GroupJPAService, mostly used in testing.
+     * @param groupJPAService the group JPA service we plan initializing.
+     */
     public void setGroupJPAService(GroupJPAService groupJPAService){
         if(groupJPAService == null) {
             this.groupJPAService = new GroupJPAService();
@@ -69,50 +80,25 @@ public final class UserService implements IService {
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
      */
-    public User addUser(User user) throws UserNotFoundException, UserNotPersistedException,
-            UsernameTooSmallException, UsernameDoesNotContainNumberException,
-            UsernameDoesNotContainUppercaseException, UsernameDoesNotContainLowercaseException,
-            PasswordDoesNotContainLowercaseException, PasswordTooSmallException,
-            PasswordDoesNotContainUppercaseException, PasswordDoesNotContainNumberException, PasswordTooLargeException, UsernameTooLongException {
-        if(user.getUsername().length() < 4) {
-            throw new UsernameTooSmallException("Username needs to be at least 4 letters long.");
-        }
-        if(user.getUsername().length() > 20) {
-            throw new UsernameTooLongException("Username can't be more than 20 letters long!");
-        }
+    public User addUser(User user) throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
         HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
-        if(!usernameCheck.get("low")) {
-            throw new UsernameDoesNotContainLowercaseException("Username must contain at least one lowercase letter.");
-        }
-        if(!usernameCheck.get("cap")) {
-            throw new UsernameDoesNotContainUppercaseException("Username must contain at least one capital letter!");
-        }
-        if(!usernameCheck.get("num")) {
-            throw new UsernameDoesNotContainNumberException("Username must contain at least one number!");
-        }
-        if(user.getPassword().length() < 4) {
-            throw new PasswordTooSmallException("Password needs to be at least 4 letters long.");
-        }
-        if(user.getPassword().length() > 20) {
-            throw new PasswordTooLargeException("Password can't be more than 20 letters long!");
+        if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
+                user.getUsername().length() < 4) {
+            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
+                    "one lowercase letter and one number.");
         }
         HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
-        if(!passwordCheck.get("low")) {
-            throw new PasswordDoesNotContainLowercaseException("Password must contain at least one lowercase letter.");
-        }
-        if(!passwordCheck.get("cap")) {
-            throw new PasswordDoesNotContainUppercaseException("Password must contain at least one capital letter!");
-        }
-        if(!passwordCheck.get("num")) {
-            throw new PasswordDoesNotContainNumberException("Password must contain at least one number!");
+        if(user.getPassword().length() < 4 || user.getPassword().length() > 20
+                || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
+            throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
+                    "one lowercase letter and one number.");
         }
         userJPAService.setEntityManager(null);
         int id = userJPAService.createUser(user);
         if(id == 0) {
             return null;
         }
-        userJPAService.setEntityManager(null);
-        return userJPAService.getUser(user.getId());
+        return userJPAService.getUser(id);
     }
 
     /**
@@ -190,8 +176,8 @@ public final class UserService implements IService {
 
     /**
      * Get a list of followers for this user
-     * @param username
-     * @return
+     * @param username the username of the person we are trying to get their followers for.
+     * @return a list of users following a particular user.
      */
     public List<User> getFollowers(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
@@ -207,8 +193,8 @@ public final class UserService implements IService {
 
     /**
      * Get a list of followees for this user
-     * @param username
-     * @return
+     * @param username of the user we are trying to get the followees of.
+     * @return list of users a particular user is following.
      */
     public List<User> getFollowees(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
@@ -312,8 +298,29 @@ public final class UserService implements IService {
             InviteNotFoundException, UserNotFoundException {
         userJPAService.setEntityManager(null);
         User retrievedUser = userJPAService.search(username);
-
         inviteJPAService.setEntityManager(null);
         return inviteJPAService.searchInviteByGroupCode(groupCode , retrievedUser);
+    }
+
+    /***
+     * This method is used to log the user logging off times for different groups.
+     * @param userName -> The username of the user trying to log off/ exit from the chatroom.
+     * @param groupUniqueCode -> The unique code of the group
+     */
+    public void userGroupEvent(String userName,String groupUniqueCode)   {
+        final String errorMsg = "This is an unexpected situation, Generally codeflow should not reach this exception block";
+        userJPAService.setEntityManager(null);
+        groupJPAService.setEntityManager(null);
+        try {
+            User user = userJPAService.search(userName);
+            Group group = groupJPAService.searchUsingCode(groupUniqueCode);
+            UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent(user.getId(), group.getId(), new Date());
+            userJPAService.saveOrUpdateJoinGroupEvent(userChatRoomLogOffEvent);
+        } catch (UserNotFoundException | GroupNotFoundException e) {
+            // There is something wrong in the control flow of the application
+            // for this use case, if the flow reaches here.
+            ChatLogger.error(errorMsg);
+            throw new UnsupportedOperationException(errorMsg);
+        }
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "user")
 public class User implements IUser {
 
-    /** The id. */
+    /** The id. */ 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;

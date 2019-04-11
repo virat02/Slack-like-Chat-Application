@@ -144,8 +144,8 @@ public class ProfileJPAServiceTest {
 
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         profileJPAService.setEntityManager(entityManager);
-
-        assertNotEquals(-1, profileJPAService.deleteProfile(p2));
+        when(entityManager.find(any(), anyInt())).thenReturn(p2);
+        assertTrue(profileJPAService.deleteProfile(p2));
 
     }
 
