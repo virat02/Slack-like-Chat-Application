@@ -175,7 +175,7 @@ public class ProfileServiceTest {
      */
     @Test
     public void testDeleteProfile() throws ProfileNotDeletedException {
-        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(1);
+        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(true);
         profileService.setProfileJPAService(profileJPAService);
         assertTrue(profileService.deleteProfile(p1));
     }
@@ -185,7 +185,7 @@ public class ProfileServiceTest {
      */
     @Test
     public void testDeleteProfileFalse() throws ProfileNotDeletedException {
-        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(-1);
+        when(profileJPAService.deleteProfile(any(Profile.class))).thenReturn(false);
         profileService.setProfileJPAService(profileJPAService);
         assertFalse(profileService.deleteProfile(p1));
     }
