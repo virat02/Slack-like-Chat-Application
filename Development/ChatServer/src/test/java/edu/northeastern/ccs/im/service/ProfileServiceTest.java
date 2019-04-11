@@ -88,7 +88,7 @@ public class ProfileServiceTest {
     }
 
     /**
-     * Test for unable to create profile in ProfileService for throwing ProfileNotPersistedException
+     * Test for unable to create profile in ProfileService
      */
     @Test
     public void testCreateProfileForFalse() throws InvalidEmailException, InvalidImageURLException {
