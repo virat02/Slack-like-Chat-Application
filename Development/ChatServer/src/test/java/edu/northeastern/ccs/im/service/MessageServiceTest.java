@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,7 +105,7 @@ public class MessageServiceTest {
     public void testCreateMessageForFalse() {
 
         messageService.setAllJPAService(jpaService);
-        when(jpaService.createEntity(any())).thenReturn(false);
+        when(jpaService.createEntity(any())).thenThrow(new NoResultException());
         assertFalse(messageService.createMessage(m));
     }
 
@@ -117,7 +118,8 @@ public class MessageServiceTest {
         when(userService.search(anyString())).thenReturn(u);
         when(groupService.searchUsingCode(anyString())).thenReturn(g);
         when(jpaService.createEntity(any(Message.class))).thenReturn(true);
-
+        when(jpaService.createEntity(any())).thenReturn(true);
+        messageService.setAllJPAService(jpaService);
         messageService.setMessageJPAService(messageJPAService);
         messageService.setJPAServices(userService, groupService);
 
@@ -128,7 +130,8 @@ public class MessageServiceTest {
      * Test the create message method from client for throwing UserNotFound Exception
      */
     @Test(expected = UserNotFoundException.class)
-    public void testCreateMessageBodyForUserNotFoundExceptionException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+    public void testCreateMessageBodyForUserNotFoundException()
+            throws UserNotFoundException, GroupNotFoundException {
 
         when(userService.search(anyString())).thenThrow(new UserNotFoundException("Could not find user!"));
         messageService.setJPAServices(userService, groupService);
@@ -140,7 +143,7 @@ public class MessageServiceTest {
      * Test the create message method from client for throwing GroupNotFound Exception
      */
     @Test(expected = GroupNotFoundException.class)
-    public void testCreateMessageBodyForGroupNotFoundExceptionException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
+    public void testCreateMessageBodyForGroupNotFoundException() throws UserNotFoundException, GroupNotFoundException, MessageNotPersistedException {
 
         when(groupService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
         messageService.setJPAServices(userService, groupService);
@@ -152,7 +155,7 @@ public class MessageServiceTest {
      * Test successful update message method
      */
     @Test
-    public void testUpdateMessageService() throws MessageNotFoundException{
+    public void testUpdateMessageOfMessageService() throws MessageNotFoundException{
 
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(true);
         messageService.setMessageJPAService(messageJPAService);
@@ -177,7 +180,7 @@ public class MessageServiceTest {
     public void testGetMessage() throws MessageNotFoundException{
 
         when(jpaService.getEntity(anyString(), anyInt())).thenReturn(m);
-        messageService.setMessageJPAService(messageJPAService);
+        messageService.setAllJPAService(jpaService);
         assertEquals(m, messageService.get(2));
     }
 
@@ -185,18 +188,27 @@ public class MessageServiceTest {
      * Test get message method to return null
      */
     @Test
-    public void testGetMessageNullMessage() throws MessageNotFoundException{
+    public void testGetMessageForNullMessage() throws MessageNotFoundException{
 
         when(jpaService.getEntity(anyString(), anyInt())).thenReturn(null);
-        messageService.setMessageJPAService(messageJPAService);
+        messageService.setAllJPAService(jpaService);
         assertNull(messageService.get(1));
+    }
+
+    @Test(expected = MessageNotFoundException.class)
+    public void testGetMessageForMessageNotFoundException()
+            throws MessageNotFoundException {
+        when(jpaService.getEntity(anyString(), anyInt())).thenThrow(new NoResultException());
+        messageService.setAllJPAService(jpaService);
+        messageService.get(1);
     }
 
     /**
      * Test the delete message method when message is deleted
      */
     @Test
-    public void testDeleteMessageForDeletedMessage() throws MessageNotFoundException {
+    public void testDeleteMessageForAlreadyDeletedMessage()
+            throws MessageNotFoundException {
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(true);
         messageService.setMessageJPAService(messageJPAService);
         assertTrue(messageService.deleteMessage(m2));
@@ -204,23 +216,35 @@ public class MessageServiceTest {
     }
 
     /**
-     * Test the delete message method when message is not deleted
+     * Test the delete message method for an unsuccessful update fron JPA
      */
     @Test
-    public void testDeleteMessageForNotDeletedMessage() throws MessageNotFoundException{
+    public void testDeleteMessageForUnsuccessfulUpdate() throws MessageNotFoundException{
         when(messageJPAService.updateMessage(any(Message.class))).thenReturn(false);
         messageService.setMessageJPAService(messageJPAService);
         assertFalse(messageService.deleteMessage(m));
     }
-//
-//    /**
-//     * Test the getTop15Messages method
-//     */
-//    @Test
-//    public void testGetTop15Messages() {
-//        List<Message> msgList = new ArrayList<>();
-//        when(messageJPAService.getTop15Messages(anyString())).thenReturn(msgList);
-//        messageService.setMessageJPAService(messageJPAService);
-//        assertEquals(msgList, messageService.getTop15Messages("ABCD"));
-//    }
+
+    /**
+     * Test the getTop15Messages method
+     */
+    @Test
+    public void testGetTop15Messages() throws GroupNotFoundException {
+        List<Message> msgList = new ArrayList<>();
+        when(messageJPAService.getTop15Messages(anyString())).thenReturn(msgList);
+        messageService.setMessageJPAService(messageJPAService);
+        assertEquals(msgList, messageService.getTop15Messages("ABCD"));
+    }
+
+    /**
+     * Test the getTop15Messages method for GroupNotFoundException
+     */
+    @Test(expected = GroupNotFoundException.class)
+    public void testGetTop15MessagesForGroupNotFoundException()
+            throws GroupNotFoundException {
+        when(messageJPAService.getTop15Messages(anyString()))
+                .thenThrow(new GroupNotFoundException("No Group found!"));
+        messageService.setMessageJPAService(messageJPAService);
+        messageService.getTop15Messages("ABCD");
+    }
 }
