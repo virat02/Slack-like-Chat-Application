@@ -127,6 +127,6 @@ public class ProfileService {
      */
     public Boolean deleteProfile(Profile pf) throws ProfileNotDeletedException {
         profileJPAService.setEntityManager(null);
-        return profileJPAService.deleteProfile(pf) != -1;
+        return profileJPAService.deleteProfile(pf);
     }
 }

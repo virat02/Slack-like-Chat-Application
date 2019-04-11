@@ -66,19 +66,34 @@ public class ProfileJPAService {
      * Deletes a profile in the database
      * @param p
      */
-    public int deleteProfile(Profile p) throws ProfileNotDeletedException {
+    public boolean deleteProfile(Profile p) throws ProfileNotDeletedException {
         try {
             beginTransaction();
+            int pid = p.getId();
+            Profile thisProfile = entityManager.find(Profile.class, pid);
+            if (thisProfile == null) {
+                LOGGER.info("Can't find Profile for this ID");
+                throw new ProfileNotFoundException("Can't find Profile for ID " + p.getId());
+            }
+            if (!entityManager.contains(p)) {
+                p = entityManager.merge(p);
+            }
             entityManager.remove(p);
             endTransaction();
-            LOGGER.info("Deleted profile : "+p.getId());
-            return p.getId();
+            LOGGER.info("Deleted profile : " + pid);
+            return true;
         }
-        catch(Exception e){
-            LOGGER.info("Profile with profile id: "+ p.getId()+", could not be deleted!");
-            throw new ProfileNotDeletedException("Profile with profile id: "+ p.getId()+", could not be deleted!");
+        catch(Exception e) {
+            if (p == null) {
+                LOGGER.info("Empty profile");
+                throw new ProfileNotDeletedException("Profile with profile id: null, could not be deleted!");
+            }
+            else {
+                LOGGER.info("Profile with profile id: " + p.getId() + ", could not be deleted!");
+                throw new ProfileNotDeletedException("Profile with profile id: " + p.getId()
+                        + ", could not be deleted!");
+            }
         }
-
     }
 
     /**

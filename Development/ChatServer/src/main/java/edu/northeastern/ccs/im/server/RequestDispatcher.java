@@ -56,6 +56,7 @@ public class RequestDispatcher {
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.UPDATE_GROUP, updateGroupQueryResults()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.CREATE_PROFILE, handleCreateUserProfile()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.UPDATE_PROFILE, handleUpdateProfileObj()),
+                        new AbstractMap.SimpleEntry<>(NetworkRequestType.DELETE_PROFILE, handleDeleteProfileObj()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.UPDATE_USERPROFILE, handleUpdateUserProfileObj()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.UPDATE_PASSWORD, handleUpdatePasswordChange()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.CREATE_GROUP, handleCreateGroup()),
@@ -310,6 +311,21 @@ public class RequestDispatcher {
             try {
                 Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
                 return profileController.updateEntity(profile);
+            } catch (IOException e) {
+                return networkResponseFactory.createFailedResponse();
+            }
+        };
+    }
+
+    /***
+     * Handle the delete user profile request from client.
+     * @return RequestStrategy handling the request.
+     */
+    private RequestStrategy handleDeleteProfileObj() {
+        return networkRequest -> {
+            try {
+                Profile profile = objectMapper.readValue(networkRequest.payload().jsonString(), Profile.class);
+                return profileController.deleteEntity(profile);
             } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
             }
