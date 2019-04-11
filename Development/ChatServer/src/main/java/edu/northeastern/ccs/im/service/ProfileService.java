@@ -154,13 +154,13 @@ public class ProfileService {
      * Updates an existing profile if the respective inputs are valid
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
-        return profileJPAService.updateProfile(pf);
+        return profileJPAService.updateProfile(get(pf.getId()));
     }
 
     /**
      * Deletes a profile
      */
-    public Boolean deleteProfile(Profile pf) {
-        return jpaService.deleteEntity(pf);
+    public Boolean deleteProfile(Profile pf) throws ProfileNotFoundException {
+        return jpaService.deleteEntity(get(pf.getId()));
     }
 }

@@ -51,6 +51,11 @@ public class AllJPAService {
         //Begin Transaction
         EntityManager em = entityManagerUtil.getEntityManager();
         em.getTransaction().begin();
+
+        //Re-attach the entity if not attached
+        if(!em.contains(obj)) {
+            obj = em.merge(obj);
+        }
         em.remove(obj);
 
         //End Transaction

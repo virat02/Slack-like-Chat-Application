@@ -156,7 +156,7 @@ public class ProfileControllerTest {
      * Test for successful delete Profile in Profile Controller
      */
     @Test
-    public void testSuccessfulDeleteProfile() {
+    public void testSuccessfulDeleteProfile() throws ProfileNotFoundException {
         when(profileService.deleteProfile(any())).thenReturn(true);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
@@ -167,11 +167,23 @@ public class ProfileControllerTest {
      * Test for unsuccessful delete Profile in Profile Controller
      */
     @Test
-    public void testUnsuccessfulDeleteProfile() {
+    public void testUnsuccessfulDeleteProfile() throws ProfileNotFoundException {
         when(profileService.deleteProfile(any())).thenReturn(false);
         profileController.setProfileService(profileService);
         NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
-        Assert.assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+    }
+
+    /**
+     * Test for unsuccessful delete Profile in Profile Controller when trying to delete a non-existing profile
+     */
+    @Test
+    public void testUnsuccessfulDeleteProfileForNonExistingProfile()
+            throws ProfileNotFoundException {
+        when(profileService.deleteProfile(any())).thenThrow(new ProfileNotFoundException("Profile not found!"));
+        profileController.setProfileService(profileService);
+        NetworkResponse networkResponse = profileController.deleteEntity(profileOne);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
     }
 
     /**

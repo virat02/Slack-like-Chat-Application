@@ -166,7 +166,9 @@ public class ProfileServiceTest {
     public void testUpdateProfileService() throws ProfileNotFoundException {
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenReturn(true);
+        when(jpaService.getEntity(anyString(),anyInt())).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
+        profileService.setAllJPAService(jpaService);
         assertTrue(profileService.updateProfile(p1));
     }
 
@@ -177,7 +179,9 @@ public class ProfileServiceTest {
     public void testUpdateProfileServiceUnsuccessful() throws ProfileNotFoundException {
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenReturn(false);
+        when(jpaService.getEntity(anyString(),anyInt())).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
+        profileService.setAllJPAService(jpaService);
         assertFalse(profileService.updateProfile(p1));
     }
 
@@ -188,7 +192,9 @@ public class ProfileServiceTest {
     public void testUpdateProfileServiceForProfileNotFoundException() throws ProfileNotFoundException {
 
         when(profileJPAService.updateProfile(any(Profile.class))).thenThrow(new ProfileNotFoundException("Could not find profile!"));
+        when(jpaService.getEntity(anyString(),anyInt())).thenReturn(p1);
         profileService.setProfileJPAService(profileJPAService);
+        profileService.setAllJPAService(jpaService);
         assertFalse(profileService.updateProfile(p1));
     }
 
@@ -218,8 +224,10 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is deleted
      */
     @Test
-    public void testDeleteProfile() {
+    public void testDeleteProfile() throws ProfileNotFoundException {
         when(jpaService.deleteEntity(any(Profile.class))).thenReturn(true);
+        when(jpaService.getEntity(anyString(),anyInt())).thenReturn(p1);
+        profileService.setProfileJPAService(profileJPAService);
         profileService.setAllJPAService(jpaService);
         assertTrue(profileService.deleteProfile(p1));
     }
@@ -228,7 +236,7 @@ public class ProfileServiceTest {
      * Test the delete profile method when profile is not deleted
      */
     @Test
-    public void testDeleteProfileFalse() {
+    public void testDeleteProfileFalse() throws ProfileNotFoundException {
         when(jpaService.deleteEntity(any(Profile.class))).thenReturn(false);
         profileService.setAllJPAService(jpaService);
         assertFalse(profileService.deleteProfile(p1));
