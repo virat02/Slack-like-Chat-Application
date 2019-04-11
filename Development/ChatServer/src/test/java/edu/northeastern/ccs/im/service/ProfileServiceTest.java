@@ -82,7 +82,6 @@ public class ProfileServiceTest {
     @Test
     public void testCreateProfile() throws InvalidEmailException, InvalidImageURLException {
 
-        //AllJPAService mjpaService = mock(AllJPAService.class);
         profileService.setAllJPAService(jpaService);
         when(jpaService.createEntity(any())).thenReturn(true);
         assertTrue(profileService.createProfile(p1));
@@ -94,7 +93,6 @@ public class ProfileServiceTest {
     @Test
     public void testCreateProfileForFalse() throws InvalidEmailException, InvalidImageURLException {
 
-        //AllJPAService jpaService = mock(AllJPAService.class);
         profileService.setAllJPAService(jpaService);
         when(jpaService.createEntity(any(Profile.class))).thenReturn(false);
         assertFalse(profileService.createProfile(p1));
@@ -111,6 +109,41 @@ public class ProfileServiceTest {
         p.setEmail("abcd");
 
         profileService.createProfile(p);
+    }
+
+    /**
+     * Test for unable to create profile in ProfileService for throwing InvalidEmailException
+     * foe email already in use
+     */
+    @Test(expected = InvalidEmailException.class)
+    public void testCreateProfileForInvalidEmailExceptionForEmailAlreadyInUse()
+            throws InvalidEmailException, InvalidImageURLException {
+
+        Profile p = new Profile();
+        p.setEmail("abcd@gmail.com");
+        p.setImageUrl("http://abcd.com");
+        when(profileJPAService.ifEmailExists(anyString())).thenReturn(true);
+        profileService.setProfileJPAService(profileJPAService);
+        profileService.createProfile(p);
+    }
+
+    /**
+     * Test for unable to create profile in ProfileService
+     * due to exception thrown by Profile JPA Service
+     */
+    @Test
+    public void testCreateProfileForFalseOnJPAException()
+            throws InvalidEmailException, InvalidImageURLException {
+
+        Profile p = new Profile();
+        p.setEmail("abcd@gmail.com");
+        p.setImageUrl("http://abcd.com");
+        when(profileJPAService.ifEmailExists(anyString())).thenReturn(false);
+        profileService.setProfileJPAService(profileJPAService);
+        profileService.setAllJPAService(jpaService);
+        when(jpaService.createEntity(any(Profile.class)))
+                .thenThrow(new NoResultException());
+        assertFalse(profileService.createProfile(p));
     }
 
     /**
@@ -212,7 +245,6 @@ public class ProfileServiceTest {
         Profile p = new Profile();
         p.setEmail("virat@gmail.com");
         p.setImageUrl("http://virat.com");
-        //profileService.setProfileJPAService(profileJPAService);
         profileService.setAllJPAService(jpaService);
         when(jpaService.createEntity(any())).thenReturn(true);
         assertTrue(profileService.createProfile(p));
