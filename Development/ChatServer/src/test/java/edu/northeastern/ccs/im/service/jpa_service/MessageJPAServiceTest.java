@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.*;

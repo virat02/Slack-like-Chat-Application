@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.server.ClientRunnable;
 import edu.northeastern.ccs.im.user_group.*;

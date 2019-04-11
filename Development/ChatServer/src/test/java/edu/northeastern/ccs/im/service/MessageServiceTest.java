@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
@@ -26,7 +25,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)

@@ -2,7 +2,6 @@ package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
