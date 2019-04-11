@@ -129,4 +129,27 @@ public class MessageJPAService {
         em.close();
         return messages;
     }
+
+    /**
+     * Gets all the messages given a group unique key.
+     *
+     * @param groupUniqueKey the group id for which the messages must be fetched
+     * @return list of messages that are fetched
+     * @throws GroupNotFoundException thrown when the given group does not exist
+     */
+    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
+
+        //Get the group based on the group unique key
+        Group g = groupService.searchUsingCode(groupUniqueKey);
+
+        String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+        TypedQuery<Message> query = em.createQuery(queryString, Message.class);
+        List<Message> msgList = query.getResultList();
+        msgList.sort(Comparator.comparing(Message::getId));
+        ChatLogger.info("All messages for a group: " + groupUniqueKey + " retrieved!");
+        return msgList;
+    }
 }

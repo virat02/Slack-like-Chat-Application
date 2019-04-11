@@ -159,4 +159,14 @@ public class MessageService implements IService{
 
         return messageJPAService.getMessagesAfterThisTimestamp(userChatRoomLogOffEvent.getLoggedOutTime(), group.getId());
     }
+
+    /**
+     * Returns the all the messages given a group unique key.
+     * @param groupUniqueKey the unique group for which the messages must be fetched
+     * @return the list of fetched messages
+     * @throws GroupNotFoundException thrown when the given group is not found
+     */
+    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
+        return messageJPAService.getAllMessages(groupUniqueKey);
+    }
 }

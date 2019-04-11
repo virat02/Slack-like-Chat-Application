@@ -182,71 +182,76 @@ public class NetworkRequestFactory {
                         + "}");
     }
 
-    public NetworkRequest createDeleteGroupRequest(String groupName, String groupCode, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
-                () -> {
-                    Group group = new Group();
-                    group.setName(groupName);
-                    group.setGroupCode(groupCode);
-                    List<User> moderators = new ArrayList<>();
-                    moderators.add(user);
-                    group.setModerators(moderators);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
-                });
-    }
+  public NetworkRequest createDeleteGroupRequest(String groupName, String groupCode, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+            () -> {
+              Group group = new Group();
+              group.setName(groupName);
+              group.setGroupCode(groupCode);
+              List<User> moderators = new ArrayList<>();
+              moderators.add(user);
+              group.setModerators(moderators);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+            });
+  }
 
-    public NetworkRequest createUpdateGroupRequest(String groupName, String groupCode, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
-                () -> {
-                    Group group = new Group();
-                    group.setName(groupName);
-                    group.setGroupCode(groupCode);
-                    List<User> moderators = new ArrayList<>();
-                    moderators.add(user);
-                    group.setModerators(moderators);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
-                });
-    }
+  public NetworkRequest createUpdateGroupRequest(String groupName, String groupCode, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+            () -> {
+              Group group = new Group();
+              group.setName(groupName);
+              group.setGroupCode(groupCode);
+              List<User> moderators = new ArrayList<>();
+              moderators.add(user);
+              group.setModerators(moderators);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+            });
+  }
 
-    public NetworkRequest createRemoveGroupUserRequest(String groupName, String groupCode, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
-                () -> {
-                    Group group = new Group();
-                    group.setName(groupName);
-                    group.setGroupCode(groupCode);
-                    List<User> moderators = new ArrayList<>();
-                    moderators.add(user);
-                    group.setModerators(moderators);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(group);
-                });
-    }
+  public NetworkRequest createRemoveGroupUserRequest(String groupName, String groupCode, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_GROUP,
+            () -> {
+              Group group = new Group();
+              group.setName(groupName);
+              group.setGroupCode(groupCode);
+              List<User> moderators = new ArrayList<>();
+              moderators.add(user);
+              group.setModerators(moderators);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(group);
+            });
+  }
 
-    public NetworkRequest createUpdateProfileStatus(boolean viewStatus, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_USERPROFILE,
-                () -> {
-                    user.setProfileAccess(viewStatus);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
-                });
-    }
+  public NetworkRequest createUpdateProfileStatus(boolean viewStatus, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_USERPROFILE,
+            () -> {
+              user.setProfileAccess(viewStatus);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+            });
+  }
 
-    public NetworkRequest createUserProfile(String userEmail, String imageUrl) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_PROFILE,
-                () -> {
-                    Profile profile = new Profile();
-                    profile.setImageUrl(imageUrl);
-                    profile.setEmail(userEmail);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
-                });
-    }
+  public NetworkRequest createUserProfile(String userEmail, String imageUrl) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.CREATE_PROFILE,
+            () -> {
+              Profile profile = new Profile();
+              profile.setImageUrl(imageUrl);
+              profile.setEmail(userEmail);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
+            });
+  }
 
-    public NetworkRequest createUpdateUserProfile(String userEmail, String imageUrl, User user) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_PROFILE,
-                () -> {
-                    Profile profile = user.getProfile();
-                    profile.setEmail(userEmail);
-                    profile.setImageUrl(imageUrl);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
-                });
+  public NetworkRequest createUpdateUserProfile(String userEmail, String imageUrl, User user) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_PROFILE,
+            () -> {
+              Profile profile = user.getProfile();
+              profile.setEmail(userEmail);
+              profile.setImageUrl(imageUrl);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(profile);
+            });
+  }
+
+    public NetworkRequest deleteUserProfile(Profile profile) {
+      return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_PROFILE,
+              () -> CommunicationUtils.getObjectMapper().writeValueAsString(profile));
     }
 
     public NetworkRequest createGetUserFollowersList(String userName) {
@@ -258,14 +263,14 @@ public class NetworkRequestFactory {
                 });
     }
 
-    public NetworkRequest createGetUserFolloweesList(String userName) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
-                () -> {
-                    User user = new User();
-                    user.setUsername(userName);
-                    return CommunicationUtils.getObjectMapper().writeValueAsString(user);
-                });
-    }
+  public NetworkRequest createGetUserFolloweesList(String userName) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.GET_FOLLOWEES,
+            () -> {
+              User user = new User();
+              user.setUsername(userName);
+              return CommunicationUtils.getObjectMapper().writeValueAsString(user);
+            });
+  }
 
     public NetworkRequest createSetUserFolloweresList(String userName, User user) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_FOLLOWERS,
@@ -303,22 +308,34 @@ public class NetworkRequestFactory {
                 });
     }
 
-    /***
-     * Creates a invite update request
-     * @param invitationId -> The id of the invitations
-     * @param status -> The updated status of the invitation
-     * @return an instance of this network request representing the transaction
-     */
-    public NetworkRequest createUpdateGroupInvite(String invitationId, Status status) {
-        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_INVITE,
-                () -> {
-                    Invite invite = new Invite();
-                    invite.setId(Integer.parseInt(invitationId));
-                    invite.setStatus(status);
-                    return CommunicationUtils.toJson(invite);
-                });
-    }
+  /***
+   * Creates a invite update request
+   * @param invitationId -> The id of the invitations
+   * @param status -> The updated status of the invitation
+   * @return an instance of this network request representing the transaction
+   */
+  public NetworkRequest createUpdateGroupInvite(String invitationId, Status status) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.UPDATE_INVITE,
+            () -> {
+              Invite invite = new Invite();
+              invite.setId(Integer.parseInt(invitationId));
+              invite.setStatus(status);
+              return CommunicationUtils.toJson(invite);
+            });
+  }
 
+  /**
+   *
+   */
+  public NetworkRequest createDeleteMessageRequest(String groupId, String userName,
+                                                   int messageNumber, boolean isPrivate) {
+    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.DELETE_MESSAGE,
+            () -> "{" + "\"groupCode\":\"" + groupId + "\"" + "," +
+                    "\"userName\":\"" + userName + "\"" + "," +
+                    "\"messageIndex\":\"" + messageNumber + "\"" + "," +
+                    "\"isPrivate\":\"" + isPrivate + "\""
+                    + "}");
+  }
 
     public NetworkRequest fetchInvitationRequest(String userName, String groupCode) {
         return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.FETCH_INVITE, () -> new StringBuilder()
