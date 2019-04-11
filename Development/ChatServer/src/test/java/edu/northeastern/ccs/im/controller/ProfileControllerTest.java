@@ -36,7 +36,7 @@ public class ProfileControllerTest {
     private List<Group> groupList;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         profileController = new ProfileController();
         profileService = mock(ProfileService.class);
 

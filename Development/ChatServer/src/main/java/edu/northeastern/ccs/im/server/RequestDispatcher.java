@@ -67,9 +67,8 @@ public class RequestDispatcher {
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.SET_UNFOLLOWERS, handleSetUnFollowers()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.INVITE_USER, handleInvitationRequest()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.FETCH_INVITE, handleFetchInvitationsRequest()),
+                        new AbstractMap.SimpleEntry<>(NetworkRequestType.EXIT_CHATROOM, handleExitChatRoomRequest()),
                         new AbstractMap.SimpleEntry<>(NetworkRequestType.DELETE_MESSAGE, handleDeleteMessageRequest())
-                        new AbstractMap.SimpleEntry<>(NetworkRequestType.FETCH_INVITE, handleFetchInvitationsRequest()),
-                        new AbstractMap.SimpleEntry<>(NetworkRequestType.EXIT_CHATROOM, handleExitChatRoomRequest())
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
@@ -503,6 +502,23 @@ public class RequestDispatcher {
         };
     }
 
+    /***
+     * A Request to exit out the chatroom. Logs in the user log out time in the db.
+     * @return
+     */
+    private RequestStrategy handleExitChatRoomRequest() {
+        return networkRequest -> {
+            try {
+                JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
+                String userName = jsonNode.get("userName").asText();
+                String groupCode = jsonNode.get("groupCode").asText();
+                return userController.exitChatRoom(groupCode, userName);
+            } catch (IOException e) {
+                return networkResponseFactory.createFailedResponse();
+            }
+        };
+    }
+
     /**
      * Delete a message from the group.
      * @return RequestStrategy handling the request
@@ -524,23 +540,6 @@ public class RequestDispatcher {
                 return networkResponseFactory.createSuccessfulResponse();
             } catch (IOException | GroupNotFoundException | UserNotFoundException |
                     UserNotPresentInTheGroup | GroupNotPersistedException e) {
-                return networkResponseFactory.createFailedResponse();
-            }
-        };
-    }
-
-    /***
-     * A Request to exit out the chatroom. Logs in the user log out time in the db.
-     * @return
-     */
-    private RequestStrategy handleExitChatRoomRequest() {
-        return networkRequest -> {
-            try {
-                JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
-                String userName = jsonNode.get("userName").asText();
-                String groupCode = jsonNode.get("groupCode").asText();
-                return userController.exitChatRoom(groupCode, userName);
-            } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
             }
         };
