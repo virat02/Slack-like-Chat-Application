@@ -1,10 +1,13 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.User;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,6 +22,7 @@ public class MessageService implements IService{
     private MessageJPAService messageJPAService = new MessageJPAService();
     private UserService userService = new UserService();
     private GroupService groupService = new GroupService();
+    private UserJPAService userJPAService = new UserJPAService();
 
     /**
      * Set a message JPA Service
@@ -125,5 +129,20 @@ public class MessageService implements IService{
     public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
         messageJPAService.setEntityManager(null);
         return messageJPAService.getAllMessages(groupUniqueKey);
+    }
+
+    public List<Message> getUnreadMessages(String userName, String groupCode) throws UserNotFoundException, GroupNotFoundException {
+        userJPAService.setEntityManager(null);
+        User user = userJPAService.search(userName);
+        Group group = groupService.searchUsingCode(groupCode);
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = null;
+        try {
+            userChatRoomLogOffEvent = userJPAService.getLogOffEvent(user.getId(), group.getId());
+        } catch (FirstTimeUserLoggedInException e) {
+            ChatLogger.info(e.getMessage() + " Return the recent 15 messages");
+            return getTop15Messages(groupCode);
+        }
+
+        return messageJPAService.getMessagesAfterThisTimestamp(userChatRoomLogOffEvent.getLoggedOutTime(), group.getId());
     }
 }

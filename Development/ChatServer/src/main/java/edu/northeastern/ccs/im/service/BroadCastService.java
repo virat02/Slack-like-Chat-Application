@@ -58,4 +58,6 @@ public interface BroadCastService {
      * @return boolean stating is the delete is successful or not
      */
     boolean deleteMessage(String groupId, int messageIndex);
+
+    List<Message> getUnreadMessages(String userName);
 }

@@ -4,11 +4,16 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +27,7 @@ public class MessageJPAService {
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
     private EntityManager entityManager;
     private GroupService groupService = new GroupService();
-
+    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
     /**
      * Set a group service
      *
@@ -30,6 +35,10 @@ public class MessageJPAService {
      */
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
+    }
+
+    private void setEntityManagerUtil(EntityManagerUtil entityManagerUtil)  {
+        this.entityManagerUtil = entityManagerUtil;
     }
 
     /**
@@ -143,7 +152,6 @@ public class MessageJPAService {
 
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
-
         String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
         beginTransaction();
         TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
@@ -172,5 +180,31 @@ public class MessageJPAService {
         msgList.sort(Comparator.comparing(Message::getId));
         ChatLogger.info("All messages for a group: " + groupUniqueKey + " retrieved!");
         return msgList;
+    }
+
+    /***
+     * Returns a list of messages after the timestamp.
+     *
+     * Considering the usage of this function, it doesn't check for any exception handling as it safely assumes that the method
+     * is called for an group which does exists.
+     * @param loggedOut -> The time at which the user has exited the chatroom. Any messages sent through this
+     *                  group after the timestamp will be delivered to the user.
+     * @param groupId -> The id of the group.
+     * @return -> A list of Messages.
+     */
+    public List<Message> getMessagesAfterThisTimestamp(Date loggedOut, int groupId) {
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
+        Root<Message> root = criteriaQuery.from(Message.class);
+        Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(root.get("receiver").get("id"), groupId),
+                criteriaBuilder.greaterThanOrEqualTo(root.get("timestamp"), loggedOut));
+        criteriaQuery.where(predicate);
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get("timestamp")));
+        TypedQuery<Message> typedQuery = em.createQuery(criteriaQuery);
+        List<Message> messages = typedQuery.getResultList();
+        em.close();
+        return messages;
     }
 }

@@ -42,9 +42,11 @@ public class UserControllerTest {
      * Tests the successful addition of a user to a database.
      * @throws UserNotFoundException if the user is not found.
      * @throws UserNotPersistedException if the user is not persisted in DB.
+     * @throws UsernameInvalidException if the username is invalid
      */
     @Test
-    public void testCreateEntity() throws UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainUppercaseException, PasswordDoesNotContainLowercaseException, UsernameDoesNotContainLowercaseException, UsernameDoesNotContainNumberException, PasswordDoesNotContainNumberException, PasswordTooSmallException, UsernameTooSmallException, UsernameDoesNotContainUppercaseException, UsernameTooLongException, PasswordTooLargeException {
+    public void testCreateEntity() throws UserNotPersistedException,
+            UserNotFoundException, UsernameInvalidException, PasswordInvalidException {
         when(userService.addUser(any())).thenReturn(userOne);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
@@ -56,9 +58,12 @@ public class UserControllerTest {
      * Tests the unsuccessful addition of a user to a database.
      * @throws UserNotPersistedException if the user is not created.
      * @throws UserNotFoundException if the user is not found.
+     * @throws UsernameInvalidException if the username is invalid.
+     * @throws PasswordInvalidException if the password is invalid.
      */
     @Test
-    public void testUserNotFailException() throws UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainUppercaseException, PasswordDoesNotContainLowercaseException, UsernameDoesNotContainLowercaseException, UsernameDoesNotContainNumberException, PasswordDoesNotContainNumberException, PasswordTooSmallException, UsernameTooSmallException, UsernameDoesNotContainUppercaseException, UsernameTooLongException, PasswordTooLargeException {
+    public void testUserNotFailException() throws UserNotPersistedException, UserNotFoundException,
+            UsernameInvalidException, PasswordInvalidException {
         when(userService.addUser(any())).thenThrow(UserNotFoundException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
@@ -70,13 +75,12 @@ public class UserControllerTest {
      * Tests the unsuccessful addition of a user to a database.
      * @throws UserNotFoundException if the user is not found.
      * @throws UserNotPersistedException if the user is not created.
+     * @throws UsernameInvalidException if the username is invalid.
+     * @throws PasswordInvalidException if the password is invalid.
      */
     @Test
     public void testCreateEntityFail() throws UserNotPersistedException,
-            UserNotFoundException, PasswordDoesNotContainUppercaseException,
-            PasswordDoesNotContainLowercaseException, UsernameDoesNotContainLowercaseException,
-            UsernameDoesNotContainNumberException, PasswordDoesNotContainNumberException, PasswordTooSmallException,
-            UsernameTooSmallException, UsernameDoesNotContainUppercaseException, UsernameTooLongException, PasswordTooLargeException {
+            UserNotFoundException, UsernameInvalidException, PasswordInvalidException {
         when(userService.addUser(any())).thenThrow(UserNotPersistedException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
@@ -237,7 +241,6 @@ public class UserControllerTest {
      */
     @Test
     public void testViewFollowersFail() throws ListOfUsersNotFound, UserNotFoundException {
-        List<User> users = new ArrayList<>();
         when(userService.getFollowers(any())).thenThrow(ListOfUsersNotFound.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.viewFollowers("Us");
@@ -252,7 +255,6 @@ public class UserControllerTest {
      */
     @Test
     public void testViewFollowersFailNotFound() throws ListOfUsersNotFound, UserNotFoundException {
-        List<User> users = new ArrayList<>();
         when(userService.getFollowers(any())).thenThrow(UserNotFoundException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.viewFollowers("Us");
@@ -282,7 +284,6 @@ public class UserControllerTest {
      */
     @Test
     public void testViewFolloweesFailNotFound() throws UserNotFoundException, ListOfUsersNotFound {
-        List<User> users = new ArrayList<>();
         when(userService.getFollowees(any())).thenThrow(UserNotFoundException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.viewFollowees("Us");
@@ -297,7 +298,6 @@ public class UserControllerTest {
      */
     @Test
     public void testViewFolloweesFail() throws UserNotFoundException, ListOfUsersNotFound {
-        List<User> users = new ArrayList<>();
         when(userService.getFollowees(any())).thenThrow(ListOfUsersNotFound.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.viewFollowees("Us");
@@ -370,11 +370,10 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure the send invite works properly when an exception is thrown.
-     * @throws InviteNotFoundException if invite is not found
      * @throws InviteNotDeletedException if we can't delete invite to DB
      */
     @Test
-    public void testDeleteInviteFailNotAdded() throws InviteNotFoundException, InviteNotDeletedException {
+    public void testDeleteInviteFailNotAdded() throws InviteNotDeletedException {
         Invite invite = new Invite();
         when(userService.deleteInvite(any())).thenThrow(InviteNotDeletedException.class);
         userController.setUserService(userService);
@@ -385,11 +384,10 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure the send invite works properly.
-     * @throws InviteNotFoundException if invite is not found
-     * @throws InviteNotAddedException if we can't delete invite to DB
+     * @throws InviteNotDeletedException if the invite wasn't deleted.
      */
     @Test
-    public void testDeleteInvite() throws InviteNotFoundException, InviteNotDeletedException {
+    public void testDeleteInvite() throws InviteNotDeletedException {
         Invite invite = new Invite();
         when(userService.deleteInvite(any())).thenReturn(invite);
         userController.setUserService(userService);
@@ -448,10 +446,9 @@ public class UserControllerTest {
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
      * @throws UserNotFoundException if we can't find the user in the DB.
-     * @throws IllegalAccessException if we can't access the object.
      */
     @Test
-    public void testSearchInviteFail() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
+    public void testSearchInviteFail() throws InviteNotFoundException, GroupNotFoundException,
             UserNotFoundException{
         String groupCode = "Group";
         String username = "Username";
@@ -466,12 +463,10 @@ public class UserControllerTest {
      * Tests to ensure the search invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
-     * @throws IllegalAccessException if we can't access the object.
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testSearchInviteFailUserNotFound() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
-            UserNotFoundException{
+    public void testSearchInviteFailUserNotFound() throws InviteNotFoundException, GroupNotFoundException, UserNotFoundException{
         String groupCode = "Group";
         String username = "Username";
         when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(UserNotFoundException.class);
@@ -485,31 +480,10 @@ public class UserControllerTest {
      * Tests to ensure the search invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
-     * @throws IllegalAccessException if we can't access the object.
-     * @throws UserNotFoundException if we can't find the user in the DB.
-     */
-//    @Test
-//    public void testSearchInviteFailGroupNotFound() throws
-//            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
-//        String groupCode = "Group";
-//        String username = "Username";
-//        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(IllegalAccessException.class);
-//        userController.setUserService(userService);
-//        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
-//        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-//        verify(userService).searchInviteByGroupCode(any(), anyString());
-//    }
-
-    /**
-     * Tests to ensure the search invite works properly when an exception is thrown.
-     * @throws InviteNotFoundException if invite is not found
-     * @throws GroupNotFoundException if we can't find the group in the DB.
-     * @throws IllegalAccessException if we can't access the object.
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testSearchInviteFailInviteNotFound() throws
-            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
+    public void testSearchInviteFailInviteNotFound() throws InviteNotFoundException, GroupNotFoundException, UserNotFoundException{
         String groupCode = "Group";
         String username = "Username";
         when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(InviteNotFoundException.class);
@@ -523,11 +497,10 @@ public class UserControllerTest {
      * Tests to ensure the search invite works properly.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
-     * @throws IllegalAccessException if we can't access the object.
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
-    public void testSearchInvite() throws InviteNotFoundException, GroupNotFoundException, IllegalAccessException,
+    public void testSearchInvite() throws InviteNotFoundException, GroupNotFoundException,
             UserNotFoundException{
         String groupCode = "Group";
         String username = "Username";
@@ -556,6 +529,22 @@ public class UserControllerTest {
     }
 
     /**
+     * Tests to ensure the unfollow user works properly when an exception is thrown.
+     * @throws UserNotFoundException if we can't find the user in the DB.
+     */
+    @Test
+    public void testUnfollowFailTwo() throws UserNotFoundException,UnfollowNotFollowingUserException {
+        String username = "user";
+        User user = new User();
+        user.setUsername(username);
+        when(userService.unfollow(anyString(), any())).thenThrow(UnfollowNotFollowingUserException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.unfollowUser(user.getUsername(), user);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).unfollow(anyString(), any());
+    }
+
+    /**
      * Tests to ensure the unfollow user works properly.
      * @throws UserNotFoundException if invite is not found
      */
@@ -573,20 +562,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure if the username is too small
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testUsernameTooSmall() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(UsernameTooSmallException.class);
+    public void testUsernameTooSmall() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(UsernameInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -595,20 +578,15 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure if the username throws if there are no lowercase letters
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testUsernameNoLower() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(UsernameDoesNotContainLowercaseException.class);
+    public void testUsernameNoLower() throws UsernameInvalidException, PasswordInvalidException,
+            UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(UsernameInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -617,20 +595,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure username uppercase error throws
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testUsernameNoUpper() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(UsernameDoesNotContainUppercaseException.class);
+    public void testUsernameNoUpper() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(UsernameInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -639,20 +611,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure username throws the no number error.
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testUsernameNoNumber() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(UsernameDoesNotContainNumberException.class);
+    public void testUsernameNoNumber() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException{
+        when(userService.addUser(any())).thenThrow(UsernameInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -661,20 +627,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure if the password is too small
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testPasswordTooSmall() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(PasswordTooSmallException.class);
+    public void testPasswordTooSmall() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(PasswordInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -683,20 +643,15 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure password no uppercase error throws.
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testPasswordNoUppercase() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(PasswordDoesNotContainUppercaseException.class);
+    public void testPasswordNoUppercase() throws UsernameInvalidException, PasswordInvalidException,
+            UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(PasswordInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -704,20 +659,15 @@ public class UserControllerTest {
     }
     /**
      * Tests to ensure the password contains a lower case letter
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testPasswordNoLower() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(PasswordDoesNotContainLowercaseException.class);
+    public void testPasswordNoLower() throws UsernameInvalidException, PasswordInvalidException,
+            UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(PasswordInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -726,20 +676,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure password contains a number.
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testPasswordNoNumber() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(PasswordDoesNotContainNumberException.class);
+    public void testPasswordNoNumber() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(PasswordInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -748,20 +692,14 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure password can't be too long.
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+]     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testPasswordTooLong() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(PasswordTooLargeException.class);
+    public void testPasswordTooLong() throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(PasswordInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -770,26 +708,29 @@ public class UserControllerTest {
 
     /**
      * Tests to ensure username can't be too long.
-     * @throws UsernameDoesNotContainUppercaseException username does not contain username
-     * @throws UsernameDoesNotContainNumberException username does not contain a number
-     * @throws UsernameDoesNotContainLowercaseException username does not contain lowercase
-     * @throws PasswordDoesNotContainUppercaseException password does not contain uppercase
-     * @throws PasswordTooSmallException password too small
+     * @throws UsernameInvalidException username does not contain lowercase
+     * @throws PasswordInvalidException password too small
      * @throws UserNotPersistedException User not persisted
      * @throws UserNotFoundException user not found exception
-     * @throws PasswordDoesNotContainLowercaseException password no lowercase
-     * @throws UsernameTooSmallException username too small
-     * @throws PasswordDoesNotContainNumberException password does not contain numbers.
      */
     @Test
-    public void testUsernameTooLong() throws UsernameDoesNotContainUppercaseException, UsernameDoesNotContainNumberException, UsernameDoesNotContainLowercaseException, PasswordDoesNotContainUppercaseException, PasswordTooSmallException, UserNotPersistedException, UserNotFoundException, PasswordDoesNotContainLowercaseException, UsernameTooSmallException, PasswordDoesNotContainNumberException, UsernameTooLongException, PasswordTooLargeException {
-        when(userService.addUser(any())).thenThrow(UsernameTooLongException.class);
+    public void testUsernameTooLong() throws UsernameInvalidException, PasswordInvalidException,
+            UserNotPersistedException, UserNotFoundException {
+        when(userService.addUser(any())).thenThrow(UsernameInvalidException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.addEntity(userOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
         verify(userService).addUser(any());
     }
 
+    /**
+     * A test for exit chat room in user controller.
+     */
+    @Test
+    public void testExitChatRoom() {
+        userController.setUserService(userService);
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, userController.exitChatRoom("123", "banjo").status());
+    }
 
 
 
