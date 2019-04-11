@@ -480,25 +480,6 @@ public class UserControllerTest {
      * Tests to ensure the search invite works properly when an exception is thrown.
      * @throws InviteNotFoundException if invite is not found
      * @throws GroupNotFoundException if we can't find the group in the DB.
-     * @throws IllegalAccessException if we can't access the object.
-     * @throws UserNotFoundException if we can't find the user in the DB.
-     */
-//    @Test
-//    public void testSearchInviteFailGroupNotFound() throws
-//            InviteNotFoundException, GroupNotFoundException, IllegalAccessException, UserNotFoundException{
-//        String groupCode = "Group";
-//        String username = "Username";
-//        when(userService.searchInviteByGroupCode(anyString(), anyString())).thenThrow(IllegalAccessException.class);
-//        userController.setUserService(userService);
-//        NetworkResponse networkResponse = userController.searchInviteByGroupCode(groupCode, username);
-//        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-//        verify(userService).searchInviteByGroupCode(any(), anyString());
-//    }
-
-    /**
-     * Tests to ensure the search invite works properly when an exception is thrown.
-     * @throws InviteNotFoundException if invite is not found
-     * @throws GroupNotFoundException if we can't find the group in the DB.
      * @throws UserNotFoundException if we can't find the user in the DB.
      */
     @Test
@@ -541,6 +522,22 @@ public class UserControllerTest {
         User user = new User();
         user.setUsername(username);
         when(userService.unfollow(anyString(), any())).thenThrow(UserNotFoundException.class);
+        userController.setUserService(userService);
+        NetworkResponse networkResponse = userController.unfollowUser(user.getUsername(), user);
+        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
+        verify(userService).unfollow(anyString(), any());
+    }
+
+    /**
+     * Tests to ensure the unfollow user works properly when an exception is thrown.
+     * @throws UserNotFoundException if we can't find the user in the DB.
+     */
+    @Test
+    public void testUnfollowFailTwo() throws UserNotFoundException,UnfollowNotFollowingUserException {
+        String username = "user";
+        User user = new User();
+        user.setUsername(username);
+        when(userService.unfollow(anyString(), any())).thenThrow(UnfollowNotFollowingUserException.class);
         userController.setUserService(userService);
         NetworkResponse networkResponse = userController.unfollowUser(user.getUsername(), user);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
@@ -726,6 +723,14 @@ public class UserControllerTest {
         verify(userService).addUser(any());
     }
 
+    /**
+     * A test for exit chat room in user controller.
+     */
+    @Test
+    public void testExitChatRoom() {
+        userController.setUserService(userService);
+        assertEquals(NetworkResponse.STATUS.SUCCESSFUL, userController.exitChatRoom("123", "banjo").status());
+    }
 
 
 

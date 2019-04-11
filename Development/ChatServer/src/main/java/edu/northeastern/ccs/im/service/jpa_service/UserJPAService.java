@@ -54,13 +54,6 @@ public class UserJPAService {
             this.entityManager = entityManager;
         }
     }
-    /**
-     * A private method that'll end the transaction.
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
 
     /**
      * Creating a new User instance we are creating in the database.
@@ -70,11 +63,10 @@ public class UserJPAService {
     public int createUser(User user) throws UserNotPersistedException {
         try {
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.persist(user);
             int id= user.getId();
-            em.getTransaction().commit();
-            em.close();
+            endTransaction(em);
             return id;
         }
         catch (Exception e) {
@@ -91,10 +83,9 @@ public class UserJPAService {
     public void deleteUser(User user) throws UserNotFoundException {
         if(user == search(user.getUsername())) {
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.remove(user);
-            em.getTransaction().commit();
-            em.close();
+            endTransaction(em);
         }
     }
 
@@ -105,7 +96,7 @@ public class UserJPAService {
     public void updateUser(User user) throws UserNotFoundException {
         try {
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             User thisUser = em.find(User.class, user.getId());
             if (thisUser == null) {
                 throw new UserNotFoundException("Can't find User for ID " + user.getId());
@@ -118,8 +109,7 @@ public class UserJPAService {
             thisUser.setProfileAccess(user.getProfileAccess());
             thisUser.setGroups(user.getGroups());
             em.merge(thisUser);
-            em.getTransaction().commit();
-            em.close();
+            endTransaction(em);
         } catch (Exception e) {
             ChatLogger.error(e.getMessage());
             throw new UserNotFoundException("Profile Not Updated!");
@@ -135,7 +125,7 @@ public class UserJPAService {
         try {
             String thisString = "SELECT u " + "FROM User u WHERE u.username ='" + username + "'";
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             TypedQuery<User> query = em.createQuery(thisString, User.class);
             User result = query.getSingleResult();
             em.getTransaction().commit();
@@ -159,7 +149,7 @@ public class UserJPAService {
             StringBuilder queryString = new StringBuilder("SELECT u FROM User u WHERE u.id = ");
             queryString.append(id);
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             TypedQuery<User> query = em.createQuery(queryString.toString(), User.class);
             return query.getSingleResult();
         }
@@ -179,7 +169,7 @@ public class UserJPAService {
         String queryString =
                 "SELECT u FROM User u WHERE u.username ='" + user.getUsername() + "'";
         EntityManager em = entityManagerUtil.getEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         try {
             TypedQuery<User> query = em.createQuery(queryString, User.class);
             User newUser = query.getSingleResult();
@@ -204,7 +194,7 @@ public class UserJPAService {
         String queryString =
                 "SELECT f FROM User u LEFT JOIN u.following f WHERE u.id = " + user.getId();
         EntityManager em = entityManagerUtil.getEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         return getUsers(queryString, em);
     }
 
@@ -238,7 +228,7 @@ public class UserJPAService {
             String queryString =
                     "SELECT u FROM user_follower u WHERE u.followerID ='" + user.getId() + "'";
             EntityManager em = entityManagerUtil.getEntityManager();
-            em.getTransaction().begin();
+            beginTransaction(em);
             return getUsers(queryString, em);
         }
 
@@ -248,8 +238,16 @@ public class UserJPAService {
     /**
      * A method to begin the transaction.
      */
-    private void beginTransaction() {
+    private void beginTransaction(EntityManager entityManager) {
         entityManager.getTransaction().begin();
+    }
+
+    /**
+     * A private method that'll end the transaction.
+     */
+    private void endTransaction(EntityManager entityManager) {
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
     /***
@@ -259,10 +257,9 @@ public class UserJPAService {
      */
     public void saveOrUpdateJoinGroupEvent(UserChatRoomLogOffEvent userChatRoomLogOffEvent)  {
         EntityManager em = entityManagerUtil.getEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         em.merge(userChatRoomLogOffEvent);
-        em.getTransaction().commit();
-        em.close();
+        endTransaction(em);
     }
 
     /**
@@ -274,7 +271,7 @@ public class UserJPAService {
      */
     public UserChatRoomLogOffEvent getLogOffEvent(int userId, int groupId) throws FirstTimeUserLoggedInException {
         EntityManager em = entityManagerUtil.getEntityManager();
-        em.getTransaction().begin();
+        beginTransaction(em);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UserChatRoomLogOffEvent> cq = cb.createQuery(UserChatRoomLogOffEvent.class);
         Root<UserChatRoomLogOffEvent> root = cq.from(UserChatRoomLogOffEvent.class);

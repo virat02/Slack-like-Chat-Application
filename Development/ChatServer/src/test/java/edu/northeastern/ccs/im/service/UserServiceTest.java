@@ -517,4 +517,46 @@ public class UserServiceTest {
         user.setPassword(password);
         userService.addUser(user);
     }
+
+    /**
+     * Tests to ensure the UserGroup Event method works properly.
+     * @throws UserNotFoundException when a user is not found in the DB.
+     * @throws GroupNotFoundException when a group is not found in the DB.
+     */
+    @Test
+    public void testUserGroupEvent() throws UserNotFoundException, GroupNotFoundException {
+        when(userJPAService.search(anyString())).thenReturn(userTwo);
+        when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
+        userService.setGroupJPAService(groupJPAService);
+        userService.setJPAService(userJPAService);
+        userService.userGroupEvent(userTwo.getUsername(), groupOne.getGroupCode());
+    }
+
+    /**
+     * Tests to ensure the UserGroup Event method throws a User Not found exception.
+     * @throws UserNotFoundException when a user is not found in the DB.
+     * @throws GroupNotFoundException when a group is not found in the DB.
+     */
+    @Test (expected = UnsupportedOperationException.class)
+    public void testUserGroupEventUserNotFound() throws UserNotFoundException, GroupNotFoundException {
+        when(userJPAService.search(anyString())).thenThrow(UserNotFoundException.class);
+        when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
+        userService.setGroupJPAService(groupJPAService);
+        userService.setJPAService(userJPAService);
+        userService.userGroupEvent(userTwo.getUsername(), groupOne.getGroupCode());
+    }
+
+    /**
+     * Tests to ensure the UserGroup Event method throws a Group Not Found Exception.
+     * @throws UserNotFoundException when a user is not found in the DB.
+     * @throws GroupNotFoundException when a group is not found in the DB.
+     */
+    @Test (expected = UnsupportedOperationException.class)
+    public void testUserGroupEventGroupNotFound() throws UserNotFoundException, GroupNotFoundException {
+        when(userJPAService.search(anyString())).thenReturn(userTwo);
+        when(groupJPAService.searchUsingCode(anyString())).thenThrow(GroupNotFoundException.class);
+        userService.setGroupJPAService(groupJPAService);
+        userService.setJPAService(userJPAService);
+        userService.userGroupEvent(userTwo.getUsername(), groupOne.getGroupCode());
+    }
 }

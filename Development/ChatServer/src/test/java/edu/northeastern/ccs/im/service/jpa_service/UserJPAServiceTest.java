@@ -1,19 +1,26 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.customexceptions.FirstTimeUserLoggedInException;
 import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Profile;
 import edu.northeastern.ccs.im.user_group.User;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
+import org.hibernate.Metamodel;
+import org.hibernate.ejb.EntityManagerFactoryImpl;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.metamodel.internal.MetamodelImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -331,6 +338,71 @@ public class UserJPAServiceTest {
         userJPAService.setEntityManagerUtil(entityManagerUtil);
         List<User> newUsers = userJPAService.getFollowees(userOne);
         assertEquals(0, newUsers.size());
+    }
+
+    /**
+     * Tests saving the log off event.
+     */
+    @Test
+    public void testSaveOrUpdate() {
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent();
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.merge(any())).thenReturn(userChatRoomLogOffEvent);
+        userJPAService.setEntityManagerUtil(entityManagerUtil);
+        userJPAService.saveOrUpdateJoinGroupEvent(userChatRoomLogOffEvent);
+    }
+
+    /**
+     * Tests the getLoffOffEvent function in the UserJPAService class.
+     * @throws FirstTimeUserLoggedInException if it's the users first time logged in.
+     */
+    @Test
+    public void testGetLogOffEvent() throws FirstTimeUserLoggedInException {
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent();
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        CriteriaQuery criteriaQuery = mock(CriteriaQuery.class);
+        Root root = mock(Root.class);
+        Predicate predicate = mock(Predicate.class);
+        javax.persistence.criteria.Path path = mock(Path.class);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+        when(cb.createQuery(any())).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(UserChatRoomLogOffEvent.class)).thenReturn(root);
+        when(root.get(anyString())).thenReturn(path);
+        when(cb.and(any(), any())).thenReturn(predicate);
+        when(criteriaQuery.where(predicate)).thenReturn(criteriaQuery);
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenReturn(userChatRoomLogOffEvent);
+        userJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertEquals(userChatRoomLogOffEvent, userJPAService.getLogOffEvent(23, 123));
+    }
+
+    /**
+     * Tests the getLoffOffEvent function in the UserJPAService when a User logs in for the first time.
+     * @throws FirstTimeUserLoggedInException if it's the users first time logged in.
+     */
+    @Test (expected = FirstTimeUserLoggedInException.class)
+    public void testGetLogOffEventFirstTimeLoggedIn() throws FirstTimeUserLoggedInException {
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent();
+        CriteriaBuilder cb = mock(CriteriaBuilder.class);
+        CriteriaQuery criteriaQuery = mock(CriteriaQuery.class);
+        Root root = mock(Root.class);
+        Predicate predicate = mock(Predicate.class);
+        javax.persistence.criteria.Path path = mock(Path.class);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.getCriteriaBuilder()).thenReturn(cb);
+        when(cb.createQuery(any())).thenReturn(criteriaQuery);
+        when(criteriaQuery.from(UserChatRoomLogOffEvent.class)).thenReturn(root);
+        when(root.get(anyString())).thenReturn(path);
+        when(cb.and(any(), any())).thenReturn(predicate);
+        when(criteriaQuery.where(predicate)).thenReturn(criteriaQuery);
+        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
+        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
+        userJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertEquals(userChatRoomLogOffEvent, userJPAService.getLogOffEvent(23, 123));
     }
 
 }
