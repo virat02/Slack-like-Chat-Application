@@ -21,7 +21,7 @@ public class ProfileController implements IController<Profile> {
     private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
     private static final String EMAIL_ALREADY_IN_USE_JSON = "{\"message\" : \"The email id is already in use. Please try again with different email id!\"}";
     private static final String INVALID_IMAGEURL_JSON = "{\"message\" : \"The imageURL you entered is invalid. Please try again! (Eg. http://* or https://* )\"}";
-
+    private static final String CANNOT_DELETE_NON_EXISTING_PROFILE_JSON = "{\"message\" : \"The profile you are trying to delete does not exist. Please check again!\"}";
     /**
      * Sets the user service for the controller.
      * @param profileService the user service the controller will be using to load on the payload.
@@ -102,13 +102,19 @@ public class ProfileController implements IController<Profile> {
      * @return a NetworkResponse
      */
     public NetworkResponse deleteEntity(Profile pf) {
-        if(profileService.deleteProfile(pf)){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(pf)));
+        try{
+            if(profileService.deleteProfile(pf)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(pf)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(INTERNAL_ERROR_DELETE_PROFILE_JSON));
+            }
         }
-        else{
+        catch (ProfileNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(INTERNAL_ERROR_DELETE_PROFILE_JSON));
+                    new PayloadImpl(CANNOT_DELETE_NON_EXISTING_PROFILE_JSON));
         }
 
     }

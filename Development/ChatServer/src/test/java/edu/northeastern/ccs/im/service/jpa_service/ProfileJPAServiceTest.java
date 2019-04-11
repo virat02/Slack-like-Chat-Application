@@ -167,6 +167,8 @@ public class ProfileJPAServiceTest {
 
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        when(entityManager.contains(any())).thenReturn(true);
+        when(entityManager.merge(any(Profile.class))).thenReturn(p1);
         allJPAService.setEntityManagerUtil(entityManagerUtil);
         doThrow(new EntityNotFoundException()).when(entityManager).remove(any(Profile.class));
         allJPAService.deleteEntity(p1);

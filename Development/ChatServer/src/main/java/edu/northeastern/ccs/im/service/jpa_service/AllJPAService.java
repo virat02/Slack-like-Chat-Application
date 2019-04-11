@@ -1,8 +1,8 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
+
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.logging.Logger;
 
@@ -10,37 +10,15 @@ public class AllJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(AllJPAService.class.getName());
 
-    //The entity manager for this class.
-    private EntityManager entityManager;
+    //The entityManagerUtil for this class.
+    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
 
     /**
-     * Set an entity manager
-     * @param entityManager
+     * Set the entityManagerUtil
+     * @param entityManagerUtil
      */
-    public void setEntityManager(EntityManager entityManager) {
-        if(entityManager == null) {
-            EntityManagerFactory emFactory;
-            emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
-            this.entityManager = emFactory.createEntityManager();
-        }
-        else{
-            this.entityManager = entityManager;
-        }
-    }
-
-    /**
-     * A method to begin the transaction.
-     */
-    private void beginTransaction() {
-        entityManager.getTransaction().begin();
-    }
-
-    /**
-     * A private method that'll end the transaction.
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
+    public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+        this.entityManagerUtil = entityManagerUtil;
     }
 
     /**
@@ -49,10 +27,17 @@ public class AllJPAService {
      * @return
      */
     public boolean createEntity(Object obj) {
-        beginTransaction();
-        entityManager.persist(obj);
-        entityManager.flush();
-        endTransaction();
+
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+
+        em.persist(obj);
+        em.flush();
+
+        //End Transaction
+        em.getTransaction().commit();
+        em.close();
         return true;
     }
 
@@ -62,17 +47,28 @@ public class AllJPAService {
      * @return
      */
     public boolean deleteEntity(Object obj) {
-        beginTransaction();
-        entityManager.remove(obj);
-        endTransaction();
+
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+
+        //Re-attach the entity if not attached
+        if(!em.contains(obj)) {
+            obj = em.merge(obj);
+        }
+        em.remove(obj);
+
+        //End Transaction
+        em.getTransaction().commit();
+        em.close();
 
         //If reached here, all went well
         return true;
     }
 
     /**
-     * Generic meethod to get a particular entity from the DB
-     * @param object
+     * Generic method to get a particular entity from the DB
+     * @param object String to identify which entity we need to get
      * @param id
      * @return
      */
@@ -81,8 +77,12 @@ public class AllJPAService {
         queryString.append(object);
         queryString.append(" o WHERE o.id = ");
         queryString.append(id);
-        beginTransaction();
-        TypedQuery<Object> query = entityManager.createQuery(queryString.toString(), Object.class);
+
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+
+        TypedQuery<Object> query = em.createQuery(queryString.toString(), Object.class);
         return query.getSingleResult();
     }
 }
