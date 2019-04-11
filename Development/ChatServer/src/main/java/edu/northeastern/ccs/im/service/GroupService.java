@@ -43,6 +43,19 @@ public class GroupService implements IService {
     }
 
     /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param jpaService for this class.
+     */
+    public void setAllService(AllJPAService jpaService) {
+        if (jpaService == null) {
+            this.jpaService = new AllJPAService();
+        } else {
+            this.jpaService = jpaService;
+        }
+    }
+
+    /**
      * A method to set the JPA Service for this class, makes the class more testable.
      *
      * @param groupJPA for this class.

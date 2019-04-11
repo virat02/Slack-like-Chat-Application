@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service;
 import static org.junit.Assert.*;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,7 @@ public class GroupServiceTest {
 	private UserJPAService userJPAService;
 	private GroupJPAService groupJPAService;
 	private GroupService groupService;
+	private AllJPAService jpaService;
 	private User userOne;
 	private User userTwo;
 	private Group groupOne;
@@ -71,6 +73,7 @@ public class GroupServiceTest {
         groupJPAService = mock(GroupJPAService.class);
 
 		userJPAService = mock(UserJPAService.class);
+		jpaService = mock(AllJPAService.class);
 	}
 
 
@@ -144,17 +147,14 @@ public class GroupServiceTest {
 	public void testCreateIfNotPresentForPrivateGroup()
 			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 
-		Group g = mock(Group.class);
-
 		groupService.setUserService(userJPAService);
 		groupService.setJPAService(groupJPAService);
+		groupService.setAllService(jpaService);
 		when(userJPAService.search("Jerry")).thenReturn(userOne);
 		when(userJPAService.search("Danny")).thenReturn(userTwo);
 		when(groupJPAService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
-		when(groupJPAService.createGroup(g)).thenReturn(1);
-		when(groupJPAService.updateGroup(g)).thenReturn(true);
+		when(jpaService.createEntity(any(Group.class))).thenReturn(true);
 
-		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Jerry", true));
 		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Danny", true));
 	}
 
