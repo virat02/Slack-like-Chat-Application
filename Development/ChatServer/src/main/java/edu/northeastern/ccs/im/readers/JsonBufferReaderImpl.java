@@ -22,11 +22,21 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
     private static final String CHARSET_NAME = "us-ascii";
     private long bytesRead;
 
+    /**
+     * Reading the bytes
+     * @return long byte representation.
+     */
     @Override
     public long bytesRead() {
         return bytesRead;
     }
 
+    /**
+     * The message list.
+     * @param buffer a ByteBuffer
+     * @return the list of messages
+     * @throws JsonProcessingException if there is a problem processing
+     */
     @Override
     public List<Message> messageList(ByteBuffer buffer) throws JsonProcessingException {
         List<Message> messages = new ArrayList<>();
@@ -45,9 +55,9 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
 
     /***
      * Reads the messages from json string using json parser on per token basis.
-     * @param jsonParser
-     * @param messages
-     * @throws IOException
+     * @param jsonParser the jsonParser
+     * @param messages the messages
+     * @throws IOException if there are not messages.
      */
     private void readFromJsonParser(JsonParser jsonParser, List<Message> messages) throws IOException {
         String srcName = null;
