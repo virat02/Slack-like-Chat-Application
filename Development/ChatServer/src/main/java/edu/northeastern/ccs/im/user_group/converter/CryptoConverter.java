@@ -14,7 +14,7 @@ import java.security.Key;
 @Converter
 public class CryptoConverter implements AttributeConverter<String, String> {
     // Algorithm used by the Cipher
-    private static final String ALGORITHM = "AES/GCM/NoPadding";
+    private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
     //Unique Key that is used in Converting the given attribute
     private static final byte[] KEY = "CS5500ProjectSecurityKey".getBytes();
 
