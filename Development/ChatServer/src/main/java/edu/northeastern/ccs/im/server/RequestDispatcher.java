@@ -72,6 +72,8 @@ public class RequestDispatcher {
                 ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
+    private static final String USERNAME = "userName";
+    private static final String GROUPCODE = "groupCode";
 
     /***
      * Private constructor to enforce singleton pattern
@@ -183,8 +185,8 @@ public class RequestDispatcher {
         return networkRequest -> {
             try {
                 JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
-                String userName = jsonNode.get("userName").asText();
-                String groupCode = jsonNode.get("groupCode").asText();
+                String userName = jsonNode.get(USERNAME).asText();
+                String groupCode = jsonNode.get(GROUPCODE).asText();
                 return userController.searchInviteByGroupCode(groupCode, userName);
             } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
@@ -225,8 +227,8 @@ public class RequestDispatcher {
         try {
             JsonNode jsonNode = CommunicationUtils
                     .getObjectMapper().readTree(networkRequest.payload().jsonString());
-            String groupCode = jsonNode.get("groupCode").asText();
-            String userName = jsonNode.get("userName").asText();
+            String groupCode = jsonNode.get(GROUPCODE).asText();
+            String userName = jsonNode.get(USERNAME).asText();
             boolean flag = jsonNode.get("isPrivate").asBoolean();
             BroadCastService messageService = messageManagerService.getService(groupCode, userName, flag);
             List<Message> messages = messageService.getUnreadMessages(userName);
@@ -510,8 +512,8 @@ public class RequestDispatcher {
         return networkRequest -> {
             try {
                 JsonNode jsonNode = CommunicationUtils.getObjectMapper().readTree(networkRequest.payload().jsonString());
-                String userName = jsonNode.get("userName").asText();
-                String groupCode = jsonNode.get("groupCode").asText();
+                String userName = jsonNode.get(USERNAME).asText();
+                String groupCode = jsonNode.get(GROUPCODE).asText();
                 return userController.exitChatRoom(groupCode, userName);
             } catch (IOException e) {
                 return networkResponseFactory.createFailedResponse();
@@ -528,8 +530,8 @@ public class RequestDispatcher {
             try {
                 JsonNode jsonNode = CommunicationUtils
                         .getObjectMapper().readTree(networkRequest.payload().jsonString());
-                String groupCode = jsonNode.get("groupCode").asText();
-                String userName = jsonNode.get("userName").asText();
+                String groupCode = jsonNode.get(GROUPCODE).asText();
+                String userName = jsonNode.get(USERNAME).asText();
                 boolean flag = jsonNode.get("isPrivate").asBoolean();
                 int messageIndex = jsonNode.get("messageIndex").asInt();
 
