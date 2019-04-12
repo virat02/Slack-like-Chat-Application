@@ -3,7 +3,6 @@ package edu.northeastern.ccs.im.service.jpa_service;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -25,9 +24,9 @@ import java.util.logging.Logger;
 public class MessageJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
-    private EntityManager entityManager;
-    private GroupService groupService = new GroupService();
     private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+    private GroupService groupService = new GroupService();
+
     /**
      * Set a group service
      *
@@ -37,61 +36,12 @@ public class MessageJPAService {
         this.groupService = groupService;
     }
 
-    private void setEntityManagerUtil(EntityManagerUtil entityManagerUtil)  {
+    /**
+     * Set the entityManagerUtil
+     * @param entityManagerUtil
+     */
+    public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
         this.entityManagerUtil = entityManagerUtil;
-    }
-
-    /**
-     * Set an entity manager
-     *
-     * @param entityManager
-     */
-    public void setEntityManager(EntityManager entityManager) {
-        if (entityManager != null) {
-            this.entityManager = entityManager;
-        } else {
-            EntityManagerFactory emFactory;
-            emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
-            this.entityManager = emFactory.createEntityManager();
-        }
-    }
-
-    /**
-     * Close the entity manager
-     */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
-    }
-
-    /**
-     * Begin the entity manager
-     *
-     * @return
-     */
-    private void beginTransaction() {
-        entityManager.getTransaction().begin();
-    }
-
-    /**
-     * Persists a message with the given message object
-     *
-     * @param message
-     * @return true iff the message could be persisted
-     */
-    public int createMessage(Message message) throws MessageNotPersistedException {
-        try {
-            beginTransaction();
-            message.setTimestamp(new Date());
-            entityManager.persist(message);
-            entityManager.flush();
-            endTransaction();
-            LOGGER.info("Created message with message id : " + message.getId());
-            return message.getId();
-        } catch (Exception e) {
-            LOGGER.info("JPA Could not persist the message!");
-            throw new MessageNotPersistedException("JPA Could not persist the message!");
-        }
     }
 
     /**
@@ -100,8 +50,12 @@ public class MessageJPAService {
      * @param message
      */
     public boolean updateMessage(Message message) throws MessageNotFoundException {
-        beginTransaction();
-        Message thisMessage = entityManager.find(Message.class, message.getId());
+
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+
+        Message thisMessage = em.find(Message.class, message.getId());
         if (thisMessage == null) {
             LOGGER.info("Can't find Message for ID:" + message.getId());
             throw new MessageNotFoundException("Can't find Message for ID:" + message.getId());
@@ -113,7 +67,10 @@ public class MessageJPAService {
         thisMessage.setMessage(message.getMessage());
         thisMessage.setTimestamp(message.getTimestamp());
         thisMessage.setExpiration(message.getExpiration());
-        endTransaction();
+
+        //End Transaction
+        em.getTransaction().commit();
+        em.close();
 
         if (thisMessage.toString().equals(message.toString())) {
             LOGGER.info("Updated message with message id : " + message.getId());
@@ -126,24 +83,6 @@ public class MessageJPAService {
     }
 
     /**
-     * Gets a message given it's id
-     *
-     * @param id
-     * @return
-     */
-    public Message getMessage(int id) throws MessageNotFoundException {
-        try {
-            String queryString = "SELECT m FROM Message m WHERE m.id =" + id;
-            beginTransaction();
-            TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
-            return query.getSingleResult();
-        } catch (Exception e) {
-            LOGGER.info("Could not get any message with id: " + id);
-            throw new MessageNotFoundException("No message found with id: " + id);
-        }
-    }
-
-    /**
      * Gets the recent-most 15 messages given a group unique key
      *
      * @param groupUniqueKey
@@ -153,32 +92,15 @@ public class MessageJPAService {
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
         String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
-        beginTransaction();
-        TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
+
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+
+        TypedQuery<Message> query = em.createQuery(queryString, Message.class);
         List<Message> msgList = query.setMaxResults(15).getResultList();
         msgList.sort(Comparator.comparing(Message::getId));
         ChatLogger.info("Top 15 messages for a group: " + groupUniqueKey + " retrieved!");
-        return msgList;
-    }
-
-    /**
-     * Gets all the messages given a group unique key.
-     *
-     * @param groupUniqueKey the group id for which the messages must be fetched
-     * @return list of messages that are fetched
-     * @throws GroupNotFoundException thrown when the given group does not exist
-     */
-    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
-
-        //Get the group based on the group unique key
-        Group g = groupService.searchUsingCode(groupUniqueKey);
-
-        String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
-        beginTransaction();
-        TypedQuery<Message> query = entityManager.createQuery(queryString, Message.class);
-        List<Message> msgList = query.getResultList();
-        msgList.sort(Comparator.comparing(Message::getId));
-        ChatLogger.info("All messages for a group: " + groupUniqueKey + " retrieved!");
         return msgList;
     }
 
@@ -206,5 +128,28 @@ public class MessageJPAService {
         List<Message> messages = typedQuery.getResultList();
         em.close();
         return messages;
+    }
+
+    /**
+     * Gets all the messages given a group unique key.
+     *
+     * @param groupUniqueKey the group id for which the messages must be fetched
+     * @return list of messages that are fetched
+     * @throws GroupNotFoundException thrown when the given group does not exist
+     */
+    public List<Message> getAllMessages(String groupUniqueKey) throws GroupNotFoundException {
+
+        //Get the group based on the group unique key
+        Group g = groupService.searchUsingCode(groupUniqueKey);
+
+        String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
+        //Begin Transaction
+        EntityManager em = entityManagerUtil.getEntityManager();
+        em.getTransaction().begin();
+        TypedQuery<Message> query = em.createQuery(queryString, Message.class);
+        List<Message> msgList = query.getResultList();
+        msgList.sort(Comparator.comparing(Message::getId));
+        ChatLogger.info("All messages for a group: " + groupUniqueKey + " retrieved!");
+        return msgList;
     }
 }

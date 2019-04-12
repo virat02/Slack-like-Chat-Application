@@ -115,7 +115,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
 
   @Override
   protected String helpCommand() {
-    return "Enter the message which you want to send to the group";
+    return "Enter the message which you want to send to the group. To delete a message, type \"Del #\" where # represents the message number";
   }
 
   @Override

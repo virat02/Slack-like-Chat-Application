@@ -15,13 +15,13 @@ public class ProfileController implements IController<Profile> {
 
     private ProfileService profileService = new ProfileService();
 
-    private static final String PROFILE_NOT_PERSISTED_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
+    private static final String INTERNAL_ERROR_CREATE_PROFILE_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
+    private static final String INTERNAL_ERROR_DELETE_PROFILE_JSON = "{\"message\" : \"Sorry, could not delete your profile!\"}";
     private static final String PROFILE_NOT_FOUND_JSON = "{\"message\" : \"The profile you are trying to find does not exist!\"}";
-    private static final String PROFILE_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the profile!\"}";
     private static final String INVALID_EMAIL_JSON = "{\"message\" : \"The email id you entered is invalid. Please try again! (Eg. youremailaddress@xyz.com)\"}";
     private static final String EMAIL_ALREADY_IN_USE_JSON = "{\"message\" : \"The email id is already in use. Please try again with different email id!\"}";
     private static final String INVALID_IMAGEURL_JSON = "{\"message\" : \"The imageURL you entered is invalid. Please try again! (Eg. http://* or https://* )\"}";
-
+    private static final String CANNOT_DELETE_NON_EXISTING_PROFILE_JSON = "{\"message\" : \"The profile you are trying to delete does not exist. Please check again!\"}";
     /**
      * Sets the user service for the controller.
      * @param profileService the user service the controller will be using to load on the payload.
@@ -37,12 +37,16 @@ public class ProfileController implements IController<Profile> {
      */
     public NetworkResponse addEntity(Profile pf) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(profileService.createProfile(pf))));
-        }
-        catch (ProfileNotPersistedException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PROFILE_NOT_PERSISTED_JSON));
+            if(profileService.createProfile(pf)) {
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(pf)));
+            }
+
+            //If createProfile returns false, some SQL error occurred
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(INTERNAL_ERROR_CREATE_PROFILE_JSON));
+            }
         }
         catch (InvalidEmailException e){
             if(e.getMessage().equals("The Email id is already in use")){
@@ -98,14 +102,21 @@ public class ProfileController implements IController<Profile> {
      * @return a NetworkResponse
      */
     public NetworkResponse deleteEntity(Profile pf) {
-        try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(profileService.deleteProfile(pf))));
+        try{
+            if(profileService.deleteProfile(pf)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(pf)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(INTERNAL_ERROR_DELETE_PROFILE_JSON));
+            }
         }
-        catch (ProfileNotDeletedException e) {
+        catch (ProfileNotFoundException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(PROFILE_NOT_DELETED_JSON));
+                    new PayloadImpl(CANNOT_DELETE_NON_EXISTING_PROFILE_JSON));
         }
+
     }
 
     /**

@@ -5,7 +5,6 @@ import edu.northeastern.ccs.im.Message;
 import edu.northeastern.ccs.im.NetworkConnection;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.MessageNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.server.ClientRunnable;
 import edu.northeastern.ccs.im.server.ServerConstants;
@@ -87,9 +86,6 @@ public class MessageBroadCastService implements BroadCastService {
                     }
                 }
             }
-        } catch (MessageNotPersistedException e) {
-            LOGGER.info("Could not create the message!");
-            ChatLogger.info("Message could not be broadcast!");
         } catch (UserNotFoundException e) {
             LOGGER.info("Could not find the user!");
             ChatLogger.info("Message will not be broadcast!");
