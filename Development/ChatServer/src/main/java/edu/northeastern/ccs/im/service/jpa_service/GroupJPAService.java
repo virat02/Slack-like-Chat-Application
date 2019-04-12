@@ -19,7 +19,6 @@ public class GroupJPAService{
 
 	private static final Logger LOGGER = Logger.getLogger(GroupJPAService.class.getName());
 	private static final String ERROR_MESSAGE = "Can't find Group for ID: ";
-
 	private UserJPAService userJPA = UserJPAService.getInstance();
 	private static final GroupJPAService groupJpaServiceInstance = new GroupJPAService();
 	private EntityManager entityManager;
@@ -47,18 +46,6 @@ public class GroupJPAService{
 		this.entityManagerUtil = entityManagerUtil;
 	}
 
-	/**
-	 * A function made to setup the entity manager for this class to make the class more testable.
-	 * @param entityManager The entity manager for this class.
-	 */
-	public void setEntityManager(EntityManager entityManager) {
-		if(entityManager == null) {
-			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-			this.entityManager = emFactory.createEntityManager();
-		} else {
-			this.entityManager = entityManager;
-		}
-	}
 
 	/**
 	 * Set the userJPAService

@@ -54,7 +54,6 @@ public final class UserService implements IService {
         } else {
             this.userJPAService = userJPAService;
         }
-        this.userJPAService.setEntityManager(null);
     }
 
     /**
@@ -80,7 +79,6 @@ public final class UserService implements IService {
         } else {
             this.inviteJPAService = inviteJPAService;
         }
-        this.inviteJPAService.setEntityManager(null);
     }
 
     /**
@@ -93,7 +91,6 @@ public final class UserService implements IService {
         } else {
             this.groupJPAService = groupJPAService;
         }
-        this.groupJPAService.setEntityManager(null);
     }
 
     /**
@@ -278,7 +275,6 @@ public final class UserService implements IService {
      * @return User instance logging into the server.
      */
     public User loginUser(Object user) throws UserNotFoundException {
-        userJPAService.setEntityManager(null);
         User newUser = (User) user;
         return userJPAService.loginUser(newUser);
     }
@@ -289,11 +285,7 @@ public final class UserService implements IService {
      * @return the invite itself back to the controller.
      */
     public Invite sendInvite(Invite invite) throws InviteNotAddedException, InviteNotFoundException, UserNotFoundException, GroupNotFoundException {
-        inviteJPAService.setEntityManager(null);
-        userJPAService.setEntityManager(null);
-        groupJPAService.setEntityManager(null);
         User sender = userJPAService.search(invite.getSender().getUsername());
-        userJPAService.setEntityManager(null);
         User reciever = userJPAService.search(invite.getReceiver().getUsername());
         Group group = groupJPAService.searchUsingCode(invite.getGroup().getGroupCode());
         Invite persistInvite = new Invite();
@@ -302,7 +294,6 @@ public final class UserService implements IService {
         persistInvite.setReceiver(reciever);
         persistInvite.setStatus(Status.NOUPDATE);
         int id = inviteJPAService.createInvite(persistInvite);
-        inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(id);
     }
 
@@ -314,7 +305,6 @@ public final class UserService implements IService {
      */
     public Invite deleteInvite(Invite invite) throws InviteNotDeletedException {
         invite.setStatus(Status.DELETED);
-        inviteJPAService.setEntityManager(null);
         return inviteJPAService.deleteInvite(invite);
     }
 
@@ -324,9 +314,7 @@ public final class UserService implements IService {
      * @return the invite that was updated in the database.
      */
     public Invite updateInvite(Invite invite) throws InviteNotUpdatedException, InviteNotFoundException {
-        inviteJPAService.setEntityManager(null);
         inviteJPAService.updateInvite(invite);
-        inviteJPAService.setEntityManager(null);
         return inviteJPAService.getInvite(invite.getId());
     }
 
@@ -339,9 +327,7 @@ public final class UserService implements IService {
      */
     public List<Invite> searchInviteByGroupCode(String groupCode, String username) throws GroupNotFoundException,
             InviteNotFoundException, UserNotFoundException {
-        userJPAService.setEntityManager(null);
         User retrievedUser = userJPAService.search(username);
-        inviteJPAService.setEntityManager(null);
         return inviteJPAService.searchInviteByGroupCode(groupCode , retrievedUser);
     }
 
@@ -352,8 +338,6 @@ public final class UserService implements IService {
      */
     public void userGroupEvent(String userName,String groupUniqueCode)   {
         final String errorMsg = "This is an unexpected situation, Generally codeflow should not reach this exception block";
-        userJPAService.setEntityManager(null);
-        groupJPAService.setEntityManager(null);
         try {
             User user = userJPAService.search(userName);
             Group group = groupJPAService.searchUsingCode(groupUniqueCode);

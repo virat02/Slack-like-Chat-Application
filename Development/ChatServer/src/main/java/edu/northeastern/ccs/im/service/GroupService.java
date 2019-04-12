@@ -49,7 +49,6 @@ public class GroupService implements IService {
         } else {
             this.userJPA = userJPA;
         }
-        this.userJPA.setEntityManager(null);
     }
 
     /**
@@ -76,7 +75,6 @@ public class GroupService implements IService {
         } else {
             this.groupJPA = groupJPA;
         }
-        this.groupJPA.setEntityManager(null);
     }
 
     /**
