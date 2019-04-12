@@ -37,6 +37,9 @@ public final class UserService implements IService {
         jpaService = AllJPAService.getInstance();
     }
 
+    /**
+     * @return Singleton instance for UserService
+     */
     public static UserService getInstance(){
         return userServiceinstance;
     }
@@ -95,8 +98,8 @@ public final class UserService implements IService {
 
     /**
      * Returns true iff username is valid
-     * @param usernameCheck
-     * @param user
+     * @param usernameCheck Username hashmap
+     * @param user User object
      * @return
      * @throws UsernameInvalidException
      */
@@ -112,8 +115,8 @@ public final class UserService implements IService {
 
     /**
      * Returns true iff password is valid
-     * @param passwordCheck
-     * @param user
+     * @param passwordCheck Password hashmap
+     * @param user user object
      * @return
      * @throws PasswordInvalidException
      */
