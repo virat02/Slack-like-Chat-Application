@@ -60,6 +60,11 @@ public class MessageBroadCastService implements BroadCastService {
         this.groupCode = groupCode;
     }
 
+    /**
+     * Adding a socket Connection.
+     * @param socketChannel the socket channel
+     * @throws IOException if there isn't a socet channel.
+     */
     @Override
     public void addConnection(SocketChannel socketChannel) throws IOException {
         socketChannel.configureBlocking(false);
@@ -71,11 +76,19 @@ public class MessageBroadCastService implements BroadCastService {
         clientRunnable.setFuture(clientFuture);
     }
 
+    /**
+     * Checks to see if the client is active.
+     * @return boolean if the client is active or not.
+     */
     @Override
     public boolean isClientActive() {
         return !active.isEmpty();
     }
 
+    /**
+     * Broadcasts a message.
+     * @param message the message to be broadcasted.
+     */
     @Override
     public void broadcastMessage(Message message) {
         try {
@@ -98,6 +111,10 @@ public class MessageBroadCastService implements BroadCastService {
         }
     }
 
+    /**
+     * Removes a client from the thread.
+     * @param dead the client runnable.
+     */
     @Override
     public void removeClient(ClientRunnable dead) {
         if (!active.remove(dead)) {
@@ -105,6 +122,10 @@ public class MessageBroadCastService implements BroadCastService {
         }
     }
 
+    /**
+     * The list of recent messages.
+     * @return list of messages.
+     */
     @Override
     public List<Message> getRecentMessages() {
         List<Message> messages = new ArrayList<>();
@@ -123,6 +144,11 @@ public class MessageBroadCastService implements BroadCastService {
         return messages;
     }
 
+    /**
+     * Gets the unread messages.
+     * @param userName of the user trying to get their unread messages.
+     * @return list of messages.
+     */
     @Override
     public List<Message> getUnreadMessages(String userName) {
         final String userNotFoundError = "User could not be found for the error";
@@ -145,6 +171,12 @@ public class MessageBroadCastService implements BroadCastService {
         return messages;
     }
 
+    /**
+     * Delete a messages.
+     * @param groupId the group from which the message must be deleted
+     * @param messageIndex the index of the message that must be deleted
+     * @return boolean if the message was deleted or not.
+     */
     @Override
     public boolean deleteMessage(String groupId, int messageIndex) {
         try {
