@@ -35,7 +35,7 @@ public class UserJPAService {
 
     /**
      * Singleton for user jpa service
-     * @return
+     * @return a UserJPAService instance.
      */
     public static UserJPAService getInstance(){
         return userJpaServiceInstance;
