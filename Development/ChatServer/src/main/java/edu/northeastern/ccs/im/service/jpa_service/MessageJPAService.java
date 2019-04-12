@@ -28,14 +28,15 @@ public class MessageJPAService {
     private GroupService groupService = GroupService.getInstance();
     private static final MessageJPAService messageJpaServiceInstance = new MessageJPAService();
 
-    //Constructor for Message JPA Service
+    /**
+     * Constructor for Message JPA Service
+     */
     private MessageJPAService(){
         this.entityManagerUtil = new EntityManagerUtil();
     }
 
     /**
-     * Singleton instance of message JPA service
-     * @return
+     * @return Singleton instance of message JPA service
      */
     public static MessageJPAService getInstance(){
         return messageJpaServiceInstance;
@@ -52,7 +53,7 @@ public class MessageJPAService {
 
     /**
      * Set the entityManagerUtil
-     * @param entityManagerUtil
+     * @param entityManagerUtil for this class
      */
     public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
         this.entityManagerUtil = entityManagerUtil;
@@ -61,7 +62,7 @@ public class MessageJPAService {
     /**
      * Updates a message with the given message object
      *
-     * @param message
+     * @param message Indicates the Message to be updated
      */
     public boolean updateMessage(Message message) throws MessageNotFoundException {
 
@@ -99,7 +100,7 @@ public class MessageJPAService {
     /**
      * Gets the recent-most 15 messages given a group unique key
      *
-     * @param groupUniqueKey
+     * @param groupUniqueKey Indicates the unique key for Group
      */
     public List<Message> getTop15Messages(String groupUniqueKey) throws GroupNotFoundException {
 

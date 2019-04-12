@@ -29,6 +29,9 @@ public class MessageService implements IService{
     private GroupService groupService;
     private UserJPAService userJPAService;
 
+    /**
+     * Constructor for MessageService
+     */
     private MessageService(){
         jpaService = AllJPAService.getInstance();
         messageJPAService = MessageJPAService.getInstance();
@@ -37,13 +40,16 @@ public class MessageService implements IService{
         userJPAService = UserJPAService.getInstance();
     }
 
+    /**
+     * @return Singleton instance for MessageService
+     */
     public static MessageService getInstance(){
         return messageServiceInstance;
     }
 
     /**
      * Set a message JPA Service
-     * @param messageJPAService
+     * @param messageJPAService for this class
      */
     public void setMessageJPAService(MessageJPAService messageJPAService) {
         if(messageJPAService == null) {
@@ -56,7 +62,7 @@ public class MessageService implements IService{
 
     /**
      * Set a profile JPA Service
-     * @param jpaService
+     * @param jpaService for this class
      */
     public void setAllJPAService(AllJPAService jpaService) {
         if(jpaService == null) {
@@ -69,8 +75,8 @@ public class MessageService implements IService{
 
     /**
      * set the userService and groupService
-     * @param userService
-     * @param groupService
+     * @param userService for this class
+     * @param groupService for this class
      */
     public void setServices(UserService userService, GroupService groupService) {
         this.userService = userService;
@@ -96,7 +102,7 @@ public class MessageService implements IService{
     /**
      * Helper method to send a message
      * @param message the message object generated from the client input
-     * @return
+     * @return True iff successful creation of message by JPA else false
      */
     public boolean createMessage(Message message) {
         try{
@@ -111,9 +117,9 @@ public class MessageService implements IService{
 
     /**
      * Generates a message object from the client input and sends the message
-     * @param messageBody
-     * @param userName
-     * @param groupCode
+     * @param messageBody The message body
+     * @param userName The username of the user
+     * @param groupCode The unique group key
      * @return
      */
     public Boolean createMessage(String messageBody, String userName, String groupCode)
@@ -132,8 +138,8 @@ public class MessageService implements IService{
 
     /**
      * Get the message
-     * @param id
-     * @return
+     * @param id The message id to be found
+     * @return the message
      */
     public Message get(int id) throws MessageNotFoundException {
         try {
@@ -147,7 +153,7 @@ public class MessageService implements IService{
 
     /**
      * Updates the message
-     * @param msg
+     * @param msg The message object to be updated
      */
     public boolean updateMessage(Message msg) throws MessageNotFoundException {
         return messageJPAService.updateMessage(msg);
@@ -169,7 +175,7 @@ public class MessageService implements IService{
 
     /**
      * Returns the recent-most 15 messages given a group unique key
-     * @param groupUniqueKey
+     * @param groupUniqueKey group unique key
      */
     public List<Message> getTop15Messages(String groupUniqueKey) throws GroupNotFoundException{
         return messageJPAService.getTop15Messages(groupUniqueKey);

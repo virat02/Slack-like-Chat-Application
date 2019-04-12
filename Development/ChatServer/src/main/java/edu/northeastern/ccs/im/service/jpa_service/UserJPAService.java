@@ -4,7 +4,6 @@ import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.FirstTimeUserLoggedInException;
 import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
@@ -46,40 +45,6 @@ public class UserJPAService {
         this.entityManagerUtil = entityManagerUtil;
     }
 
-
-    /**
-     * Creating a new User instance we are creating in the database.
-     * @param user being created in the database.
-     * @return the id of the user in the database.
-     */
-    public int createUser(User user) throws UserNotPersistedException {
-        try {
-            EntityManager em = entityManagerUtil.getEntityManager();
-            beginTransaction(em);
-            em.persist(user);
-            int id= user.getId();
-            endTransaction(em);
-            return id;
-        }
-        catch (Exception e) {
-            LOGGER.info("JPA could not persist the user!");
-            throw new UserNotPersistedException("JPA could not persist the user!");
-        }
-
-    }
-
-    /**
-     * A method made to delete a user in the database.
-     * @param user being deleted in the database.
-     */
-    public void deleteUser(User user) throws UserNotFoundException {
-        if(user == search(user.getUsername())) {
-            EntityManager em = entityManagerUtil.getEntityManager();
-            beginTransaction(em);
-            em.remove(user);
-            endTransaction(em);
-        }
-    }
 
     /**
      * Updating the User in the database with the given user credentials.
@@ -127,27 +92,6 @@ public class UserJPAService {
         catch (Exception e) {
             ChatLogger.error(e.getMessage());
             throw new UserNotFoundException("User with username: "+username+ " not found! ");
-        }
-
-    }
-
-    /**
-     * A method made to get the user by it's Id in the database.
-     * @param id of the user we are looking to get.
-     * @return a User instance when we are trying to get a User.
-     */
-    public User getUser(int id) throws UserNotFoundException {
-        try {
-            StringBuilder queryString = new StringBuilder("SELECT u FROM User u WHERE u.id = ");
-            queryString.append(id);
-            EntityManager em = entityManagerUtil.getEntityManager();
-            beginTransaction(em);
-            TypedQuery<User> query = em.createQuery(queryString.toString(), User.class);
-            return query.getSingleResult();
-        }
-        catch (Exception e) {
-            LOGGER.info("Could not find User with user id: "+id);
-            throw new UserNotFoundException("Could not find User with user id: "+id);
         }
 
     }

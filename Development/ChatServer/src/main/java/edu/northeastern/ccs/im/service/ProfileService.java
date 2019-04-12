@@ -38,7 +38,7 @@ public class ProfileService {
 
     /**
      * Set a profile JPA Service
-     * @param profileJPAService
+     * @param profileJPAService the profile JPA service instance
      */
     public void setProfileJPAService(ProfileJPAService profileJPAService) {
         if(profileJPAService == null) {
@@ -51,7 +51,7 @@ public class ProfileService {
 
     /**
      * Set a profile JPA Service
-     * @param jpaService
+     * @param jpaService the All JPA Service instance
      */
     public void setAllJPAService(AllJPAService jpaService) {
         if(jpaService == null) {
@@ -64,7 +64,7 @@ public class ProfileService {
 
     /**
      * Returns true iff the email id is valid
-     * @param emailId
+     * @param emailId String indicating the email id of the user
      */
     public boolean isValidEmail(String emailId){
 
@@ -82,18 +82,16 @@ public class ProfileService {
     }
 
     /**
-     * Returns true iff an email id is already in use by some other user in the DB
-     * @param emailId
-     * @return
+     * @param emailId String indicating the email id of the user
+     * @return Returns true iff an email id is already in use by some other user in the DB
      */
     public boolean isEmailAlreadyInUse(String emailId){
         return profileJPAService.ifEmailExists(emailId);
     }
 
     /**
-     * Returns true iff an image URL is valid
-     * @param imageURL
-     * @return
+     * @param imageURL Indicates the image URL of the user
+     * @return Returns true iff an image URL is valid
      */
     public boolean isValidImageURL(String imageURL) {
         /* Try creating a valid URL */
@@ -111,6 +109,7 @@ public class ProfileService {
 
     /**
      * Creates a profile if the respective inputs are valid
+     * @param pf Indicates a profile
      */
     public boolean createProfile(Profile pf)
             throws InvalidEmailException, InvalidImageURLException {
@@ -145,8 +144,8 @@ public class ProfileService {
 
     /**
      * Get the profile
-     * @param id
-     * @return
+     * @param id indicates the profile id
+     * @return a Profile
      */
     public Profile get(int id) throws ProfileNotFoundException {
         try {
@@ -160,6 +159,7 @@ public class ProfileService {
 
     /**
      * Updates an existing profile if the respective inputs are valid
+     * @param pf Indicates a profile
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
         return profileJPAService.updateProfile(get(pf.getId()));
@@ -167,6 +167,7 @@ public class ProfileService {
 
     /**
      * Deletes a profile
+     * @param pf Indicates a profile
      */
     public Boolean deleteProfile(Profile pf) throws ProfileNotFoundException {
         return jpaService.deleteEntity(get(pf.getId()));

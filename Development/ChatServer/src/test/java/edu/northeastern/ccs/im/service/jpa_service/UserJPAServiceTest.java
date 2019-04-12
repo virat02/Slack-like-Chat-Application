@@ -3,17 +3,10 @@ package edu.northeastern.ccs.im.service.jpa_service;
 import edu.northeastern.ccs.im.customexceptions.FirstTimeUserLoggedInException;
 import edu.northeastern.ccs.im.customexceptions.ListOfUsersNotFound;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.UserNotPersistedException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Profile;
 import edu.northeastern.ccs.im.user_group.User;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
-import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
-import org.hibernate.Metamodel;
-import org.hibernate.ejb.EntityManagerFactoryImpl;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.metamodel.internal.MetamodelImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +17,7 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,6 +27,7 @@ import static org.mockito.Mockito.*;
 public class UserJPAServiceTest {
 
     private UserJPAService userJPAService;
+    private AllJPAService allJPAService;
     private User userOne;
     private User userTwo;
     private User userThree;
@@ -80,32 +73,30 @@ public class UserJPAServiceTest {
         entityTransaction = mock(EntityTransaction.class);
         typedQuery = mock(TypedQuery.class);
 
+        allJPAService = AllJPAService.getInstance();
+
     }
 
     /**
      * Tests the create entity method.
      */
     @Test
-    public void testCreateEntity() throws UserNotPersistedException {
+    public void testCreateEntity() {
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        userJPAService.setEntityManagerUtil(entityManagerUtil);
-        userJPAService.createUser(userOne);
-        assertEquals(123, userOne.getId());
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.createEntity(userOne));
     }
 
     /**
      * Tests the delete entity method.
      */
     @Test
-    public void testDeleteEntity() throws UserNotFoundException {
+    public void testDeleteEntity() {
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
-        when(typedQuery.getSingleResult()).thenReturn(userOne);
-        userJPAService.setEntityManagerUtil(entityManagerUtil);
-        userJPAService.deleteUser(userOne);
-        verify(typedQuery).getSingleResult();
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.deleteEntity(userOne));
     }
 
     /**
@@ -151,14 +142,14 @@ public class UserJPAServiceTest {
      * Tests the getUser method in the JPA service.
      */
     @Test
-    public void testGetUser() throws UserNotFoundException {
+    public void testGetUser() {
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenReturn(userOne);
-        userJPAService.setEntityManagerUtil(entityManagerUtil);
-        User newUser = userJPAService.getUser(99);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        User newUser = (User) allJPAService.getEntity("User", 99);
         assertEquals(newUser, userOne);
     }
 
@@ -275,19 +266,6 @@ public class UserJPAServiceTest {
     }
 
     /**
-     * Tests to ensure a user not persisted exception can be thrown.
-     * @throws UserNotPersistedException when a user is not persisted.
-     */
-    @Test (expected = UserNotPersistedException.class)
-    public void testUserNotPersistedCreateUser() throws UserNotPersistedException {
-        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        when(entityManager.getTransaction()).thenThrow(UserNotPersistedException.class);
-        userJPAService.setEntityManagerUtil(entityManagerUtil);
-        userJPAService.createUser(userOne);
-        assertEquals(123, userOne.getId());
-    }
-
-    /**
      * Tests to ensure a user not found exception can be thrown.
      * @throws UserNotFoundException when a user is not found in the DB.
      */
@@ -308,15 +286,15 @@ public class UserJPAServiceTest {
      * @throws UserNotFoundException when a user is not found.
      */
     @Test (expected = UserNotFoundException.class)
-    public void testGetUserUserNotFound() throws UserNotFoundException {
+    public void testGetUserUserNotFound() {
         int userId = 123;
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         TypedQuery mockedQuery = mock(TypedQuery.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenThrow(IllegalArgumentException.class);
-        userJPAService.setEntityManagerUtil(entityManagerUtil);
-        userJPAService.getUser(userId);
+        when(mockedQuery.getSingleResult()).thenThrow(UserNotFoundException.class);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        allJPAService.getEntity("User", userId);
     }
 
     /**

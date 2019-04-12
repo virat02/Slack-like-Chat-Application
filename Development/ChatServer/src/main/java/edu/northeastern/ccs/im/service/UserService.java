@@ -2,10 +2,7 @@ package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.Status;
-import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
@@ -26,6 +23,7 @@ public final class UserService implements IService {
     private static final UserService userServiceinstance = new UserService();
 
     private UserJPAService userJPAService;
+    private AllJPAService jpaService;
     private InviteJPAService inviteJPAService;
     private GroupJPAService groupJPAService;
 
@@ -36,8 +34,12 @@ public final class UserService implements IService {
         userJPAService = UserJPAService.getInstance();
         inviteJPAService = InviteJPAService.getInstance();
         groupJPAService = GroupJPAService.getInstance();
+        jpaService = AllJPAService.getInstance();
     }
 
+    /**
+     * @return Singleton instance for UserService
+     */
     public static UserService getInstance(){
         return userServiceinstance;
     }
@@ -51,6 +53,19 @@ public final class UserService implements IService {
             this.userJPAService = UserJPAService.getInstance();
         } else {
             this.userJPAService = userJPAService;
+        }
+    }
+
+    /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param jpaService for this class.
+     */
+    public void setAllService(AllJPAService jpaService) {
+        if (jpaService == null) {
+            this.jpaService = AllJPAService.getInstance();
+        } else {
+            this.jpaService = jpaService;
         }
     }
 
@@ -79,27 +94,52 @@ public final class UserService implements IService {
     }
 
     /**
-     * Add user will add a user to the database.
-     * @param user being added to the database.* @return the user which was added to the database.
+     * Returns true iff username is valid
+     * @param usernameCheck Username hashmap
+     * @param user User object
+     * @return
+     * @throws UsernameInvalidException
      */
-    public User addUser(User user) throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
-        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+    public boolean isValidUsername(HashMap<String, Boolean> usernameCheck, User user) throws UsernameInvalidException {
         if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
                 user.getUsername().length() < 4) {
             throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+
+        return true;
+    }
+
+    /**
+     * Returns true iff password is valid
+     * @param passwordCheck Password hashmap
+     * @param user user object
+     * @return
+     * @throws PasswordInvalidException
+     */
+    public boolean isValidPassword(HashMap<String, Boolean> passwordCheck, User user) throws PasswordInvalidException {
         if(user.getPassword().length() < 4 || user.getPassword().length() > 20
                 || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
             throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        int id = userJPAService.createUser(user);
-        if(id == 0) {
-            return null;
+
+        return true;
+    }
+
+    /**
+     * Add user will add a user to the database.
+     * @param user being added to the database.* @return the user which was added to the database.
+     */
+    public boolean addUser(User user)
+            throws UsernameInvalidException, PasswordInvalidException {
+        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+        if(isValidUsername(usernameCheck, user) && isValidPassword(passwordCheck, user)){
+            return jpaService.createEntity(user);
         }
-        return userJPAService.getUser(id);
+
+        return false;
     }
 
     /**
@@ -210,7 +250,7 @@ public final class UserService implements IService {
      */
     public User update(User user) throws UserNotFoundException {
         userJPAService.updateUser(user);
-        return userJPAService.getUser(user.getId());
+        return (User) jpaService.getEntity("User", user.getId());
     }
 
     /**
@@ -218,9 +258,15 @@ public final class UserService implements IService {
      * @param user being deleted from the database.
      * @return the user which was deleted from the database.
      */
-    public User delete(User user) throws UserNotFoundException {
-        userJPAService.deleteUser(user);
-        return userJPAService.getUser(user.getId());
+    public boolean delete(User user) throws UserNotFoundException {
+        User currentUser = userJPAService.search(user.getUsername());
+        try {
+            return jpaService.deleteEntity(currentUser);
+        }
+        catch (Exception e) {
+            LOGGER.info(e.getMessage());
+            return false;
+        }
     }
 
     /**

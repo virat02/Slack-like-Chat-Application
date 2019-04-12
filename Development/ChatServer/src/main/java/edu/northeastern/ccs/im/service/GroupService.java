@@ -7,6 +7,7 @@ import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -77,10 +78,8 @@ public class GroupService implements IService {
     }
 
     /**
-     * Create a group iff the group does not already exist
-     * @param groupCode
-     * @return
-     * @throws GroupNotPersistedException
+     * @param groupCode Indicates the unique group key of a group
+     * @return Create a group iff the group does not already exist
      */
     public boolean createIfNotPresent(String groupCode, String username, boolean flag)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
@@ -100,7 +99,6 @@ public class GroupService implements IService {
      * @param groupUniqueKey the unique key of the group searched for.
      * @param username       The username which is trying to initiate a private conversation
      * @return Boolean value indicating the outcome of the operations
-     * @throws GroupNotPersistedException exception happened during group persistance
      * @throws UserNotFoundException      user cannot be found, the user with whom conversation is
      *                                    being initiated.
      */
@@ -134,16 +132,15 @@ public class GroupService implements IService {
         //Make both users : "username" and "userToSearch" the moderator of this group
         group.addModerator(u1);
         group.addModerator(u2);
+
         //Update the DB
-        return jpaService.createEntity(group);
+        return create(group);
     }
 
     /**
-     * Adds a user to a group iff the user is not already a part of the group
-     *
      * @param groupUniqueKey
      * @param username
-     * @return
+     * @return Adds a user to a group iff the user is not already a part of the group
      * @throws GroupNotFoundException
      * @throws UserNotFoundException
      * @throws UserNotPresentInTheGroup
@@ -167,19 +164,13 @@ public class GroupService implements IService {
      * @param group object
      * @return a Group with the id after being persisted in the group
      */
-    public Group create(Group group) throws GroupNotFoundException, GroupNotPersistedException {
-        groupJPA.createGroup(group);
-        return groupJPA.getGroup(group.getId());
-    }
-
-    /**
-     * get method to retrieve the Group based on an id
-     *
-     * @param id int
-     * @return a Group with the id retrieved from the database
-     */
-    public Group get(int id) throws GroupNotFoundException{
-        return groupJPA.getGroup(id);
+    public boolean create(Group group) {
+        try{
+            return jpaService.createEntity(group);
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -197,7 +188,7 @@ public class GroupService implements IService {
         else {
             groupJPA.updateGroup(group);
         }
-        return groupJPA.getGroup(group.getId());
+        return (Group) jpaService.getEntity("Group", group.getId());
     }
 
     /**
@@ -206,16 +197,22 @@ public class GroupService implements IService {
      * @param group object
      * @return Group that was deleted
      */
-    public Group delete(Group group) throws GroupNotFoundException, GroupNotDeletedException{
+    public boolean delete(Group group) throws GroupNotFoundException {
         Group currentGroup = groupJPA.searchUsingCode(group.getGroupCode());
-        groupJPA.deleteGroup(currentGroup);
-        return groupJPA.getGroup(group.getId());
+        try {
+            return jpaService.deleteEntity(currentGroup);
+        }
+        catch (Exception e) {
+            LOGGER.info(e.getMessage());
+            return false;
+        }
+
     }
 
     /**
      * Search group based on groupCode to retrieve a distinct group
      *
-     * @param groupCode
+     * @param groupCode Indicates the group unique key for a group
      * @return Group that was retrieved from database using groupCode
      */
     public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
@@ -225,7 +222,7 @@ public class GroupService implements IService {
     /**
      * searchUsingName method returns the list of groups with a given name
      *
-     * @param groupName
+     * @param groupName Indicates the group name
      * @return list of groups
      */
     public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
@@ -233,7 +230,7 @@ public class GroupService implements IService {
     }
 
     /**
-     * joinGroup methood is to add a useer to a group
+     * joinGroup method is to add a user to a group
      *
      * @param group that contains the user to be added
      * @return updated group with the user added to it
@@ -241,23 +238,30 @@ public class GroupService implements IService {
     public Group joinGroup(Group group) throws GroupNotFoundException, UserNotFoundException {
         Group retrievedGroup = searchUsingCode(group.getGroupCode());
         List<User> userOfGroup = group.getUsers();
-        User retirevedUser = userJPA.getUser(userOfGroup.get(0).getId());
-        retrievedGroup.addUser(retirevedUser);
-        groupJPA.updateGroup(retrievedGroup);
-        return groupJPA.getGroup(retrievedGroup.getId());
+        try {
+            User retrievedUser = (User) jpaService.getEntity("User", userOfGroup.get(0).getId());
+            retrievedGroup.addUser(retrievedUser);
+            groupJPA.updateGroup(retrievedGroup);
+            return (Group) jpaService.getEntity("Group", retrievedGroup.getId());
+        }
+        catch (NoResultException e) {
+            throw new UserNotFoundException("Could not find the user :"+userOfGroup.get(0).getId());
+        }
+
     }
 
     /**
      * Remove user from the given group based on the userid and groupcode
      *
-     * @param groupCode
-     * @param username
+     * @param groupCode Indicates the group unique key
+     * @param username Indicates the username of the user
      * @return the updated group after the user has been removed from it
      */
-    public Group removeUserFromGroup(String groupCode, String username) throws GroupNotFoundException, UserNotFoundException{
+    public Group removeUserFromGroup(String groupCode, String username)
+            throws GroupNotFoundException, UserNotFoundException{
         Group retrievedGroup = searchUsingCode(groupCode);
         groupJPA.removeUserFromGroup(retrievedGroup, username);
-        return groupJPA.getGroup(retrievedGroup.getId());
+        return (Group) jpaService.getEntity("Group" , retrievedGroup.getId());
     }
 
 }

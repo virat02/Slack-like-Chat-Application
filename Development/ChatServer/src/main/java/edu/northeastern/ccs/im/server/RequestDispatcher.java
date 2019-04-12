@@ -10,7 +10,6 @@ import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
@@ -234,7 +233,7 @@ public class RequestDispatcher {
             List<Message> messages = messageService.getUnreadMessages(userName);
             messageService.addConnection(socketChannel);
             return networkResponseFactory.createSuccessfulResponseWithPayload(() -> CommunicationUtils.toJson(messages));
-        } catch (IOException | GroupNotPersistedException e) {
+        } catch (IOException e) {
             return networkResponseFactory.createFailedResponseWithPayload(() -> IOError);
         } catch (UserNotPresentInTheGroup userNotPresentInTheGroup) {
             return networkResponseFactory.createFailedResponseWithPayload(() -> userNotPresentInGroup);
@@ -541,7 +540,7 @@ public class RequestDispatcher {
 
                 return networkResponseFactory.createSuccessfulResponse();
             } catch (IOException | GroupNotFoundException | UserNotFoundException |
-                    UserNotPresentInTheGroup | GroupNotPersistedException e) {
+                    UserNotPresentInTheGroup e) {
                 return networkResponseFactory.createFailedResponse();
             }
         };

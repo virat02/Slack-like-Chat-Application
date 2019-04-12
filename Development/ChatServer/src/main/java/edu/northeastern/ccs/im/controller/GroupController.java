@@ -4,12 +4,12 @@ import edu.northeastern.ccs.im.communication.CommunicationUtils;
 import edu.northeastern.ccs.im.communication.NetworkResponse;
 import edu.northeastern.ccs.im.communication.NetworkResponseImpl;
 import edu.northeastern.ccs.im.communication.PayloadImpl;
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.GroupService;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
+import org.eclipse.persistence.internal.oxm.schema.model.All;
 
 public class GroupController implements IController<Group>{
 
@@ -21,7 +21,6 @@ public class GroupController implements IController<Group>{
 
 
 	private GroupService groupService;
-
 	private static final GroupController groupControllerInstance = new GroupController();
 
 	/**
@@ -55,17 +54,14 @@ public class GroupController implements IController<Group>{
 	 */
 	@Override
 	public NetworkResponse addEntity(Group group) {
-		try {
+		if(groupService.create(group)){
 			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-					new PayloadImpl(CommunicationUtils.toJson(groupService.create(group))));
-		} catch (GroupNotFoundException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(GROUP_NOT_FOUND_JSON));
-		} catch (GroupNotPersistedException e) {
+					new PayloadImpl(CommunicationUtils.toJson(group)));
+		}
+		else {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
 					new PayloadImpl(GROUP_NOT_PERSISTED_JSON));
 		}
-
 	}
 
 	/**
@@ -108,11 +104,14 @@ public class GroupController implements IController<Group>{
 	@Override
 	public NetworkResponse deleteEntity(Group group) {
 		try {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-					new PayloadImpl(CommunicationUtils.toJson(groupService.delete(group))));
-		} catch (GroupNotDeletedException e) {
-			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-					new PayloadImpl(GROUP_NOT_DELETED_JSON));
+			if(groupService.delete(group)) {
+				return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+						new PayloadImpl(CommunicationUtils.toJson(group)));
+			}
+			else {
+				return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+						new PayloadImpl(GROUP_NOT_DELETED_JSON));
+			}
 		} catch (GroupNotFoundException e) {
 			return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
 					new PayloadImpl(GROUP_NOT_FOUND_JSON));

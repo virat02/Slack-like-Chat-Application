@@ -1,8 +1,6 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
@@ -27,6 +25,7 @@ public class GroupJPAServiceTest {
      */
 
     private GroupJPAService groupJPAService;
+    private AllJPAService allJPAService;
     private User userOne;
     private Group groupOne;
     private Group groupTwo;
@@ -41,6 +40,7 @@ public class GroupJPAServiceTest {
      */
     @Before
     public void setUp(){
+
         userOne = new User();
         userOne.setUsername("Jalannin");
         userOne.setPassword("jjj");
@@ -58,53 +58,31 @@ public class GroupJPAServiceTest {
         groupJPAService = GroupJPAService.getInstance();
         entityTransaction = mock(EntityTransaction.class);
         entityManagerUtil = mock(EntityManagerUtil.class);
+
+        allJPAService = AllJPAService.getInstance();
     }
 
     /**
      * Testing the create group method
      */
     @Test
-    public void testCreateGroup() throws GroupNotPersistedException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+    public void testCreateGroup() {
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        groupJPAService.setEntityManagerUtil(entityManagerUtil);
-        groupJPAService.createGroup(groupOne);
-        assertEquals(1234,groupOne.getId());
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.createEntity(groupOne));
     }
 
     /**
      * Testing the create group method for throwing a custom exception
      */
-    @Test(expected = GroupNotPersistedException.class)
-    public void testCreateGroupForException() throws GroupNotPersistedException{
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateGroupForIllegalArgumentException() {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        groupJPAService.setEntityManagerUtil(entityManagerUtil);
-        doThrow(new EntityNotFoundException()).when(entityManager).persist(any(Group.class));
-        groupJPAService.createGroup(groupOne);
-    }
-
-    /**
-     * Testing the get group method
-     */
-    @Test
-    public void testGetGroup() throws GroupNotFoundException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        groupJPAService.setEntityManagerUtil(entityManagerUtil);
-        groupJPAService.getGroup(groupOne.getId());
-    }
-
-    /**
-     * Testing the get group method for throwing custom exception
-     */
-    @Test(expected = GroupNotFoundException.class)
-    public void testGetGroupForException() throws GroupNotFoundException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        groupJPAService.setEntityManagerUtil(entityManagerUtil);
-        when(entityManager.find(any(), anyInt())).thenThrow(new EntityNotFoundException());
-        groupJPAService.getGroup(groupOne.getId());
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        doThrow(new IllegalArgumentException()).when(entityManager).persist(any(Group.class));
+        allJPAService.createEntity(groupOne);
     }
 
     /**
@@ -151,17 +129,11 @@ public class GroupJPAServiceTest {
      * Testing the delete group method
      */
     @Test
-    public void testDeleteGroup() throws GroupNotFoundException, GroupNotDeletedException {
-        TypedQuery mockedQuery = mock(TypedQuery.class);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(groupOne);
+    public void testDeleteGroup() {
         when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-        groupJPAService.setEntityManagerUtil(entityManagerUtil);
-        when(entityManager.find(any(), anyInt())).thenReturn(groupOne);
-        Group newGroupList = groupJPAService.searchUsingCode(groupOne.getGroupCode());
-        assertEquals(newGroupList,groupOne);
-        groupJPAService.deleteGroup(groupOne);
+        when(entityManager.getTransaction()).thenReturn(entityTransaction);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.deleteEntity(groupOne));
     }
 
     /**
