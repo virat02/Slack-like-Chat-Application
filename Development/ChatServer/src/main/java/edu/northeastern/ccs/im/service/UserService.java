@@ -94,26 +94,52 @@ public final class UserService implements IService {
     }
 
     /**
-     * Add user will add a user to the database.
-     * @param user being added to the database.* @return the user which was added to the database.
+     * Returns true iff username is valid
+     * @param usernameCheck
+     * @param user
+     * @return
+     * @throws UsernameInvalidException
      */
-    public boolean addUser(User user)
-            throws UsernameInvalidException, PasswordInvalidException {
-        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+    public boolean isValidUsername(HashMap<String, Boolean> usernameCheck, User user) throws UsernameInvalidException {
         if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
                 user.getUsername().length() < 4) {
             throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+
+        return true;
+    }
+
+    /**
+     * Returns true iff password is valid
+     * @param passwordCheck
+     * @param user
+     * @return
+     * @throws PasswordInvalidException
+     */
+    public boolean isValidPassword(HashMap<String, Boolean> passwordCheck, User user) throws PasswordInvalidException {
         if(user.getPassword().length() < 4 || user.getPassword().length() > 20
                 || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
             throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
 
-        return jpaService.createEntity(user);
+        return true;
+    }
 
+    /**
+     * Add user will add a user to the database.
+     * @param user being added to the database.* @return the user which was added to the database.
+     */
+    public boolean addUser(User user)
+            throws UsernameInvalidException, PasswordInvalidException {
+        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+        if(isValidUsername(usernameCheck, user) && isValidPassword(passwordCheck, user)){
+            return jpaService.createEntity(user);
+        }
+
+        return false;
     }
 
     /**
