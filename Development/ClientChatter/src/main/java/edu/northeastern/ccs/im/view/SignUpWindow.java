@@ -100,6 +100,11 @@ public class SignUpWindow extends AbstractTerminalWindow {
             }
             else {
                 sendNetworkConnection(new NetworkRequestFactory().deleteUserProfile(profile));
+                try {
+                    ResponseParser.parseLoginNetworkResponse(networkResponse).getId();
+                } catch (NetworkResponseFailureException exception) {
+                    printMessageInConsole(exception.getMessage());
+                }
             }
         } catch (NetworkResponseFailureException exception) {
             printMessageInConsole(exception.getMessage());
