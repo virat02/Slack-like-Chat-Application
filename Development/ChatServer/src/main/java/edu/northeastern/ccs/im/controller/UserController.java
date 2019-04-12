@@ -29,7 +29,24 @@ public final class UserController implements IController<User> {
     private static final String CANNOT_UNFOLLOW_JSON = "{\"message\" : \"Cannot unfollow a user you do not follow!\"}";
     private static final String EXIT_CHAT_ROOM_SUCCESSFUL = "{\"message\" : \"Successfully exited the chatroom\"}";
 
-    private UserService userService = new UserService();
+    private UserService userService;
+
+    private static final UserController userControllerInstance = new UserController();
+
+    /**
+     * Constructor for the user controller
+     */
+    private UserController(){
+        userService = new UserService();
+    }
+
+    /**
+     * Singleton instance for user controller
+     * @return a singleton instance
+     */
+    public static UserController getInstance(){
+        return userControllerInstance;
+    }
 
     /**
      * Sets the user service for the controller.

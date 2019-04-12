@@ -13,7 +13,14 @@ import java.util.logging.Logger;
 public class ProfileJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileJPAService.class.getName());
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+    private EntityManagerUtil entityManagerUtil;
+
+    /**
+     *Constructor for Profile jpa service
+     */
+    public ProfileJPAService(){
+        this.entityManagerUtil = new EntityManagerUtil();
+    }
 
     /**
      * Set the entityManagerUtil

@@ -24,8 +24,13 @@ import java.util.logging.Logger;
 public class MessageJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+    private EntityManagerUtil entityManagerUtil;
     private GroupService groupService = new GroupService();
+
+
+    public MessageJPAService(){
+        this.entityManagerUtil = new EntityManagerUtil();
+    }
 
     /**
      * Set a group service

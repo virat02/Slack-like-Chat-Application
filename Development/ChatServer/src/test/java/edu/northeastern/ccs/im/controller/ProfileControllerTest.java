@@ -37,7 +37,7 @@ public class ProfileControllerTest {
 
     @Before
     public void setUp() {
-        profileController = new ProfileController();
+        profileController = ProfileController.getInstance();
         profileService = mock(ProfileService.class);
 
         //setup a group

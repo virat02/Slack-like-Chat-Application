@@ -21,12 +21,20 @@ import java.util.logging.Logger;
 public class MessageService implements IService{
 
     private static final Logger LOGGER = Logger.getLogger(MessageService.class.getName());
-    private AllJPAService jpaService = new AllJPAService();
+    private AllJPAService jpaService;
 
-    private MessageJPAService messageJPAService = new MessageJPAService();
-    private UserService userService = new UserService();
-    private GroupService groupService = new GroupService();
-    private UserJPAService userJPAService = new UserJPAService();
+    private MessageJPAService messageJPAService;
+    private UserService userService;
+    private GroupService groupService;
+    private UserJPAService userJPAService;
+
+    public MessageService(){
+        jpaService = new AllJPAService();
+        messageJPAService = new MessageJPAService();
+        userService = new UserService();
+        groupService = new GroupService();
+        userJPAService = new UserJPAService();
+    }
 
     /**
      * Set a message JPA Service

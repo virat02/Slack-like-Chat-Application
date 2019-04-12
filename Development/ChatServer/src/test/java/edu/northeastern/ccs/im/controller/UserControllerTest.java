@@ -31,7 +31,7 @@ public class UserControllerTest {
      */
     @Before
     public void setUp() {
-        userController = new UserController();
+        userController = UserController.getInstance();
         userService = mock(UserService.class);
         userOne = new User();
         userOne.setPassword("yo123");

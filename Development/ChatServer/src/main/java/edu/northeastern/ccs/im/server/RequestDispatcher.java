@@ -100,7 +100,7 @@ public class RequestDispatcher {
     }
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private UserController userController = new UserController();
+    private UserController userController = UserController.getInstance();
     private NetworkResponseFactory networkResponseFactory = new NetworkResponseFactory();
     private MessageManagerService messageManagerService = MessageManagerService.getInstance();
 
@@ -114,8 +114,8 @@ public class RequestDispatcher {
         this.groupController = groupController;
     }
 
-    private GroupController groupController = new GroupController();
-    private ProfileController profileController = new ProfileController();
+    private GroupController groupController = GroupController.getInstance();
+    private ProfileController profileController = ProfileController.getInstance();
 
     /***
      * Provides a way of injecting user controller

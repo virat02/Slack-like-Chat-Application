@@ -30,7 +30,7 @@ public class GroupJPAService{
 	private EntityManagerUtil entityManagerUtil;
 
 	/**
-	 * Constructor for UserJPAService to setup the EntityManagerUtil
+	 * Constructor for GroupJPAService to setup the EntityManagerUtil
 	 */
 	public GroupJPAService() {
 		entityManagerUtil = new EntityManagerUtil();
@@ -145,6 +145,7 @@ public class GroupJPAService{
 		group.setCreatedOn(currentGroup.getCreatedOn());
 		group.setMsgs(currentGroup.getMsgs());
 		group.setGroupPassword(currentGroup.getGroupPassword());
+		entityManager.merge(group);
 		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){

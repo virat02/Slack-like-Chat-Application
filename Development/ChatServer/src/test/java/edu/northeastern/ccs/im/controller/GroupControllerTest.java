@@ -38,7 +38,7 @@ public class GroupControllerTest {
      */
     @Before
     public void setUp() throws IOException {
-        groupController = new GroupController();
+        groupController = GroupController.getInstance();
         groupService = mock(GroupService.class);
         groupOne = new Group();
         groupOne.setName("groupOneTest");

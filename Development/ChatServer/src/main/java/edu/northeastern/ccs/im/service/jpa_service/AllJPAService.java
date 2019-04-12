@@ -11,7 +11,12 @@ public class AllJPAService {
     private static final Logger LOGGER = Logger.getLogger(AllJPAService.class.getName());
 
     //The entityManagerUtil for this class.
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+    private EntityManagerUtil entityManagerUtil;
+
+
+    public AllJPAService(){
+        this.entityManagerUtil = new EntityManagerUtil();
+    }
 
     /**
      * Set the entityManagerUtil
