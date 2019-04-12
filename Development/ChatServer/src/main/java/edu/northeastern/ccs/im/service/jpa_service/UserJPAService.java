@@ -21,9 +21,6 @@ public class UserJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
     private static final UserJPAService userJpaServiceInstance = new UserJPAService();
-    //The entity manager for this class.
-    private EntityManager entityManager;
-
     private EntityManagerUtil entityManagerUtil;
 
     /**
@@ -49,19 +46,6 @@ public class UserJPAService {
         this.entityManagerUtil = entityManagerUtil;
     }
 
-    /**
-     * A function made to setup the entity manager for this class to make the class more testable.
-     * @param entityManager The entity manager for this class.
-     */
-    public void setEntityManager(EntityManager entityManager) {
-        if(entityManager == null) {
-            EntityManagerFactory emFactory;
-            emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-            this.entityManager = emFactory.createEntityManager();
-        } else {
-            this.entityManager = entityManager;
-        }
-    }
 
     /**
      * Creating a new User instance we are creating in the database.
