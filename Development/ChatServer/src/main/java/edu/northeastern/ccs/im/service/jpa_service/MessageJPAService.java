@@ -120,8 +120,10 @@ public class MessageJPAService {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
         Root<Message> root = criteriaQuery.from(Message.class);
-        Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(root.get("receiver").get("id"), groupId),
-                criteriaBuilder.greaterThanOrEqualTo(root.get("timestamp"), loggedOut));
+        Predicate subPredicate1 = criteriaBuilder.equal(root.get("receiver").get("id"), groupId);
+        Predicate subPredicate2 = criteriaBuilder.greaterThanOrEqualTo(root.get("timestamp"), loggedOut);
+        Predicate subPredicate3 = criteriaBuilder.equal(root.get("deleted"), false);
+        Predicate predicate = criteriaBuilder.and(subPredicate1, subPredicate2, subPredicate3);
         criteriaQuery.where(predicate);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("timestamp")));
         TypedQuery<Message> typedQuery = em.createQuery(criteriaQuery);
@@ -141,7 +143,6 @@ public class MessageJPAService {
 
         //Get the group based on the group unique key
         Group g = groupService.searchUsingCode(groupUniqueKey);
-
         String queryString = "SELECT m FROM Message m WHERE m.receiver.id = " + g.getId() + " ORDER BY m.timestamp DESC";
         //Begin Transaction
         EntityManager em = entityManagerUtil.getEntityManager();
