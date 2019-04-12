@@ -4,11 +4,9 @@ import edu.northeastern.ccs.im.service.EntityManagerUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.logging.Logger;
 
 public class AllJPAService {
 
-    private static final Logger LOGGER = Logger.getLogger(AllJPAService.class.getName());
     private static final AllJPAService jpaServiceInstance = new AllJPAService();
 
     //The entityManagerUtil for this class.

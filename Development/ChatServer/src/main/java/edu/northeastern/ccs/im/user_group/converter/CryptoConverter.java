@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+import javax.persistence.PersistenceException;
 import java.security.Key;
 
 /**
@@ -33,7 +34,7 @@ public class CryptoConverter implements AttributeConverter<String, String> {
             c.init(Cipher.ENCRYPT_MODE, key);
             return Base64.getEncoder().encodeToString(c.doFinal(password.getBytes()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new PersistenceException(e);
         }
     }
 
@@ -51,7 +52,7 @@ public class CryptoConverter implements AttributeConverter<String, String> {
             c.init(Cipher.DECRYPT_MODE, key);
             return new String(c.doFinal(Base64.getDecoder().decode(dbData)));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new PersistenceException(e);
         }
     }
 }

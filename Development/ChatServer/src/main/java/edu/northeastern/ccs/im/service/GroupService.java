@@ -85,7 +85,7 @@ public class GroupService implements IService {
      * @throws GroupNotPersistedException
      */
     public boolean createIfNotPresent(String groupCode, String username, boolean flag)
-            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
+            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
 
         //Check if request for private group
         if(flag) {

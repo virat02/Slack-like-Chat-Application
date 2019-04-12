@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 public class MessageBroadCastService implements BroadCastService {
 
     private static final Logger LOGGER = Logger.getLogger(MessageBroadCastService.class.getName());
+    private static final String ERROR_MESSAGE_1 = "Group with group unique key: ";
+    private static final String ERROR_MESSAGE_2 = " trying to be accessed does not exist!";
+    private static final String ERROR_MESSAGE_3 = "Messages could not be retrieved for group having group unique key: ";
     private String groupCode;
     private ConcurrentLinkedQueue<ClientRunnable> active = new ConcurrentLinkedQueue<>();
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10);
@@ -112,9 +115,9 @@ public class MessageBroadCastService implements BroadCastService {
                     .map(m -> Message.makeBroadcastMessage(m.getSender().getUsername(), m.getMessage(), m.getReceiver().getGroupCode()))
                     .collect(Collectors.toList());
         } catch (NoResultException e) {
-            ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
+            ChatLogger.warning(ERROR_MESSAGE_3 + groupCode);
         } catch (GroupNotFoundException e) {
-            ChatLogger.warning("Group with group unique key: " + groupCode + " trying to be accessed does not exist!");
+            ChatLogger.warning(ERROR_MESSAGE_1 + groupCode + ERROR_MESSAGE_2);
         }
 
         return messages;
@@ -123,8 +126,8 @@ public class MessageBroadCastService implements BroadCastService {
     @Override
     public List<Message> getUnreadMessages(String userName) {
         final String userNotFoundError = "User could not be found for the error";
-        final String noResultFoundError = "Messages could not be retrieved for group having group unique key: " + groupCode;
-        final String groupNotFoundError = "Group with group unique key: " + groupCode + " trying to be accessed does not exist!";
+        final String noResultFoundError = ERROR_MESSAGE_3 + groupCode;
+        final String groupNotFoundError = ERROR_MESSAGE_1 + groupCode + ERROR_MESSAGE_2;
         List<Message> messages = new ArrayList<>();
         try {
             return messageService.getUnreadMessages(userName, groupCode)
@@ -151,9 +154,9 @@ public class MessageBroadCastService implements BroadCastService {
             messageService.deleteMessage(messageList.get(messageList.size() - messageIndex - 1));
             return true;
         } catch (NoResultException e) {
-            ChatLogger.warning("Messages could not be retrieved for group having group unique key: " + groupCode);
+            ChatLogger.warning(ERROR_MESSAGE_3 + groupCode);
         } catch (GroupNotFoundException | MessageNotFoundException e) {
-            ChatLogger.warning("Group with group unique key: "+groupCode+" trying to be accessed does not exist!");
+            ChatLogger.warning(ERROR_MESSAGE_1+groupCode+ERROR_MESSAGE_2);
         }
         return false;
     }
