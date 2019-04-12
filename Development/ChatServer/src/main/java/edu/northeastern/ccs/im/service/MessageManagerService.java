@@ -19,9 +19,9 @@ public class MessageManagerService {
     // static variable instance of type MessageManagerService
     private static MessageManagerService instance = null;
 
-    private GroupService groupService = new GroupService();
+    private GroupService groupService = GroupService.getInstance();
 
-    private UserService userService = new UserService();
+    private UserService userService = UserService.getInstance();
 
     public void setUserService(UserService userService) {
         this.userService = userService;

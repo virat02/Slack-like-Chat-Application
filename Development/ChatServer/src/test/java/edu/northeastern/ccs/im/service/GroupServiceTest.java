@@ -69,7 +69,7 @@ public class GroupServiceTest {
 		groupOne.addUser(userOne);
 		userList.add(userOne);
 
-		groupService = new GroupService();
+		groupService = GroupService.getInstance();
 		groupJPAService = mock(GroupJPAService.class);
 
 		userJPAService = mock(UserJPAService.class);

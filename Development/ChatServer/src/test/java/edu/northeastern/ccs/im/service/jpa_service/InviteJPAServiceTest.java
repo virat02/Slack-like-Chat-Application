@@ -46,7 +46,7 @@ public class InviteJPAServiceTest {
          mockedEntityTransaction = mock(EntityTransaction.class);
          mockedEntityManager = mock(EntityManager.class);
          inviteList = new ArrayList<>();
-         inviteJPAService =  new InviteJPAService();
+         inviteJPAService =  InviteJPAService.getInstance();
          userOne = new User();
          userOne.setUsername("User1");
          userOne.setPassword("User1");

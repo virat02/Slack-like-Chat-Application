@@ -14,12 +14,21 @@ public class ProfileJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileJPAService.class.getName());
     private EntityManagerUtil entityManagerUtil;
+    private static final ProfileJPAService profileJpaServiceInstance = new ProfileJPAService();
 
     /**
      *Constructor for Profile jpa service
      */
-    public ProfileJPAService(){
+    private ProfileJPAService(){
         this.entityManagerUtil = new EntityManagerUtil();
+    }
+
+    /**
+     * Singleton for Profile JPA service
+     * @return
+     */
+    public static ProfileJPAService getInstance(){
+        return profileJpaServiceInstance;
     }
 
     /**

@@ -119,8 +119,8 @@ public class MessageJPAServiceTest {
         m3.setReceiver(group);
         m3.setDeleted(false);
 
-        messageJPAService = new MessageJPAService();
-        allJPAService = new AllJPAService();
+        messageJPAService = MessageJPAService.getInstance();
+        allJPAService = AllJPAService.getInstance();
     }
 
     /**

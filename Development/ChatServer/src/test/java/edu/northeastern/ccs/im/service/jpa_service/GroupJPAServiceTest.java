@@ -55,7 +55,7 @@ public class GroupJPAServiceTest {
         groupList.add(groupOne);
 
         entityManager = mock(EntityManager.class);
-        groupJPAService = new GroupJPAService();
+        groupJPAService = GroupJPAService.getInstance();
         entityTransaction = mock(EntityTransaction.class);
         entityManagerUtil = mock(EntityManagerUtil.class);
     }

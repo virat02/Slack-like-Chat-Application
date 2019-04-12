@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class ProfileService {
 
     private static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
+    private static final ProfileService profileServiceInstance = new ProfileService();
 
     private ProfileJPAService profileJPAService;
     private AllJPAService jpaService;
@@ -23,9 +24,16 @@ public class ProfileService {
     /**
      * Constructor for ProfileService
      */
-    public ProfileService(){
-        profileJPAService = new ProfileJPAService();
-        jpaService = new AllJPAService();
+    private ProfileService(){
+        profileJPAService = ProfileJPAService.getInstance();
+        jpaService = AllJPAService.getInstance();
+    }
+
+    /**
+     * Singleton instance for Profile Service
+     */
+    public static ProfileService getInstance(){
+        return profileServiceInstance;
     }
 
     /**
@@ -34,7 +42,7 @@ public class ProfileService {
      */
     public void setProfileJPAService(ProfileJPAService profileJPAService) {
         if(profileJPAService == null) {
-            this.profileJPAService = new ProfileJPAService();
+            this.profileJPAService = ProfileJPAService.getInstance();
         }
         else {
             this.profileJPAService = profileJPAService;
@@ -47,7 +55,7 @@ public class ProfileService {
      */
     public void setAllJPAService(AllJPAService jpaService) {
         if(jpaService == null) {
-            this.jpaService = new AllJPAService();
+            this.jpaService = AllJPAService.getInstance();
         }
         else {
             this.jpaService = jpaService;

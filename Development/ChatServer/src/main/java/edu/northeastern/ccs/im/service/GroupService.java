@@ -22,13 +22,19 @@ public class GroupService implements IService {
     private UserJPAService userJPA;
     private AllJPAService jpaService;
 
+    private static final GroupService groupServiceinstance = new GroupService();
+
     /**
      * Constructor for this class.
      */
-    public GroupService() {
-        groupJPA = new GroupJPAService();
-        userJPA = new UserJPAService();
-        jpaService = new AllJPAService();
+    private GroupService() {
+        groupJPA = GroupJPAService.getInstance();
+        userJPA = UserJPAService.getInstance();
+        jpaService = AllJPAService.getInstance();
+    }
+
+    public static GroupService getInstance(){
+        return groupServiceinstance;
     }
 
     /**
@@ -38,7 +44,7 @@ public class GroupService implements IService {
      */
     public void setUserService(UserJPAService userJPA) {
         if (userJPA == null) {
-            this.userJPA = new UserJPAService();
+            this.userJPA = UserJPAService.getInstance();
         } else {
             this.userJPA = userJPA;
         }
@@ -52,7 +58,7 @@ public class GroupService implements IService {
      */
     public void setAllService(AllJPAService jpaService) {
         if (jpaService == null) {
-            this.jpaService = new AllJPAService();
+            this.jpaService = AllJPAService.getInstance();
         } else {
             this.jpaService = jpaService;
         }
@@ -65,7 +71,7 @@ public class GroupService implements IService {
      */
     public void setJPAService(GroupJPAService groupJPA) {
         if (groupJPA == null) {
-            this.groupJPA = new GroupJPAService();
+            this.groupJPA = GroupJPAService.getInstance();
         } else {
             this.groupJPA = groupJPA;
         }

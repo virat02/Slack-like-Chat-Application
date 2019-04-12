@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class UserJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(UserJPAService.class.getName());
-
+    private static final UserJPAService userJpaServiceInstance = new UserJPAService();
     //The entity manager for this class.
     private EntityManager entityManager;
 
@@ -29,8 +29,16 @@ public class UserJPAService {
     /**
      * Constructor for UserJPAService to setup the EntityManagerUtil
      */
-    public UserJPAService() {
+    private UserJPAService() {
         entityManagerUtil = new EntityManagerUtil();
+    }
+
+    /**
+     * Singleton for user jpa service
+     * @return
+     */
+    public static UserJPAService getInstance(){
+        return userJpaServiceInstance;
     }
 
     /**

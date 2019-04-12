@@ -37,7 +37,7 @@ public final class UserController implements IController<User> {
      * Constructor for the user controller
      */
     private UserController(){
-        userService = new UserService();
+        userService = UserService.getInstance();
     }
 
     /**

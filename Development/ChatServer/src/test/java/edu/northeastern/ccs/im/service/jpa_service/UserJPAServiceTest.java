@@ -76,7 +76,7 @@ public class UserJPAServiceTest {
 
         entityManager = mock(EntityManager.class);
         entityManagerUtil = mock(EntityManagerUtil.class);
-        userJPAService = new UserJPAService();
+        userJPAService = UserJPAService.getInstance();
         entityTransaction = mock(EntityTransaction.class);
         typedQuery = mock(TypedQuery.class);
 

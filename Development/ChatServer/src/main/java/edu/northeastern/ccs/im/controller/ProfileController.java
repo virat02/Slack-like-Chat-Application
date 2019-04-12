@@ -26,7 +26,7 @@ public class ProfileController implements IController<Profile> {
     private static final ProfileController profileControllerInstance = new ProfileController();
 
     private ProfileController(){
-       profileService = new ProfileService();
+       profileService = ProfileService.getInstance();
     }
 
     /**

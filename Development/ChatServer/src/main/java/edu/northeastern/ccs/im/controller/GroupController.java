@@ -28,7 +28,7 @@ public class GroupController implements IController<Group>{
 	 * Constructor for the group controller
 	 */
 	private GroupController(){
-		groupService = new GroupService();
+		groupService = GroupService.getInstance();
 	}
 
 	/**

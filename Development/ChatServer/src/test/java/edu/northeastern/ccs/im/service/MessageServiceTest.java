@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessageServiceTest {
 
-    private MessageService messageService = new MessageService();
+    private MessageService messageService = MessageService.getInstance();
     private MessageJPAService messageJPAService;
     private UserService userService;
     private GroupService groupService;

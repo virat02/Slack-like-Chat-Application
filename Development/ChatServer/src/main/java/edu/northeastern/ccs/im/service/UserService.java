@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 public final class UserService implements IService {
 
     private static final Logger LOGGER = Logger.getLogger(UserService.class.getName());
+    private static final UserService userServiceinstance = new UserService();
 
     private UserJPAService userJPAService;
     private InviteJPAService inviteJPAService;
@@ -31,10 +32,14 @@ public final class UserService implements IService {
     /**
      * Constructor for this class.
      */
-    public UserService() {
-        userJPAService = new UserJPAService();
-        inviteJPAService = new InviteJPAService();
-        groupJPAService = new GroupJPAService();
+    private UserService() {
+        userJPAService = UserJPAService.getInstance();
+        inviteJPAService = InviteJPAService.getInstance();
+        groupJPAService = GroupJPAService.getInstance();
+    }
+
+    public static UserService getInstance(){
+        return userServiceinstance;
     }
 
     /**
@@ -43,7 +48,7 @@ public final class UserService implements IService {
      */
     public void setJPAService(UserJPAService userJPAService) {
         if(userJPAService == null) {
-            this.userJPAService = new UserJPAService();
+            this.userJPAService = UserJPAService.getInstance();
         } else {
             this.userJPAService = userJPAService;
         }
@@ -56,7 +61,7 @@ public final class UserService implements IService {
      */
     public void setInviteJPAService(InviteJPAService inviteJPAService){
         if(inviteJPAService == null) {
-            this.inviteJPAService = new InviteJPAService();
+            this.inviteJPAService = InviteJPAService.getInstance();
         } else {
             this.inviteJPAService = inviteJPAService;
         }
@@ -69,7 +74,7 @@ public final class UserService implements IService {
      */
     public void setGroupJPAService(GroupJPAService groupJPAService){
         if(groupJPAService == null) {
-            this.groupJPAService = new GroupJPAService();
+            this.groupJPAService = GroupJPAService.getInstance();
         } else {
             this.groupJPAService = groupJPAService;
         }

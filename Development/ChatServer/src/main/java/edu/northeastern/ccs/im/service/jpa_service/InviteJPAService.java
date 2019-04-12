@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
@@ -13,7 +14,8 @@ import java.util.List;
 public class InviteJPAService {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(UserJPAService.class.getName());
-    private GroupJPAService groupJPA = new GroupJPAService();
+    private GroupJPAService groupJPA = GroupJPAService.getInstance();
+    private static final InviteJPAService inviteJpaServiceInstance = new InviteJPAService();
     private static final String NO_INVITE = "Could not get the invite!";
 
     /**
@@ -21,6 +23,17 @@ public class InviteJPAService {
      */
     //The entity manager for this class.
     private EntityManager entityManager;
+
+    private EntityManagerUtil entityManagerUtil;
+
+    //Constructor of Invite JPA service
+    private InviteJPAService(){
+        entityManagerUtil = new EntityManagerUtil();
+    }
+
+    public static InviteJPAService getInstance(){
+        return inviteJpaServiceInstance;
+    }
 
     /**
      * A function made to setup the entity manager for this class to make the class more testable.
