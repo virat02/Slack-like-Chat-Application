@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
@@ -35,6 +36,8 @@ public class InviteJPAServiceTest {
      private EntityTransaction mockedEntityTransaction;
      private TypedQuery typedQuery;
      private List<Invite> inviteList;
+    private EntityManagerUtil entityManagerUtil;
+
 
     /**
      * Sets up the inviteJPAService before the tests.
@@ -80,6 +83,7 @@ public class InviteJPAServiceTest {
          invite.setGroup(group);
          invite.setStatus(Status.NOUPDATE);
 
+        entityManagerUtil = mock(EntityManagerUtil.class);
      }
 
     /**
@@ -90,9 +94,10 @@ public class InviteJPAServiceTest {
      public void testCreateInvite() throws InviteNotAddedException {
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(typedQuery.getResultList()).thenReturn(inviteList);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite.getId(), inviteJPAService.createInvite(invite));
      }
 
@@ -105,8 +110,9 @@ public class InviteJPAServiceTest {
         group.addUser(receiver);
         invite.setGroup(group);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.createInvite(invite);
     }
 
@@ -119,9 +125,10 @@ public class InviteJPAServiceTest {
         inviteList.add(invite);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.createQuery(anyString(), any())).thenReturn(typedQuery);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(typedQuery.getResultList()).thenReturn(inviteList);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.createInvite(invite);
     }
 
@@ -133,7 +140,8 @@ public class InviteJPAServiceTest {
     public void testGetInvite() throws InviteNotFoundException {
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite, inviteJPAService.getInvite(invite.getId()));
     }
 
@@ -145,7 +153,8 @@ public class InviteJPAServiceTest {
     public void testGetInviteFail() throws InviteNotFoundException {
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenThrow(IllegalArgumentException.class);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite, inviteJPAService.getInvite(invite.getId()));
     }
 
@@ -155,9 +164,10 @@ public class InviteJPAServiceTest {
      */
     @Test
     public void testUpdateInvite() throws InviteNotUpdatedException {
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.updateInvite(invite);
         assertEquals(Status.NOUPDATE, invite.getStatus());
     }
@@ -168,9 +178,10 @@ public class InviteJPAServiceTest {
      */
     @Test (expected = InviteNotFoundException.class)
     public void testUpdateInviteFail() throws InviteNotFoundException {
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenThrow(IllegalArgumentException.class);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite, inviteJPAService.getInvite(invite.getId()));
     }
 
@@ -196,9 +207,11 @@ public class InviteJPAServiceTest {
     public void testUpdateInviteGroup() throws InviteNotUpdatedException, GroupNotFoundException {
         GroupJPAService groupJPAService = mock(GroupJPAService.class);
         invite.setStatus(Status.ACCEPTED);
+
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.setGroupJPA(groupJPAService);
         inviteJPAService.updateInvite(invite);
         assertEquals(Status.ACCEPTED, invite.getStatus());
@@ -210,9 +223,11 @@ public class InviteJPAServiceTest {
      */
     @Test
     public void testDeleteInvite() throws InviteNotDeletedException {
+
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite, inviteJPAService.deleteInvite(invite));
     }
 
@@ -222,9 +237,11 @@ public class InviteJPAServiceTest {
      */
     @Test (expected = InviteNotDeletedException.class)
     public void testDeleteInviteException() throws InviteNotDeletedException {
+
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenThrow(IllegalArgumentException.class);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         assertEquals(invite, inviteJPAService.deleteInvite(invite));
     }
 
@@ -237,12 +254,14 @@ public class InviteJPAServiceTest {
     public void testSearchInvite() throws GroupNotFoundException, InviteNotFoundException {
         inviteList.add(invite);
         GroupJPAService groupJPAService = mock(GroupJPAService.class);
+
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(groupJPAService.searchUsingCode(anyString())).thenReturn(group);
         when(mockedEntityManager.createQuery(anyString(),any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(inviteList);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.setGroupJPA(groupJPAService);
         inviteJPAService.searchInviteByGroupCode("Banjo", userOne);
         assertEquals(1, inviteList.size());
@@ -257,12 +276,14 @@ public class InviteJPAServiceTest {
     public void testSearchInviteNotModeratorFail() throws GroupNotFoundException, InviteNotFoundException {
         inviteList.add(invite);
         GroupJPAService groupJPAService = mock(GroupJPAService.class);
+
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(groupJPAService.searchUsingCode(anyString())).thenReturn(group);
         when(mockedEntityManager.createQuery(anyString(),any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(inviteList);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.setGroupJPA(groupJPAService);
         inviteJPAService.searchInviteByGroupCode("Banjo", userTwo);
     }
@@ -276,12 +297,13 @@ public class InviteJPAServiceTest {
     public void testSearchInviteGroupNotFound() throws GroupNotFoundException, InviteNotFoundException {
         inviteList.add(invite);
         GroupJPAService groupJPAService = mock(GroupJPAService.class);
+        when(entityManagerUtil.getEntityManager()).thenReturn(mockedEntityManager);
         when(groupJPAService.searchUsingCode(anyString())).thenThrow(GroupNotFoundException.class);
         when(mockedEntityManager.createQuery(anyString(),any())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(inviteList);
         when(mockedEntityManager.getTransaction()).thenReturn(mockedEntityTransaction);
         when(mockedEntityManager.find(any(), anyInt())).thenReturn(invite);
-        inviteJPAService.setEntityManager(mockedEntityManager);
+        inviteJPAService.setEntityManagerUtil(entityManagerUtil);
         inviteJPAService.setGroupJPA(groupJPAService);
         inviteJPAService.searchInviteByGroupCode("Banjo", userTwo);
     }
