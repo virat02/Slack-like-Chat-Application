@@ -53,7 +53,7 @@ public class UserServiceTest {
         userTwo.setPassword("Dragons1");
         userTwo.setId(2);
 
-        userService = new UserService();
+        userService = UserService.getInstance();
         userJPAService = mock(UserJPAService.class);
 
         inviteJPAService = mock(InviteJPAService.class);

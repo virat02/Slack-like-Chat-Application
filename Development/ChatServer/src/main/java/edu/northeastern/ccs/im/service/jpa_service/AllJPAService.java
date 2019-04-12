@@ -9,9 +9,19 @@ import java.util.logging.Logger;
 public class AllJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(AllJPAService.class.getName());
+    private static final AllJPAService jpaServiceInstance = new AllJPAService();
 
     //The entityManagerUtil for this class.
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
+    private EntityManagerUtil entityManagerUtil;
+
+
+    private AllJPAService(){
+        this.entityManagerUtil = new EntityManagerUtil();
+    }
+
+    public static AllJPAService getInstance(){
+        return jpaServiceInstance;
+    }
 
     /**
      * Set the entityManagerUtil

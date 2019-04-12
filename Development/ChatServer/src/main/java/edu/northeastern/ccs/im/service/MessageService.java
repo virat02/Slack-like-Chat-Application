@@ -21,12 +21,25 @@ import java.util.logging.Logger;
 public class MessageService implements IService{
 
     private static final Logger LOGGER = Logger.getLogger(MessageService.class.getName());
-    private AllJPAService jpaService = new AllJPAService();
+    private static final MessageService messageServiceInstance = new MessageService();
+    private AllJPAService jpaService;
 
-    private MessageJPAService messageJPAService = new MessageJPAService();
-    private UserService userService = new UserService();
-    private GroupService groupService = new GroupService();
-    private UserJPAService userJPAService = new UserJPAService();
+    private MessageJPAService messageJPAService;
+    private UserService userService;
+    private GroupService groupService;
+    private UserJPAService userJPAService;
+
+    private MessageService(){
+        jpaService = AllJPAService.getInstance();
+        messageJPAService = MessageJPAService.getInstance();
+        userService = UserService.getInstance();
+        groupService = GroupService.getInstance();
+        userJPAService = UserJPAService.getInstance();
+    }
+
+    public static MessageService getInstance(){
+        return messageServiceInstance;
+    }
 
     /**
      * Set a message JPA Service
@@ -34,7 +47,7 @@ public class MessageService implements IService{
      */
     public void setMessageJPAService(MessageJPAService messageJPAService) {
         if(messageJPAService == null) {
-            this.messageJPAService = new MessageJPAService();
+            this.messageJPAService = MessageJPAService.getInstance();
         }
         else {
             this.messageJPAService = messageJPAService;
@@ -47,7 +60,7 @@ public class MessageService implements IService{
      */
     public void setAllJPAService(AllJPAService jpaService) {
         if(jpaService == null) {
-            this.jpaService = new AllJPAService();
+            this.jpaService = AllJPAService.getInstance();
         }
         else {
             this.jpaService = jpaService;

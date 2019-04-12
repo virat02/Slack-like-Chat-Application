@@ -77,8 +77,8 @@ public class ProfileJPAServiceTest {
         p3.setEmail(P3_EMAIL);
         p3.setImageUrl(P3_IMAGE_URL);
 
-        profileJPAService = new ProfileJPAService();
-        allJPAService = new AllJPAService();
+        profileJPAService = ProfileJPAService.getInstance();
+        allJPAService = AllJPAService.getInstance();
     }
 
     /**

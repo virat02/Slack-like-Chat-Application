@@ -11,6 +11,7 @@ import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
+import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -22,18 +23,24 @@ public class GroupJPAService{
 	private static final Logger LOGGER = Logger.getLogger(GroupJPAService.class.getName());
 	private static final String ERROR_MESSAGE = "Can't find Group for ID: ";
 
-	private UserJPAService userJPA = new UserJPAService();
-
-	//The entity manager for this class.
+	private UserJPAService userJPA = UserJPAService.getInstance();
+	private static final GroupJPAService groupJpaServiceInstance = new GroupJPAService();
 	private EntityManager entityManager;
-
 	private EntityManagerUtil entityManagerUtil;
 
 	/**
-	 * Constructor for UserJPAService to setup the EntityManagerUtil
+	 * Constructor for GroupJPAService to setup the EntityManagerUtil
 	 */
-	public GroupJPAService() {
+	private GroupJPAService() {
 		entityManagerUtil = new EntityManagerUtil();
+	}
+
+	/**
+	 * Singleton instance for group jpa service
+	 * @return
+	 */
+	public static GroupJPAService getInstance(){
+		return groupJpaServiceInstance;
 	}
 
 	/**
@@ -145,6 +152,7 @@ public class GroupJPAService{
 		group.setCreatedOn(currentGroup.getCreatedOn());
 		group.setMsgs(currentGroup.getMsgs());
 		group.setGroupPassword(currentGroup.getGroupPassword());
+		entityManager.merge(group);
 		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){

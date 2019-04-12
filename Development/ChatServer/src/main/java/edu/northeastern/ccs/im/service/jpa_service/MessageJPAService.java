@@ -24,8 +24,22 @@ import java.util.logging.Logger;
 public class MessageJPAService {
 
     private static final Logger LOGGER = Logger.getLogger(MessageJPAService.class.getName());
-    private EntityManagerUtil entityManagerUtil = new EntityManagerUtil();
-    private GroupService groupService = new GroupService();
+    private EntityManagerUtil entityManagerUtil;
+    private GroupService groupService = GroupService.getInstance();
+    private static final MessageJPAService messageJpaServiceInstance = new MessageJPAService();
+
+    //Constructor for Message JPA Service
+    private MessageJPAService(){
+        this.entityManagerUtil = new EntityManagerUtil();
+    }
+
+    /**
+     * Singleton instance of message JPA service
+     * @return
+     */
+    public static MessageJPAService getInstance(){
+        return messageJpaServiceInstance;
+    }
 
     /**
      * Set a group service

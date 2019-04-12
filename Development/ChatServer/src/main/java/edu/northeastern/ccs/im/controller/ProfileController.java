@@ -13,7 +13,7 @@ import edu.northeastern.ccs.im.user_group.Profile;
  */
 public class ProfileController implements IController<Profile> {
 
-    private ProfileService profileService = new ProfileService();
+    private ProfileService profileService;
 
     private static final String INTERNAL_ERROR_CREATE_PROFILE_JSON = "{\"message\" : \"Sorry, could not create your profile!\"}";
     private static final String INTERNAL_ERROR_DELETE_PROFILE_JSON = "{\"message\" : \"Sorry, could not delete your profile!\"}";
@@ -22,6 +22,21 @@ public class ProfileController implements IController<Profile> {
     private static final String EMAIL_ALREADY_IN_USE_JSON = "{\"message\" : \"The email id is already in use. Please try again with different email id!\"}";
     private static final String INVALID_IMAGEURL_JSON = "{\"message\" : \"The imageURL you entered is invalid. Please try again! (Eg. http://* or https://* )\"}";
     private static final String CANNOT_DELETE_NON_EXISTING_PROFILE_JSON = "{\"message\" : \"The profile you are trying to delete does not exist. Please check again!\"}";
+
+    private static final ProfileController profileControllerInstance = new ProfileController();
+
+    private ProfileController(){
+       profileService = ProfileService.getInstance();
+    }
+
+    /**
+     *  Singleton pattern for profile controller
+     * @return a singleton instance
+     */
+    public static ProfileController getInstance(){
+        return profileControllerInstance;
+    }
+
     /**
      * Sets the user service for the controller.
      * @param profileService the user service the controller will be using to load on the payload.
@@ -29,6 +44,7 @@ public class ProfileController implements IController<Profile> {
     public void setProfileService(ProfileService profileService) {
         this.profileService = profileService;
     }
+
 
     /**
      * Controller to add a Profile

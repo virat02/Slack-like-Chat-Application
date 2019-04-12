@@ -44,7 +44,7 @@ public class MessageBroadCastService implements BroadCastService {
      * Instantiates a new Message broad cast service.
      */
     public MessageBroadCastService() {
-        messageService = new MessageService();
+        messageService = MessageService.getInstance();
     }
 
     /**

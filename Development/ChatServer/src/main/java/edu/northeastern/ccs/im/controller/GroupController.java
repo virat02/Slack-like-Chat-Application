@@ -20,7 +20,24 @@ public class GroupController implements IController<Group>{
 	private static final String MODERATOR_CANNOT_BE_DELETED = "{\"message\" : \"Given user is a moderator. Moderator cannot be deleted!\"}";
 
 
-	private GroupService groupService = new GroupService();
+	private GroupService groupService;
+
+	private static final GroupController groupControllerInstance = new GroupController();
+
+	/**
+	 * Constructor for the group controller
+	 */
+	private GroupController(){
+		groupService = GroupService.getInstance();
+	}
+
+	/**
+	 * Singleton pattern for group controller
+	 * @return a singleton instance
+	 */
+	public static GroupController getInstance(){
+		return groupControllerInstance;
+	}
 
 	/**
 	 * Sets the user service for the controller.
