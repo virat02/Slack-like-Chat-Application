@@ -7,7 +7,7 @@ public class InvalidEmailException extends Exception {
 
     /**
      * Constructor for InvalidEmailException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public InvalidEmailException(String message)
     {

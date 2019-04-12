@@ -7,7 +7,7 @@ public class ListOfUsersNotFound extends Exception {
 
     /**
      * Constructor for ListOfUsersNotFound
-     * @param message
+     * @param message the message attached to the exception.
      */
     public ListOfUsersNotFound(String message)
     {

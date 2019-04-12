@@ -6,7 +6,7 @@ package edu.northeastern.ccs.im.customexceptions;
 public class UnfollowNotFollowingUserException extends Exception {
     /**
      * Constructor for UnfollowNotFollowingUserException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public UnfollowNotFollowingUserException(String message)
     {
