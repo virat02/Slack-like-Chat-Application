@@ -176,7 +176,6 @@ public class MessageService implements IService{
     }
 
     public List<Message> getUnreadMessages(String userName, String groupCode) throws UserNotFoundException, GroupNotFoundException {
-        userJPAService.setEntityManager(null);
         User user = userJPAService.search(userName);
         Group group = groupService.searchUsingCode(groupCode);
         UserChatRoomLogOffEvent userChatRoomLogOffEvent = null;
