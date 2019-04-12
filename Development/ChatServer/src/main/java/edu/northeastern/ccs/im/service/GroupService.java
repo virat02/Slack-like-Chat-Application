@@ -80,9 +80,8 @@ public class GroupService implements IService {
     }
 
     /**
-     * Create a group iff the group does not already exist
-     * @param groupCode
-     * @return
+     * @param groupCode Indicates the unique group key of a group
+     * @return Create a group iff the group does not already exist
      */
     public boolean createIfNotPresent(String groupCode, String username, boolean flag)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
@@ -141,11 +140,9 @@ public class GroupService implements IService {
     }
 
     /**
-     * Adds a user to a group iff the user is not already a part of the group
-     *
      * @param groupUniqueKey
      * @param username
-     * @return
+     * @return Adds a user to a group iff the user is not already a part of the group
      * @throws GroupNotFoundException
      * @throws UserNotFoundException
      * @throws UserNotPresentInTheGroup
@@ -217,7 +214,7 @@ public class GroupService implements IService {
     /**
      * Search group based on groupCode to retrieve a distinct group
      *
-     * @param groupCode
+     * @param groupCode Indicates the group unique key for a group
      * @return Group that was retrieved from database using groupCode
      */
     public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
@@ -227,7 +224,7 @@ public class GroupService implements IService {
     /**
      * searchUsingName method returns the list of groups with a given name
      *
-     * @param groupName
+     * @param groupName Indicates the group name
      * @return list of groups
      */
     public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
@@ -258,8 +255,8 @@ public class GroupService implements IService {
     /**
      * Remove user from the given group based on the userid and groupcode
      *
-     * @param groupCode
-     * @param username
+     * @param groupCode Indicates the group unique key
+     * @param username Indicates the username of the user
      * @return the updated group after the user has been removed from it
      */
     public Group removeUserFromGroup(String groupCode, String username)
