@@ -7,7 +7,7 @@ public class GroupNotFoundException extends Exception{
 
     /**
      * Constructor for GroupNotFoundException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public GroupNotFoundException(String message)
     {

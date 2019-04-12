@@ -36,8 +36,10 @@ public interface NetworkRequest {
         SELECT_CHAT,
         JOIN_GROUP,
         SEND_MESSAGE,
+        DELETE_MESSAGE,
         CREATE_PROFILE,
         UPDATE_PROFILE,
+        DELETE_PROFILE,
         UPDATE_USERPROFILE,
         UPDATE_PASSWORD,
         GET_FOLLOWEES,
@@ -47,5 +49,6 @@ public interface NetworkRequest {
         UPDATE_INVITE,
         FETCH_INVITE,
         SET_UNFOLLOWERS,
+        EXIT_CHATROOM,
     }
 }

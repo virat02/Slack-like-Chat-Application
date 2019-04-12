@@ -42,6 +42,11 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
         }
     }
 
+    @Override
+    protected String helpCommand() {
+        return "Invite users to your group to start chatting";
+    }
+
     private void sendGroupInvite(String userName, String groupCode) {
         NetworkRequest inviteGroupRequest = networkRequestFactory.createGroupInviteRequest(userName, UserConstants.getUserName(), groupCode);
         try {
@@ -53,10 +58,5 @@ public class InviteUserToGroupWindow extends AbstractTerminalWindow {
         }
 
         goBack();
-    }
-
-    public static void main(String args[]) {
-        InviteUserToGroupWindow inviteUserToGroupWindow = new InviteUserToGroupWindow(null, new ClientConnectionFactory());
-        inviteUserToGroupWindow.runWindow();
     }
 }

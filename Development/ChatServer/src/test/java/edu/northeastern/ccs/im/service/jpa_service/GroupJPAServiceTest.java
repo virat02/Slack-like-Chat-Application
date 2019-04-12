@@ -1,11 +1,10 @@
 package edu.northeastern.ccs.im.service.jpa_service;
 
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,7 @@ public class GroupJPAServiceTest {
      */
 
     private GroupJPAService groupJPAService;
+    private AllJPAService allJPAService;
     private User userOne;
     private Group groupOne;
     private Group groupTwo;
@@ -33,12 +33,14 @@ public class GroupJPAServiceTest {
 
     private EntityManager entityManager;
     private EntityTransaction entityTransaction;
+    private EntityManagerUtil entityManagerUtil;
 
     /**
      * Setting up the mock for testing groupService methods
      */
     @Before
     public void setUp(){
+
         userOne = new User();
         userOne.setUsername("Jalannin");
         userOne.setPassword("jjj");
@@ -53,50 +55,34 @@ public class GroupJPAServiceTest {
         groupList.add(groupOne);
 
         entityManager = mock(EntityManager.class);
-        groupJPAService = new GroupJPAService();
+        groupJPAService = GroupJPAService.getInstance();
         entityTransaction = mock(EntityTransaction.class);
+        entityManagerUtil = mock(EntityManagerUtil.class);
+
+        allJPAService = AllJPAService.getInstance();
     }
 
     /**
      * Testing the create group method
      */
     @Test
-    public void testCreateGroup() throws GroupNotPersistedException {
+    public void testCreateGroup() {
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
-        groupJPAService.createGroup(groupOne);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.createEntity(groupOne));
     }
 
     /**
      * Testing the create group method for throwing a custom exception
      */
-    @Test(expected = GroupNotPersistedException.class)
-    public void testCreateGroupForException() throws GroupNotPersistedException{
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateGroupForIllegalArgumentException() {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
-        doThrow(new EntityNotFoundException()).when(entityManager).persist(any(Group.class));
-        groupJPAService.createGroup(groupOne);
-    }
-
-    /**
-     * Testing the get group method
-     */
-    @Test
-    public void testGetGroup() throws GroupNotFoundException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
-        groupJPAService.getGroup(groupOne.getId());
-    }
-
-    /**
-     * Testing the get group method for throwing custom exception
-     */
-    @Test(expected = GroupNotFoundException.class)
-    public void testGetGroupForException() throws GroupNotFoundException {
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenThrow(new EntityNotFoundException());
-        groupJPAService.getGroup(groupOne.getId());
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        doThrow(new IllegalArgumentException()).when(entityManager).persist(any(Group.class));
+        allJPAService.createEntity(groupOne);
     }
 
     /**
@@ -106,7 +92,8 @@ public class GroupJPAServiceTest {
     public void testUpdateGroup() throws GroupNotFoundException{
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(any(), anyInt())).thenReturn(groupOne);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         assertTrue(groupJPAService.updateGroup(groupOne));
     }
 
@@ -119,7 +106,8 @@ public class GroupJPAServiceTest {
 
         //When the group is not found, null is returned, so we mock that behavior
         when(entityManager.find(any(), anyInt())).thenReturn(null);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.updateGroup(groupOne);
     }
 
@@ -132,7 +120,8 @@ public class GroupJPAServiceTest {
 
         //We mock the behavior of a falsely updated group object returned by JPA
         when(entityManager.find(any(), anyInt())).thenReturn(groupTwo);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         assertFalse(groupJPAService.updateGroup(groupOne));
     }
 
@@ -140,16 +129,11 @@ public class GroupJPAServiceTest {
      * Testing the delete group method
      */
     @Test
-    public void testDeleteGroup() throws GroupNotFoundException, GroupNotDeletedException {
-        TypedQuery mockedQuery = mock(TypedQuery.class);
+    public void testDeleteGroup() {
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
-        when(mockedQuery.getSingleResult()).thenReturn(groupOne);
-        groupJPAService.setEntityManager(entityManager);
-        when(entityManager.find(any(), anyInt())).thenReturn(groupOne);
-        Group newGroupList = groupJPAService.searchUsingCode(groupOne.getGroupCode());
-        assertEquals(newGroupList,groupOne);
-        groupJPAService.deleteGroup(groupOne);
+        allJPAService.setEntityManagerUtil(entityManagerUtil);
+        assertTrue(allJPAService.deleteEntity(groupOne));
     }
 
     /**
@@ -162,7 +146,8 @@ public class GroupJPAServiceTest {
         Group g = mock(Group.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(Group.class, g.getId())).thenReturn(g);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.addUserToGroup(g.getId(),u);
     }
 
@@ -176,7 +161,8 @@ public class GroupJPAServiceTest {
         Group g = mock(Group.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(Group.class, g.getId())).thenReturn(null);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.addUserToGroup(g.getId(),u);
     }
 
@@ -189,7 +175,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getResultList()).thenReturn(groupList);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         List<Group> newGroupList = groupJPAService.searchUsingName(groupOne.getName());
         assertEquals(newGroupList.size(),groupList.size());
     }
@@ -203,7 +190,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getResultList()).thenThrow(new IllegalArgumentException());
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.searchUsingName(groupOne.getName());
     }
 
@@ -216,7 +204,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenReturn(groupOne);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         Group newGroup = groupJPAService.searchUsingCode(groupOne.getGroupCode());
         assertEquals(newGroup,groupOne);
     }
@@ -230,7 +219,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery(anyString(), any())).thenReturn(mockedQuery);
         when(mockedQuery.getSingleResult()).thenThrow(new IllegalArgumentException());
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.searchUsingCode(groupOne.getGroupCode());
     }
 
@@ -244,7 +234,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createNativeQuery(anyString())).thenReturn(mockedQuery);
         when(mockedQuery.executeUpdate()).thenReturn(1);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.setUserJPAService(userJPA);
         when(userJPA.search(anyString())).thenReturn(userOne);
         int res = groupJPAService.removeUserFromGroup(groupOne, userOne.getUsername());
@@ -258,7 +249,8 @@ public class GroupJPAServiceTest {
     public void testRemoveUserFromGroupForUserNotFoundException() throws UserNotFoundException{
         UserJPAService userJPA = mock(UserJPAService.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.setUserJPAService(userJPA);
         when(userJPA.search(anyString())).thenThrow(new UserNotFoundException("Could not find user!"));
         groupJPAService.removeUserFromGroup(groupOne, userOne.getUsername());
@@ -280,7 +272,8 @@ public class GroupJPAServiceTest {
 
         UserJPAService userJPA = mock(UserJPAService.class);
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.setUserJPAService(userJPA);
         when(g.getModerators()).thenReturn(userList);
         when(userJPA.search(anyString())).thenReturn(userOne);
@@ -297,7 +290,8 @@ public class GroupJPAServiceTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createNativeQuery(anyString())).thenReturn(mockedQuery);
         when(mockedQuery.executeUpdate()).thenReturn(0);
-        groupJPAService.setEntityManager(entityManager);
+        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
+        groupJPAService.setEntityManagerUtil(entityManagerUtil);
         groupJPAService.setUserJPAService(userJPA);
         when(userJPA.search(anyString())).thenReturn(userOne);
         int res = groupJPAService.removeUserFromGroup(groupOne, userOne.getUsername());

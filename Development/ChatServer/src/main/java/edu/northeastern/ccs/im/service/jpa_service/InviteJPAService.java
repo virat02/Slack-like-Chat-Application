@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service.jpa_service;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
@@ -13,28 +14,34 @@ import java.util.List;
 public class InviteJPAService {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(UserJPAService.class.getName());
-    private GroupJPAService groupJPA = new GroupJPAService();
+    private GroupJPAService groupJPA = GroupJPAService.getInstance();
+    private static final InviteJPAService inviteJpaServiceInstance = new InviteJPAService();
     private static final String NO_INVITE = "Could not get the invite!";
 
     /**
      * The emfactory.
      */
-    //The entity manager for this class.
-    private EntityManager entityManager;
+
+    private EntityManagerUtil entityManagerUtil;
+
+    //Constructor of Invite JPA service
+    private InviteJPAService(){
+        entityManagerUtil = new EntityManagerUtil();
+    }
+
+    public static InviteJPAService getInstance(){
+        return inviteJpaServiceInstance;
+    }
 
     /**
-     * A function made to setup the entity manager for this class to make the class more testable.
-     *
-     * @param entityManager The entity manager for this class.
+     * A function made to setup the entity manager util for this class to make the class more testable.
+     * @param entityManagerUtil The entity manager for this class.
      */
-    public void setEntityManager(EntityManager entityManager) {
-        if (entityManager == null) {
-            EntityManagerFactory emFactory = Persistence.createEntityManagerFactory("PrattlePersistance");
-            this.entityManager = emFactory.createEntityManager();
-        } else {
-            this.entityManager = entityManager;
-        }
+    public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+        this.entityManagerUtil = entityManagerUtil;
     }
+
+
 
     /**
      * A setter for GroupJPAService
@@ -47,16 +54,16 @@ public class InviteJPAService {
     /**
      * A method to begin the transaction.
      */
-    private void beginTransaction() {
-        entityManager.getTransaction().begin();
+    private void beginTransaction(EntityManager em) {
+        em.getTransaction().begin();
     }
 
     /**
      * A private method that'll end the transaction.
      */
-    private void endTransaction() {
-        entityManager.getTransaction().commit();
-        entityManager.close();
+    private void endTransaction(EntityManager em) {
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -67,13 +74,14 @@ public class InviteJPAService {
      */
     public int createInvite(Invite invite) throws InviteNotAddedException {
         try {
-            beginTransaction();
+            EntityManager em = entityManagerUtil.getEntityManager();
+            beginTransaction(em);
             if (!isUserInGroup(invite)) {
                 if (!isUserInvitedToGroup(invite)) {
-                    entityManager.persist(invite);
-                    entityManager.flush();
+                    em.persist(invite);
+                    em.flush();
                     int id = invite.getId();
-                    endTransaction();
+                    endTransaction(em);
                     return id;
                 } else {
                     throw new InviteNotAddedException("User has already been invited to group!");
@@ -95,9 +103,10 @@ public class InviteJPAService {
      */
     public Invite getInvite(int id) throws InviteNotFoundException {
         try {
-            beginTransaction();
-            Invite invite = entityManager.find(Invite.class, id);
-            endTransaction();
+            EntityManager em = entityManagerUtil.getEntityManager();
+            beginTransaction(em);
+            Invite invite = em.find(Invite.class, id);
+            endTransaction(em);
             return invite;
         } catch (Exception e) {
             LOGGER.info(NO_INVITE);
@@ -112,8 +121,9 @@ public class InviteJPAService {
      */
     public void updateInvite(Invite currentInvite) throws InviteNotUpdatedException {
         try {
-            beginTransaction();
-            Invite invite = entityManager.find(Invite.class, currentInvite.getId());
+            EntityManager em = entityManagerUtil.getEntityManager();
+            beginTransaction(em);
+            Invite invite = em.find(Invite.class, currentInvite.getId());
 
             if (invite == null) {
                 throw new EntityNotFoundException("Can't find Invite for the given id = " + currentInvite.getId());
@@ -121,10 +131,9 @@ public class InviteJPAService {
 
             invite.setStatus(currentInvite.getStatus());
             if (invite.getStatus() == Status.ACCEPTED) {
-                groupJPA.setEntityManager(null);
                 groupJPA.addUserToGroup(invite.getGroup().getId(), invite.getReceiver());
             }
-            endTransaction();
+            endTransaction(em);
         } catch (Exception e) {
             LOGGER.info("Could not update the invite!");
             throw new InviteNotUpdatedException("Could not update the invite!");
@@ -138,10 +147,11 @@ public class InviteJPAService {
      */
     public Invite deleteInvite(Invite currentInvite) throws InviteNotDeletedException {
         try {
+            EntityManager em = entityManagerUtil.getEntityManager();
             Invite invite = getInvite(currentInvite.getId());
-            beginTransaction();
-            entityManager.remove(invite);
-            endTransaction();
+            beginTransaction(em);
+            em.remove(invite);
+            endTransaction(em);
             return invite;
         } catch (Exception e) {
             LOGGER.info("Could not delete the invite!");
@@ -158,7 +168,7 @@ public class InviteJPAService {
      */
     public List<Invite> searchInviteByGroupCode(String groupCode, User moderator) throws GroupNotFoundException, InviteNotFoundException {
         try {
-            groupJPA.setEntityManager(null);
+            EntityManager em = entityManagerUtil.getEntityManager();
             Group group = groupJPA.searchUsingCode(groupCode);
             List<User> moderators = group.getModerators();
             boolean isModerator = false;
@@ -172,7 +182,7 @@ public class InviteJPAService {
             if (isModerator) {
                 String queryString =
                         "SELECT i FROM Invite i WHERE i.group.id ='" + group.getId() + "'";
-                TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+                TypedQuery<Invite> query = em.createQuery(queryString, Invite.class);
                 return query.getResultList();
             } else {
                 ChatLogger.info("User is not the moderator of the group with code: " + groupCode);
@@ -200,12 +210,13 @@ public class InviteJPAService {
     }
 
     private boolean isUserInvitedToGroup(Invite invite) {
+        EntityManager em = entityManagerUtil.getEntityManager();
         Group group = invite.getGroup();
         User receiver = invite.getReceiver();
         String queryString =
                 "SELECT i FROM Invite i WHERE i.group.id =" + group.getId() + " AND i.receiver.id = " + receiver.getId()
                         + " AND NOT i.status = edu.northeastern.ccs.im.service.jpa_service.Status.REJECTED";
-        TypedQuery<Invite> query = entityManager.createQuery(queryString, Invite.class);
+        TypedQuery<Invite> query = em.createQuery(queryString, Invite.class);
         List<Invite> inviteList = query.getResultList();
         return !inviteList.isEmpty();
     }

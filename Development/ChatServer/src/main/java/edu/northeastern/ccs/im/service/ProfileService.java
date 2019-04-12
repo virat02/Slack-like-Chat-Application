@@ -1,10 +1,13 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
+import javax.persistence.NoResultException;
 import java.net.URL;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -12,56 +15,83 @@ import java.util.regex.Pattern;
  */
 public class ProfileService {
 
-    private ProfileJPAService profileJPAService;
+    private static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
+    private static final ProfileService profileServiceInstance = new ProfileService();
 
-    public ProfileService(){
-        profileJPAService = new ProfileJPAService();
+    private ProfileJPAService profileJPAService;
+    private AllJPAService jpaService;
+
+    /**
+     * Constructor for ProfileService
+     */
+    private ProfileService(){
+        profileJPAService = ProfileJPAService.getInstance();
+        jpaService = AllJPAService.getInstance();
+    }
+
+    /**
+     * Singleton instance for Profile Service
+     */
+    public static ProfileService getInstance(){
+        return profileServiceInstance;
     }
 
     /**
      * Set a profile JPA Service
-     * @param profileJPAService
+     * @param profileJPAService the profile JPA service instance
      */
     public void setProfileJPAService(ProfileJPAService profileJPAService) {
         if(profileJPAService == null) {
-            this.profileJPAService = new ProfileJPAService();
+            this.profileJPAService = ProfileJPAService.getInstance();
         }
         else {
             this.profileJPAService = profileJPAService;
         }
-        this.profileJPAService.setEntityManager(null);
+    }
+
+    /**
+     * Set a profile JPA Service
+     * @param jpaService the All JPA Service instance
+     */
+    public void setAllJPAService(AllJPAService jpaService) {
+        if(jpaService == null) {
+            this.jpaService = AllJPAService.getInstance();
+        }
+        else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
      * Returns true iff the email id is valid
-     * @param emailId
+     * @param emailId String indicating the email id of the user
      */
     public boolean isValidEmail(String emailId){
+
+        if (emailId == null)
+            return false;
+
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +
                 "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
                 "A-Z]{2,7}$";
 
         Pattern pat = Pattern.compile(emailRegex);
-        if (emailId == null)
-            return false;
+
         return pat.matcher(emailId).matches();
     }
 
     /**
-     * Returns true iff Email id already is in use by some other user
-     * @param emailId
-     * @return
+     * @param emailId String indicating the email id of the user
+     * @return Returns true iff an email id is already in use by some other user in the DB
      */
-    public boolean isEmailAlreadyInUse(String emailId) {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.checkIfEmailExists(emailId);
+    public boolean isEmailAlreadyInUse(String emailId){
+        return profileJPAService.ifEmailExists(emailId);
     }
 
     /**
-     * Returns true iff an image URL is valid
-     * @param imageURL
-     * @return
+     * @param imageURL Indicates the image URL of the user
+     * @return Returns true iff an image URL is valid
      */
     public boolean isValidImageURL(String imageURL) {
         /* Try creating a valid URL */
@@ -79,9 +109,10 @@ public class ProfileService {
 
     /**
      * Creates a profile if the respective inputs are valid
+     * @param pf Indicates a profile
      */
-    public Profile createProfile(Profile pf)
-            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public boolean createProfile(Profile pf)
+            throws InvalidEmailException, InvalidImageURLException {
 
         //Check for validity of email and Image URL
         if(!isValidEmail(pf.getEmail()) || !isValidImageURL(pf.getImageUrl())){
@@ -100,33 +131,45 @@ public class ProfileService {
             throw new InvalidEmailException("The Email id is already in use");
         }
 
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.createProfile(pf);
+        try {
+            return jpaService.createEntity(pf);
+        }
+        catch (Exception e) {
+            LOGGER.info("Could not persist profile with profile id: "+pf.getId());
+            LOGGER.info(e.getMessage());
+            return false;
+        }
+
     }
 
     /**
      * Get the profile
-     * @param id
-     * @return
+     * @param id indicates the profile id
+     * @return a Profile
      */
     public Profile get(int id) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.getProfile(id);
+        try {
+            return (Profile) jpaService.getEntity("Profile", id);
+        }
+        catch (NoResultException e) {
+            LOGGER.info("Could not find profile for profile id: "+id);
+            throw new ProfileNotFoundException("Could not find profile for profile id: "+id);
+        }
     }
 
     /**
      * Updates an existing profile if the respective inputs are valid
+     * @param pf Indicates a profile
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.updateProfile(pf);
+        return profileJPAService.updateProfile(get(pf.getId()));
     }
 
     /**
      * Deletes a profile
+     * @param pf Indicates a profile
      */
-    public Boolean deleteProfile(Profile pf) throws ProfileNotDeletedException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.deleteProfile(pf) != -1;
+    public Boolean deleteProfile(Profile pf) throws ProfileNotFoundException {
+        return jpaService.deleteEntity(get(pf.getId()));
     }
 }

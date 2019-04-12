@@ -62,6 +62,14 @@ public class SearchWindow extends AbstractTerminalWindow {
         }
     }
 
+    @Override
+    protected String helpCommand() {
+        if (isSearchingForUser) {
+            return "Search is a user is available";
+        }
+        return "Search is a group is available";
+    }
+
     private User searchForUsers(String inputString) {
         try {
             NetworkResponse networkResponse = sendNetworkConnection(networkRequestFactory

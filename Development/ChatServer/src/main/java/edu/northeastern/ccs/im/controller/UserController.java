@@ -27,8 +27,27 @@ public final class UserController implements IController<User> {
     private static final String USERNAME_INCORRECT = "{\"message\" : \"Username must be between 4 and 20 digits long, contain " +
             "at least one number, one uppercase letter and one lowercase letter\"}";
     private static final String CANNOT_UNFOLLOW_JSON = "{\"message\" : \"Cannot unfollow a user you do not follow!\"}";
+    private static final String EXIT_CHAT_ROOM_SUCCESSFUL = "{\"message\" : \"Successfully exited the chatroom\"}";
+    private static final String USER_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the user!\"}";
 
-    private UserService userService = new UserService();
+    private UserService userService;
+
+    private static final UserController userControllerInstance = new UserController();
+
+    /**
+     * Constructor for the user controller
+     */
+    private UserController(){
+        userService = UserService.getInstance();
+    }
+
+    /**
+     * Singleton instance for user controller
+     * @return a singleton instance
+     */
+    public static UserController getInstance(){
+        return userControllerInstance;
+    }
 
     /**
      * Sets the user service for the controller.
@@ -45,20 +64,18 @@ public final class UserController implements IController<User> {
      */
     public NetworkResponse addEntity(User user) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.addUser(user))));
-        } catch (UserNotPersistedException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_PERSISTED_JSON));
-        } catch(UserNotFoundException e){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_FOUND_JSON));
-        } catch(UsernameTooSmallException | UsernameDoesNotContainLowercaseException | UsernameDoesNotContainNumberException
-                | UsernameDoesNotContainUppercaseException | UsernameTooLongException e){
+            if(userService.addUser(user)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(user)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(USER_NOT_PERSISTED_JSON));
+            }
+        } catch(UsernameInvalidException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USERNAME_INCORRECT));
-        } catch (PasswordTooSmallException | PasswordDoesNotContainLowercaseException
-                | PasswordDoesNotContainUppercaseException | PasswordDoesNotContainNumberException | PasswordTooLargeException e) {
+        } catch (PasswordInvalidException e) {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(PASS_INCORRECT));
         }
@@ -87,8 +104,14 @@ public final class UserController implements IController<User> {
      */
     public NetworkResponse deleteEntity(User user) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.delete(user))));
+            if(userService.delete(user)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(user)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(USER_NOT_DELETED_JSON));
+            }
         }
         catch(UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
@@ -285,5 +308,17 @@ public final class UserController implements IController<User> {
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USER_NOT_FOUND_JSON));
         }
+    }
+
+    /***
+     * Dispatches the exit chat room request to the userservice and
+     * sends back appropriate response.
+     * @param userName -> The username of the user trying to log off/ exit from the chatroom.
+     * @param groupCode -> The unique code of the group
+     * @return NetworkResponse representing the appropriate response to the user.
+     */
+    public NetworkResponse exitChatRoom(String groupCode, String userName) {
+        userService.userGroupEvent(userName, groupCode);
+        return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL, () -> EXIT_CHAT_ROOM_SUCCESSFUL);
     }
 }

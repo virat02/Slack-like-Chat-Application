@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service;
 import static org.junit.Assert.*;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class GroupServiceTest {
 	private UserJPAService userJPAService;
 	private GroupJPAService groupJPAService;
 	private GroupService groupService;
+	private AllJPAService jpaService;
 	private User userOne;
 	private User userTwo;
 	private Group groupOne;
@@ -53,24 +57,25 @@ public class GroupServiceTest {
 		groupTwo.setGroupCode("Hello");
 
 		userOne = new User();
-        userTwo = new User();
-        userOne.setUsername("Jerry");
-        userOne.setPassword("Banjo");
-        userOne.setId(123);
+		userTwo = new User();
+		userOne.setUsername("Jerry");
+		userOne.setPassword("Banjo");
+		userOne.setId(123);
 
-        userTwo.setUsername("Danny");
-        userTwo.setPassword("Dragons");
-        userTwo.setId(2);
+		userTwo.setUsername("Danny");
+		userTwo.setPassword("Dragons");
+		userTwo.setId(2);
 
-        groupList.add(groupOne);
-        groupList.add(groupTwo);
-        groupOne.addUser(userOne);
-        userList.add(userOne);
+		groupList.add(groupOne);
+		groupList.add(groupTwo);
+		groupOne.addUser(userOne);
+		userList.add(userOne);
 
-        groupService = new GroupService();
-        groupJPAService = mock(GroupJPAService.class);
+		groupService = GroupService.getInstance();
+		groupJPAService = mock(GroupJPAService.class);
 
 		userJPAService = mock(UserJPAService.class);
+		jpaService = mock(AllJPAService.class);
 	}
 
 
@@ -78,25 +83,21 @@ public class GroupServiceTest {
 	 * Testing the create group method
 	 */
 	@Test
-	public void testCreateGroup() throws GroupNotPersistedException, GroupNotFoundException {
-		when(groupJPAService.createGroup(any())).thenReturn(1);
-        when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
-        groupService.setJPAService(groupJPAService);
-        Group newGroup = groupService.create(groupOne);
-
-        assert newGroup != null;
-        assertEquals(groupOne,newGroup);
-        verify(groupJPAService).createGroup(any());
+	public void testCreateGroup() {
+		when(jpaService.createEntity(any())).thenReturn(true);
+		when(jpaService.getEntity(anyString(), anyInt())).thenReturn(groupOne);
+		groupService.setAllService(jpaService);
+		assertTrue(groupService.create(groupOne));
 	}
 
-    /**
-     * Testing the createIfNotPresent group method for UserNotPresentException
-     */
-    @Test(expected = UserNotPresentInTheGroup.class)
-    public void testCreateIfNotPresentForPublicGroupForUserAlreadyExistsException()
-			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
+	/**
+	 * Testing the createIfNotPresent group method for UserNotPresentException
+	 */
+	@Test(expected = UserNotPresentInTheGroup.class)
+	public void testCreateIfNotPresentForPublicGroupForUserAlreadyExistsException()
+			throws GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 
-        Group g = mock(Group.class);
+		Group g = mock(Group.class);
 		groupService.setUserService(userJPAService);
 		groupService.setJPAService(groupJPAService);
 		when(g.getUsers()).thenReturn(Collections.emptyList());
@@ -104,14 +105,14 @@ public class GroupServiceTest {
 		when(groupJPAService.searchUsingCode(anyString())).thenReturn(g);
 		groupService.createIfNotPresent("abc", "Jerry", false);
 
-    }
+	}
 
 	/**
 	 * Testing the createIfNotPresent group method for successful
 	 */
 	@Test
 	public void testCreateIfNotPresentForPublicGroup()
-			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
+			throws GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 
 		Group g = mock(Group.class);
 		groupService.setUserService(userJPAService);
@@ -128,7 +129,7 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testCreateIfNotPresentForPrivateGroupAlreadyExists()
-			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
+			throws GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 
 		Group g = mock(Group.class);
 		groupService.setJPAService(groupJPAService);
@@ -142,19 +143,17 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testCreateIfNotPresentForPrivateGroup()
-			throws GroupNotPersistedException, GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
-
-		Group g = mock(Group.class);
+			throws GroupNotFoundException, UserNotPresentInTheGroup, UserNotFoundException {
 
 		groupService.setUserService(userJPAService);
 		groupService.setJPAService(groupJPAService);
+		groupService.setAllService(jpaService);
 		when(userJPAService.search("Jerry")).thenReturn(userOne);
 		when(userJPAService.search("Danny")).thenReturn(userTwo);
-		when(groupJPAService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
-		when(groupJPAService.createGroup(g)).thenReturn(1);
-		when(groupJPAService.updateGroup(g)).thenReturn(true);
+		when(groupJPAService.searchUsingCode(anyString()))
+				.thenThrow(new GroupNotFoundException("Could not find group!"));
+		when(jpaService.createEntity(any(Group.class))).thenReturn(true);
 
-		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Jerry", true));
 		assertTrue(groupService.createIfNotPresent("Danny_Jerry", "Danny", true));
 	}
 
@@ -163,13 +162,13 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testUpdateGroup() throws GroupNotFoundException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+		when(jpaService.getEntity(anyString(), anyInt())).thenReturn(groupOne);
 		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(true);
 		groupService.setJPAService(groupJPAService);
+		groupService.setAllService(jpaService);
 		Group newGroup = groupService.update(groupOne);
 
-		verify(groupJPAService).getGroup(anyInt());
 		assertEquals(groupOne,newGroup);
 	}
 
@@ -178,7 +177,7 @@ public class GroupServiceTest {
 	 */
 	@Test
 	public void testUpdateGroupForFalse() throws GroupNotFoundException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupTwo);
+		when(jpaService.getEntity(anyString(), anyInt())).thenReturn(groupTwo);
 		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		when(groupJPAService.updateGroup(any())).thenReturn(false);
 		groupService.setJPAService(groupJPAService);
@@ -190,9 +189,8 @@ public class GroupServiceTest {
 	 */
 	@Test(expected = GroupNotFoundException.class)
 	public void testUpdateGroupForGroupNotFoundException() throws GroupNotFoundException {
-		when(groupJPAService.getGroup(anyInt())).thenThrow(new GroupNotFoundException("Could not find group"));
-		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
-		when(groupJPAService.updateGroup(any())).thenReturn(true);
+		when(groupJPAService.searchUsingCode(anyString()))
+				.thenThrow(new GroupNotFoundException("Could not find group!"));
 		groupService.setJPAService(groupJPAService);
 		groupService.update(groupOne);
 	}
@@ -201,48 +199,37 @@ public class GroupServiceTest {
 	 * Testing the delete group method
 	 */
 	@Test
-	public void testDeleteGroup() throws GroupNotFoundException, GroupNotDeletedException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+	public void testDeleteGroup() throws GroupNotFoundException {
+		when(jpaService.deleteEntity(any())).thenReturn(true);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
+		groupService.setAllService(jpaService);
 		groupService.setJPAService(groupJPAService);
-		Group newGroup = groupService.delete(groupOne);
-
-		verify(groupJPAService).getGroup(anyInt());
-		assertEquals(groupOne,newGroup);
+		assertTrue(groupService.delete(groupOne));
 	}
 
 
 	/**
-	 * Testing the delete group method for throwing GroupNotDeletedException
+	 * Testing the delete group method for false
 	 */
-	@Test(expected = GroupNotDeletedException.class)
-	public void testDeleteGroupForGroupNotDeletedException() throws GroupNotFoundException, GroupNotDeletedException {
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
-		doThrow(new GroupNotDeletedException("Group not deleted")).when(groupJPAService).deleteGroup(any());
+	@Test
+	public void testDeleteGroupForFalse() throws GroupNotFoundException {
+		when(jpaService.deleteEntity(any())).thenReturn(false);
+		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
-		groupService.delete(groupOne);
+		groupService.setAllService(jpaService);
+		assertFalse(groupService.delete(groupOne));
 	}
 
 	/**
 	 * Testing the get group method
 	 */
 	@Test
-	public void testGetGroup() throws GroupNotFoundException{
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+	public void testGetGroup(){
+		when(jpaService.getEntity(anyString(), anyInt())).thenReturn(groupOne);
 		groupService.setJPAService(groupJPAService);
-		Group newGroup = groupService.get(groupOne.getId());
+		Group newGroup = (Group) jpaService.getEntity("Group", groupOne.getId());
 
-		verify(groupJPAService).getGroup(anyInt());
 		assertEquals(groupOne,newGroup);
-	}
-
-	/**
-	 * Testing the get group method for throwing GroupNotFoundException
-	 */
-	@Test(expected = GroupNotFoundException.class)
-	public void testGetGroupForGroupNotFoundException() throws GroupNotFoundException{
-		when(groupJPAService.getGroup(anyInt())).thenThrow(new GroupNotFoundException("Could not find group!"));
-		groupService.setJPAService(groupJPAService);
-		groupService.get(groupOne.getId());
 	}
 
 	/**
@@ -276,11 +263,11 @@ public class GroupServiceTest {
 	@Test
 	public void testRemoveUserFromGroup() throws GroupNotFoundException, UserNotFoundException {
 		when(groupJPAService.searchUsingCode(any())).thenReturn(groupOne);
-		when(groupJPAService.getGroup(anyInt())).thenReturn(groupOne);
+		when(jpaService.getEntity(anyString(), anyInt())).thenReturn(groupOne);
 		when(groupJPAService.removeUserFromGroup(any(),anyString())).thenReturn(1);
 		groupService.setJPAService(groupJPAService);
+		groupService.setAllService(jpaService);
 		Group newGroup = groupService.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
-		verify(groupJPAService).getGroup(anyInt());
 		assertEquals(groupOne,newGroup);
 	}
 
@@ -317,24 +304,6 @@ public class GroupServiceTest {
 		when(groupJPAService.removeUserFromGroup(any(),anyString())).thenThrow(new IllegalArgumentException("Could not find user to be removed!"));
 		groupService.setJPAService(groupJPAService);
 		groupService.removeUserFromGroup(groupOne.getGroupCode(),userOne.getUsername());
-	}
-
-	/**
-	 * testing join Group method
-	 */
-	@Test
-	public void testJoinGroup() throws GroupNotFoundException, UserNotFoundException{
-
-		Group g = mock(Group.class);
-
-		when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
-		when(userJPAService.getUser(anyInt())).thenReturn(userOne);
-		when(groupJPAService.getGroup(anyInt())).thenReturn(g);
-		groupService.setJPAService(groupJPAService);
-		groupService.setUserService(userJPAService);
-		when(g.getUsers()).thenReturn(userList);
-
-		assertEquals(g, groupService.joinGroup(groupOne));
 	}
 
 	/**

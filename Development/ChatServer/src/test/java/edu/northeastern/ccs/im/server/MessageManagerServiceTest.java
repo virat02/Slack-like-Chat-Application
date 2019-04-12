@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.server;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
@@ -38,7 +37,7 @@ public class MessageManagerServiceTest {
 
     @Test
     public void shouldReturnSameMessageBroadCastServiceForRepeatedCallsToSameGroup()
-            throws UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+            throws UserNotFoundException, UserNotPresentInTheGroup, GroupNotFoundException {
         when(groupService.createIfNotPresent(anyString(), anyString(), anyBoolean())).thenReturn(true);
         BroadCastService broadCastService1 = messageManagerService.getService("group1", "user1", false);
         BroadCastService broadCastService2 = messageManagerService.getService("group1", "user2", false);

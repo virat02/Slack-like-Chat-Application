@@ -71,9 +71,11 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
     getInputFromUser();
   }
 
+  protected abstract String helpCommand();
+
   //INPUT METHODS
   protected void getInputFromUser() {
-    String input = "";
+    String input;
     try {
       while((input = ViewConstants.getInputStream().readLine()) != null) {
         if (input.trim().equals("")) {
@@ -87,6 +89,22 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
         }
         else if (input.equals("/..")) {
           goBack();
+        }
+        else if (input.equals("??")) {
+          try {
+            String url = "https://files.slack.com/files-pri/TF01D2C0P-FHGHA82JF/download/help_document.pdf";
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+          }
+          catch (java.io.IOException e) {
+            printMessageInConsole("Unable to open help document");
+          }
+          printInConsoleForCurrentProcess();
+        }
+        else if (input.equals("?")) {
+          printMessageInConsole("*********HELP************");
+          printMessageInConsole(helpCommand());
+          printMessageInConsole("*************************");
+          printInConsoleForCurrentProcess();
         }
         else
           inputFetchedFromUser(input);

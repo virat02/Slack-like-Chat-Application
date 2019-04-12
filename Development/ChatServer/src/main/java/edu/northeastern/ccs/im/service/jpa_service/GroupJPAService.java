@@ -6,10 +6,9 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 
 import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
+import edu.northeastern.ccs.im.service.EntityManagerUtil;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -20,28 +19,36 @@ public class GroupJPAService{
 
 	private static final Logger LOGGER = Logger.getLogger(GroupJPAService.class.getName());
 	private static final String ERROR_MESSAGE = "Can't find Group for ID: ";
-
-	private UserJPAService userJPA = new UserJPAService();
-
-	//The entity manager for this class.
-	private EntityManager entityManager;
+	private UserJPAService userJPA = UserJPAService.getInstance();
+	private static final GroupJPAService groupJpaServiceInstance = new GroupJPAService();
+	private EntityManagerUtil entityManagerUtil;
 
 	/**
-	 * A function made to setup the entity manager for this class to make the class more testable.
-	 * @param entityManager The entity manager for this class.
+	 * Constructor for GroupJPAService to setup the EntityManagerUtil
 	 */
-	public void setEntityManager(EntityManager entityManager) {
-		if(entityManager == null) {
-			EntityManagerFactory emFactory = Persistence.createEntityManagerFactory( "PrattlePersistance" );
-			this.entityManager = emFactory.createEntityManager();
-		} else {
-			this.entityManager = entityManager;
-		}
+	private GroupJPAService() {
+		entityManagerUtil = new EntityManagerUtil();
 	}
 
 	/**
+	 * @return Singleton instance for group jpa service
+	 */
+	public static GroupJPAService getInstance(){
+		return groupJpaServiceInstance;
+	}
+
+	/**
+	 * A function made to setup the entity manager util for this class to make the class more testable.
+	 * @param entityManagerUtil The entity manager for this class.
+	 */
+	public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
+		this.entityManagerUtil = entityManagerUtil;
+	}
+
+
+	/**
 	 * Set the userJPAService
-	 * @param userJPA
+	 * @param userJPA for this class
 	 */
 	public void setUserJPAService(UserJPAService userJPA) {
 		this.userJPA = userJPA;
@@ -50,61 +57,25 @@ public class GroupJPAService{
     /**
      * A method to begin the transaction.
      */
-	private void beginTransaction() {
+	private void beginTransaction(EntityManager entityManager) {
 		entityManager.getTransaction().begin();
 	}
 
     /**
      * A private method that'll end the transaction.
      */
-	private void endTransaction() {
+	private void endTransaction(EntityManager entityManager) {
 		entityManager.getTransaction().commit();
 		entityManager.close();
 	}
 
     /**
-     * Creates a group and persists in database
-     * @param group
-     * @return id of the newly added group
-     */
-	public int createGroup(Group group) throws GroupNotPersistedException {
-		try {
-			beginTransaction();
-			entityManager.persist(group);
-			entityManager.flush();
-			endTransaction();
-			LOGGER.info("Successfully created a group with group unique key: "+group.getGroupCode());
-			return group.getId();
-		}
-		catch (Exception e) {
-			LOGGER.info("Could not create the group!");
-			throw new GroupNotPersistedException("Could not create the group");
-		}
-
-	}
-
-    /**
-     * getGroup returns the group from the database fetched using id
-     * @param id
-     * @return a group
-     */
-	public Group getGroup(int id) throws GroupNotFoundException {
-		try {
-			beginTransaction();
-			return entityManager.find(Group.class, id);
-		}
-		catch (Exception e) {
-			LOGGER.info("Could not find a Group with group id: "+id);
-			throw new GroupNotFoundException("Could not find a Group with group id: "+id);
-		}
-	}
-
-    /**
      * updateGroup updates a given group with the changed attribute values
-     * @param currentGroup
+     * @param currentGroup Indicates the current group
      */
 	public Boolean updateGroup(Group currentGroup) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, currentGroup.getId());
 
 		if (group == null) {
@@ -122,7 +93,8 @@ public class GroupJPAService{
 		group.setCreatedOn(currentGroup.getCreatedOn());
 		group.setMsgs(currentGroup.getMsgs());
 		group.setGroupPassword(currentGroup.getGroupPassword());
-		endTransaction();
+		entityManager.merge(group);
+		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){
 			LOGGER.info("Updated Group : "+currentGroup.getId());
@@ -137,11 +109,12 @@ public class GroupJPAService{
     /**
      * addUserToGroup adds a user to the group and persists
      * their relationship in the join table
-     * @param id
-     * @param user
+     * @param id Indicates the Group id
+     * @param user Indicates the user
      */
 	public void addUserToGroup(int id, User user) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, id);
 
 		if (group == null) {
@@ -149,7 +122,7 @@ public class GroupJPAService{
 		}
 
 		group.addUser(user);
-		endTransaction();
+		endTransaction(entityManager);
 	}
 
 	/**
@@ -159,23 +132,24 @@ public class GroupJPAService{
 	 * @throws GroupNotFoundException thrown when the group is not found
 	 */
 	public Boolean addSubGroupToGroup(Group currentGroup) throws GroupNotFoundException{
-		beginTransaction();
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		Group group = entityManager.find(Group.class, currentGroup.getId());
 
 		if (group == null) {
 			LOGGER.info("Could not update group since group not found");
-			throw new GroupNotFoundException("Can't find Group for ID: " + currentGroup.getId());
+			throw new GroupNotFoundException("Can't find "+"Group for ID: " + currentGroup.getId());
 		}
 
 		group.setGroups(currentGroup.getGroups());
-		endTransaction();
+		endTransaction(entityManager);
 
 		if(group.toString().equals(currentGroup.toString())){
-			LOGGER.info("Updated Group : "+currentGroup.getId());
+			LOGGER.info("Updated Group with sub group : "+currentGroup.getId());
 			return true;
 		}
 		else {
-			LOGGER.info("Could not update group : "+currentGroup.getId());
+			LOGGER.info("Could not update group with sub group: "+currentGroup.getId());
 			return false;
 		}
 	}
@@ -183,15 +157,18 @@ public class GroupJPAService{
 
     /**
      * searchUsingName method returns the list of groups with a given name
-     * @param groupName
+     * @param groupName Indicates the name of the group
      * @return a list of groups
      */
 	public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
 		try {
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
 			String queryString = "SELECT g FROM Group g WHERE g.name = '" + groupName+"' AND g.isDeleted = false";
-			beginTransaction();
+			beginTransaction(entityManager);
 			TypedQuery<Group> query = entityManager.createQuery(queryString,Group.class);
-			return query.getResultList();
+			List<Group> searchedGroups = query.getResultList();
+			endTransaction(entityManager);
+			return searchedGroups;
 		}
 		catch (Exception e) {
 			LOGGER.info("Can't find Group with name: " + groupName);
@@ -207,11 +184,12 @@ public class GroupJPAService{
      */
 	public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
 		try {
+			EntityManager entityManager = entityManagerUtil.getEntityManager();
 			String queryString = "SELECT g FROM Group g WHERE g.groupCode = '" + groupCode + "' AND g.isDeleted = false";
-			beginTransaction();
+			beginTransaction(entityManager);
 			TypedQuery<Group> query = entityManager.createQuery(queryString, Group.class);
 			Group group = query.getSingleResult();
-			endTransaction();
+			endTransaction(entityManager);
 			return group;
 		}
 		catch (Exception e) {
@@ -221,34 +199,14 @@ public class GroupJPAService{
 	}
 
     /**
-     * deletes a group from database based on the id of the group
-     * @param currentGroup
-     */
-	public void deleteGroup(Group currentGroup) throws GroupNotDeletedException {
-
-		try {
-			beginTransaction();
-			Group group = entityManager.find(Group.class, currentGroup.getId());
-			group.setIsDeleted(true);
-			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
-			endTransaction();
-		}
-		catch(Exception e) {
-			LOGGER.info("Can't delete Group with code: " + currentGroup.getGroupCode());
-			throw new GroupNotDeletedException("Could not delete group with code: "+currentGroup.getGroupCode());
-		}
-
-	}
-
-    /**
      * removeUserFromGroup removes the relationship between group and user in the join table
-     * @param currentGroup
-     * @param username
+     * @param currentGroup The current group
+     * @param username The username of the user
      * @return 1 for success , 0 for failure
      */
 	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
-		beginTransaction();
-		userJPA.setEntityManager(null);
+		EntityManager entityManager = entityManagerUtil.getEntityManager();
+		beginTransaction(entityManager);
 		User u = userJPA.search(username);
 		boolean isModerator=false;
 		int userId = u.getId();
@@ -264,7 +222,7 @@ public class GroupJPAService{
 					" AND group_id=" + currentGroup.getId()).executeUpdate();
 			int result2 = entityManager.createNativeQuery("DELETE FROM user_basegroup WHERE user_id=" + userId +
 					" AND groups_id=" + currentGroup.getId()).executeUpdate();
-			endTransaction();
+			endTransaction(entityManager);
 			if(result==1 && result2==1) {
 				ChatLogger.info("Successfully removed User: "+username+" from Group: "+currentGroup.getGroupCode());
 				return 1;

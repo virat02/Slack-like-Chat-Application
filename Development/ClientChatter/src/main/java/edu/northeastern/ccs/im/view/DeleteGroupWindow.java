@@ -47,6 +47,11 @@ public class DeleteGroupWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Enter the group code which you want to delete";
+  }
+
   private boolean deleteGroup(String groupName,String groupCode) {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()

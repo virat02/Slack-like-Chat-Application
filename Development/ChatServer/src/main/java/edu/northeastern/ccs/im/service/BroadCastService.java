@@ -49,4 +49,15 @@ public interface BroadCastService {
      * @return the recent messages
      */
     List<Message> getRecentMessages();
+
+    /**
+     * Deletes the message for the index from the  given group.
+     *
+     * @param groupId the group from which the message must be deleted
+     * @param messageIndex the index of the message that must be deleted
+     * @return boolean stating is the delete is successful or not
+     */
+    boolean deleteMessage(String groupId, int messageIndex);
+
+    List<Message> getUnreadMessages(String userName);
 }

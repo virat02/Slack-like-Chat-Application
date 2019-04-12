@@ -1,9 +1,7 @@
 package edu.northeastern.ccs.im.controller;
 
 import edu.northeastern.ccs.im.communication.NetworkResponse;
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.user_group.User;
 import org.junit.Before;
@@ -12,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
+
+import javax.persistence.EntityNotFoundException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -38,7 +39,7 @@ public class GroupControllerTest {
      */
     @Before
     public void setUp() throws IOException {
-        groupController = new GroupController();
+        groupController = GroupController.getInstance();
         groupService = mock(GroupService.class);
         groupOne = new Group();
         groupOne.setName("groupOneTest");
@@ -55,36 +56,23 @@ public class GroupControllerTest {
      * Testing the create group method
      */
     @Test
-    public void testCreateGroup() throws GroupNotPersistedException, GroupNotFoundException {
-        when(groupService.create(any())).thenReturn(groupOne);
+    public void testCreateGroup() {
+        when(groupService.create(any())).thenReturn(true);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.addEntity(groupOne);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
-        verify(groupService).create(any());
+
     }
 
     /**
      * Testing the create group method for GroupNotPersistedException
      */
     @Test
-    public void testCreateGroupForGroupNotPersistedException() throws GroupNotPersistedException, GroupNotFoundException {
-        when(groupService.create(any())).thenThrow(new GroupNotPersistedException("Could not persist group!"));
+    public void testCreateGroupForFalse() {
+        when(groupService.create(any())).thenReturn(false);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.addEntity(groupOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).create(any());
-    }
-
-    /**
-     * Testing the create group method for GroupNotFoundException
-     */
-    @Test
-    public void testCreateGroupForGroupNotFoundException() throws GroupNotPersistedException, GroupNotFoundException {
-        when(groupService.create(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
-        groupController.setGroupService(groupService);
-        NetworkResponse networkResponse = groupController.addEntity(groupOne);
-        assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
-        verify(groupService).create(any());
     }
 
     /**
@@ -139,8 +127,8 @@ public class GroupControllerTest {
      * Testing the delete group method
      */
     @Test
-    public void testDeleteGroup() throws GroupNotFoundException, GroupNotDeletedException {
-        when(groupService.delete(any())).thenReturn(groupOne);
+    public void testDeleteGroup() throws GroupNotFoundException {
+        when(groupService.delete(any())).thenReturn(true);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
         assertEquals(NetworkResponse.STATUS.SUCCESSFUL, networkResponse.status());
@@ -151,7 +139,7 @@ public class GroupControllerTest {
      * Testing the delete group method for throwing GroupNotFoundException
      */
     @Test
-    public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException, GroupNotDeletedException {
+    public void testDeleteGroupForGroupNotFoundException() throws GroupNotFoundException {
         when(groupService.delete(any())).thenThrow(new GroupNotFoundException("Could not find group!"));
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
@@ -163,8 +151,8 @@ public class GroupControllerTest {
      * Testing the delete group method for throwing GroupNotDeletedException
      */
     @Test
-    public void testDeleteGroupForGroupNotDeletedException() throws GroupNotFoundException, GroupNotDeletedException {
-        when(groupService.delete(any())).thenThrow(new GroupNotDeletedException("Could not delete group!"));
+    public void testDeleteGroupForGroupNotDeletedException() throws GroupNotFoundException {
+        when(groupService.delete(any())).thenReturn(false);
         groupController.setGroupService(groupService);
         NetworkResponse networkResponse = groupController.deleteEntity(groupOne);
         assertEquals(NetworkResponse.STATUS.FAILED, networkResponse.status());
