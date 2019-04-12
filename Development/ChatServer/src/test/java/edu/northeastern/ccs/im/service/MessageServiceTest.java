@@ -1,13 +1,17 @@
 package edu.northeastern.ccs.im.service;
 
+import edu.northeastern.ccs.im.customexceptions.FirstTimeUserLoggedInException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.MessageNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Message;
 import edu.northeastern.ccs.im.user_group.User;
+import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessageServiceTest {
@@ -46,6 +49,7 @@ public class MessageServiceTest {
 
     private User u = new User();
     private Group g = new Group();
+    List<Message> messages;
 
     private static final String MESSAGE_BODY = "Hello!";
     private static final String USERNAME = "virat";
@@ -83,6 +87,10 @@ public class MessageServiceTest {
         m1.setTimestamp(new Date());
         m1.setSender(u);
         m1.setReceiver(g);
+
+        messages = new ArrayList<>();
+        messages.add(m1);
+        messages.add(m2);
     }
 
     /**
@@ -120,7 +128,7 @@ public class MessageServiceTest {
         when(jpaService.createEntity(any())).thenReturn(true);
         messageService.setAllJPAService(jpaService);
         messageService.setMessageJPAService(messageJPAService);
-        messageService.setJPAServices(userService, groupService);
+        messageService.setServices(userService, groupService);
 
         assertTrue(messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE));
     }
@@ -133,7 +141,7 @@ public class MessageServiceTest {
             throws UserNotFoundException, GroupNotFoundException {
 
         when(userService.search(anyString())).thenThrow(new UserNotFoundException("Could not find user!"));
-        messageService.setJPAServices(userService, groupService);
+        messageService.setServices(userService, groupService);
 
         messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE);
     }
@@ -146,7 +154,7 @@ public class MessageServiceTest {
             throws UserNotFoundException, GroupNotFoundException {
 
         when(groupService.searchUsingCode(anyString())).thenThrow(new GroupNotFoundException("Could not find group!"));
-        messageService.setJPAServices(userService, groupService);
+        messageService.setServices(userService, groupService);
 
         messageService.createMessage(MESSAGE_BODY, USERNAME, GROUPCODE);
     }
@@ -247,4 +255,69 @@ public class MessageServiceTest {
         messageService.setMessageJPAService(messageJPAService);
         messageService.getTop15Messages("ABCD");
     }
+
+    /**
+     * Tests the get Unread Messages method.
+     * @throws UserNotFoundException if the user isn't found.
+     * @throws GroupNotFoundException if the group isn't found.
+     * @throws FirstTimeUserLoggedInException if this if the first time the user logged in to a chat.
+     */
+    @Test
+    public void testGetUnreadMessages() throws UserNotFoundException, GroupNotFoundException, FirstTimeUserLoggedInException {
+        UserJPAService userJPAService = mock(UserJPAService.class);
+        User userOne = new User();
+        userOne.setId(123);
+        userOne.setUsername("Hello");
+        Group groupOne = new Group();
+        groupOne.setId(345);
+        groupOne.setName("Hello");
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent();
+        when(userJPAService.search(any())).thenReturn(userOne);
+        when(groupService.searchUsingCode(anyString())).thenReturn(groupOne);
+        when(userJPAService.getLogOffEvent(anyInt(), anyInt())).thenReturn(userChatRoomLogOffEvent);
+        when(messageJPAService.getMessagesAfterThisTimestamp(any(), anyInt())).thenReturn(messages);
+        messageService.setUserJPAService(userJPAService);
+        messageService.setGroupService(groupService);
+        messageService.setMessageJPAService(messageJPAService);
+        assertEquals(messages, messageService.getUnreadMessages("Bob", "321"));
+
+    }
+    /**
+     * Tests the get Unread Messages method.
+     * @throws UserNotFoundException if the user isn't found.
+     * @throws GroupNotFoundException if the group isn't found.
+     * @throws FirstTimeUserLoggedInException if this if the first time the user logged in to a chat.
+     */
+    @Test
+    public void testGetUnreadMessagesFail() throws UserNotFoundException, GroupNotFoundException, FirstTimeUserLoggedInException {
+        UserJPAService userJPAService = mock(UserJPAService.class);
+        User userOne = new User();
+        userOne.setId(123);
+        userOne.setUsername("Hello");
+        Group groupOne = new Group();
+        groupOne.setId(345);
+        groupOne.setName("Hello");
+        UserChatRoomLogOffEvent userChatRoomLogOffEvent = new UserChatRoomLogOffEvent();
+        when(userJPAService.search(any())).thenReturn(userOne);
+        when(groupService.searchUsingCode(anyString())).thenReturn(groupOne);
+        when(userJPAService.getLogOffEvent(anyInt(), anyInt())).thenThrow(FirstTimeUserLoggedInException.class);
+        when(messageJPAService.getTop15Messages(anyString())).thenReturn(messages);
+        messageService.setUserJPAService(userJPAService);
+        messageService.setGroupService(groupService);
+        messageService.setMessageJPAService(messageJPAService);
+        assertEquals(messages, messageService.getUnreadMessages("Bob", "321"));
+
+    }
+
+    /**
+     * Tests the get all messages method for the UserService class.
+     * @throws GroupNotFoundException if the group is not found.
+     */
+    @Test
+    public void testGetAllMessages() throws GroupNotFoundException {
+        when(messageJPAService.getAllMessages(anyString())).thenReturn(messages);
+        messageService.setMessageJPAService(messageJPAService);
+        assertEquals(messages, messageService.getAllMessages("123"));
+    }
+
 }

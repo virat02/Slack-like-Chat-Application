@@ -148,7 +148,6 @@ public class MessageJPAService {
 
     /**
      * Gets all the messages given a group unique key.
-     *
      * @param groupUniqueKey the group id for which the messages must be fetched
      * @return list of messages that are fetched
      * @throws GroupNotFoundException thrown when the given group does not exist
