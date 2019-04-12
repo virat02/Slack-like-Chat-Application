@@ -63,6 +63,11 @@ public class GroupDetailsWindow extends AbstractTerminalWindow {
   }
 
   @Override
+  protected String helpCommand() {
+    return "View, access and modify groups which you have created";
+  }
+
+  @Override
   void inputFetchedFromUser(String inputString) {
     if (getCurrentProcess() == 0) {
       groupName = inputString;

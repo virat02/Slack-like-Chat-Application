@@ -155,19 +155,19 @@ public class NetworkRequestFactory {
                 });
     }
 
-  /***
-   * Creates a message request for sending a message.
-   * @param messageBody
-   * @return
-   */
-  public NetworkRequest createMessageRequest(String messageBody) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEND_MESSAGE,
-            () -> {
-              Message message = new Message();
-              message.setMessage(messageBody);
-              return CommunicationUtils.getObjectMapper().writeValueAsString(message);
-            });
-  }
+    /***
+     * Creates a message request for sending a message.
+     * @param messageBody
+     * @return
+     */
+    public NetworkRequest createMessageRequest(String messageBody) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SEND_MESSAGE,
+                () -> {
+                    Message message = new Message();
+                    message.setMessage(messageBody);
+                    return CommunicationUtils.getObjectMapper().writeValueAsString(message);
+                });
+    }
 
     /***
      * Creates a request for joining a group.
@@ -278,35 +278,35 @@ public class NetworkRequestFactory {
                         "\n" + userName);
     }
 
-  public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
-            () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
-                    "\n" + userName);
-  }
+    public NetworkRequest createSetUserUnFolloweresList(String userName, User user) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.SET_UNFOLLOWERS,
+                () -> CommunicationUtils.getObjectMapper().writeValueAsString(user) +
+                        "\n" + userName);
+    }
 
-  /***
-   * Creates a group invite request.
-   * @param invitee -> The user whom has been invited to join the group
-   * @param inviter -> The user whom invites another user to join the group
-   * @param groupCode -> The group code of the group under consideration
-   * @return An instance of Network Request representing the transaction.
-   */
-  public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
-    return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
-            () -> {
-              Invite invite = new Invite();
-              User inviterUser = new User();
-              inviterUser.setUsername(inviter);
-              User inviteeUser = new User();
-              inviteeUser.setUsername(invitee);
-              Group group = new Group();
-              group.setGroupCode(groupCode);
-              invite.setSender(inviterUser);
-              invite.setReceiver(inviteeUser);
-              invite.setGroup(group);
-              return CommunicationUtils.toJson(invite);
-            });
-  }
+    /***
+     * Creates a group invite request.
+     * @param invitee -> The user whom has been invited to join the group
+     * @param inviter -> The user whom invites another user to join the group
+     * @param groupCode -> The group code of the group under consideration
+     * @return An instance of Network Request representing the transaction.
+     */
+    public NetworkRequest createGroupInviteRequest(String invitee, String inviter, String groupCode) {
+        return new NetworkRequestImpl(NetworkRequest.NetworkRequestType.INVITE_USER,
+                () -> {
+                    Invite invite = new Invite();
+                    User inviterUser = new User();
+                    inviterUser.setUsername(inviter);
+                    User inviteeUser = new User();
+                    inviteeUser.setUsername(invitee);
+                    Group group = new Group();
+                    group.setGroupCode(groupCode);
+                    invite.setSender(inviterUser);
+                    invite.setReceiver(inviteeUser);
+                    invite.setGroup(group);
+                    return CommunicationUtils.toJson(invite);
+                });
+    }
 
     /***
      * Creates a invite update request

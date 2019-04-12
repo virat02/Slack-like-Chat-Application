@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -17,8 +18,9 @@ public class GroupService implements IService {
 
     private static final Logger LOGGER = Logger.getLogger(GroupService.class.getName());
 
-    private GroupJPAService groupJPA = new GroupJPAService();
-    private UserJPAService userJPA = new UserJPAService();
+    private GroupJPAService groupJPA;
+    private UserJPAService userJPA;
+    private AllJPAService jpaService;
 
     /**
      * Constructor for this class.
@@ -26,6 +28,7 @@ public class GroupService implements IService {
     public GroupService() {
         groupJPA = new GroupJPAService();
         userJPA = new UserJPAService();
+        jpaService = new AllJPAService();
     }
 
     /**
@@ -40,6 +43,19 @@ public class GroupService implements IService {
             this.userJPA = userJPA;
         }
         this.userJPA.setEntityManager(null);
+    }
+
+    /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param jpaService for this class.
+     */
+    public void setAllService(AllJPAService jpaService) {
+        if (jpaService == null) {
+            this.jpaService = new AllJPAService();
+        } else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
@@ -85,7 +101,7 @@ public class GroupService implements IService {
      *                                    being initiated.
      */
     private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
-            throws GroupNotPersistedException, UserNotFoundException {
+            throws UserNotFoundException {
 
         try {
             searchUsingCode(groupUniqueKey);
@@ -105,21 +121,17 @@ public class GroupService implements IService {
             userToSearch = users[0];
         }
 
-        userJPA.setEntityManager(null);
         User u1 = userJPA.search(userToSearch);
-        userJPA.setEntityManager(null);
         User u2 = userJPA.search(username);
 
         Group group = new Group();
         group.setGroupCode(groupUniqueKey);
+
         //Make both users : "username" and "userToSearch" the moderator of this group
         group.addModerator(u1);
         group.addModerator(u2);
-        groupJPA.setEntityManager(null);
-        //Update the database
-        groupJPA.createGroup(group);
-
-        return true;
+        //Update the DB
+        return jpaService.createEntity(group);
     }
 
     /**
@@ -135,10 +147,8 @@ public class GroupService implements IService {
     private boolean addUserToPublicGroupIfNotPresent(String groupUniqueKey, String username)
             throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
 
-        groupJPA.setEntityManager(null);
         Group g = groupJPA.searchUsingCode(groupUniqueKey);
 
-        userJPA.setEntityManager(null);
         if (!(g.getUsers().contains(userJPA.search(username)))) {
             throw new UserNotPresentInTheGroup("This user is not part of the group!");
         }
@@ -154,9 +164,7 @@ public class GroupService implements IService {
      * @return a Group with the id after being persisted in the group
      */
     public Group create(Group group) throws GroupNotFoundException, GroupNotPersistedException {
-        groupJPA.setEntityManager(null);
         groupJPA.createGroup(group);
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(group.getId());
     }
 
@@ -167,7 +175,6 @@ public class GroupService implements IService {
      * @return a Group with the id retrieved from the database
      */
     public Group get(int id) throws GroupNotFoundException{
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(id);
     }
 
@@ -178,18 +185,14 @@ public class GroupService implements IService {
      * @return Group retrieved from database after persisting the update
      */
     public Group update(Group group) throws GroupNotFoundException{
-        groupJPA.setEntityManager(null);
         Group groupUpdating = groupJPA.searchUsingCode(group.getGroupCode());
 
         if (groupUpdating.getGroups().size() != group.getGroups().size()) {
-            groupJPA.setEntityManager(null);
             groupJPA.addSubGroupToGroup(group);
         }
         else {
-            groupJPA.setEntityManager(null);
             groupJPA.updateGroup(group);
         }
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(group.getId());
     }
 
@@ -200,11 +203,8 @@ public class GroupService implements IService {
      * @return Group that was deleted
      */
     public Group delete(Group group) throws GroupNotFoundException, GroupNotDeletedException{
-        groupJPA.setEntityManager(null);
         Group currentGroup = groupJPA.searchUsingCode(group.getGroupCode());
-        groupJPA.setEntityManager(null);
         groupJPA.deleteGroup(currentGroup);
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(group.getId());
     }
 
@@ -215,7 +215,6 @@ public class GroupService implements IService {
      * @return Group that was retrieved from database using groupCode
      */
     public Group searchUsingCode(String groupCode) throws GroupNotFoundException {
-        groupJPA.setEntityManager(null);
         return groupJPA.searchUsingCode(groupCode);
     }
 
@@ -226,7 +225,6 @@ public class GroupService implements IService {
      * @return list of groups
      */
     public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
-        groupJPA.setEntityManager(null);
         return groupJPA.searchUsingName(groupName);
     }
 
@@ -239,12 +237,9 @@ public class GroupService implements IService {
     public Group joinGroup(Group group) throws GroupNotFoundException, UserNotFoundException {
         Group retrievedGroup = searchUsingCode(group.getGroupCode());
         List<User> userOfGroup = group.getUsers();
-        userJPA.setEntityManager(null);
         User retirevedUser = userJPA.getUser(userOfGroup.get(0).getId());
         retrievedGroup.addUser(retirevedUser);
-        groupJPA.setEntityManager(null);
         groupJPA.updateGroup(retrievedGroup);
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(retrievedGroup.getId());
     }
 
@@ -257,9 +252,7 @@ public class GroupService implements IService {
      */
     public Group removeUserFromGroup(String groupCode, String username) throws GroupNotFoundException, UserNotFoundException{
         Group retrievedGroup = searchUsingCode(groupCode);
-        groupJPA.setEntityManager(null);
         groupJPA.removeUserFromGroup(retrievedGroup, username);
-        groupJPA.setEntityManager(null);
         return groupJPA.getGroup(retrievedGroup.getId());
     }
 
