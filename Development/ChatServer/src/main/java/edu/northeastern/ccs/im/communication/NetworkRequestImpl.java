@@ -24,11 +24,19 @@ public class NetworkRequestImpl implements NetworkRequest {
         this.payload = payload;
     }
 
+    /**
+     * Getting the Network Request Type.
+     * @return NetworkRequestType found.
+     */
     @Override
     public NetworkRequestType networkRequestType() {
         return networkRequestType;
     }
 
+    /**
+     * The payload to the Network Request.
+     * @return the payload.
+     */
     @Override
     public Payload payload() {
         return payload;

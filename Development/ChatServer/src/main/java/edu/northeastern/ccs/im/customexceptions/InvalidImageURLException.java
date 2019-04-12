@@ -7,7 +7,7 @@ public class InvalidImageURLException extends Exception {
 
     /**
      * Constructor for InvalidEmailException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public InvalidImageURLException(String message)
     {

@@ -7,7 +7,7 @@ public class UserNotPresentInTheGroup extends Exception {
 
     /**
      * Constructor for UserNotPresentInTheGroup
-     * @param message
+     * @param message the message attached to the exception.
      */
     public UserNotPresentInTheGroup(String message)
     {

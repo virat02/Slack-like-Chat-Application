@@ -49,6 +49,13 @@ class NetworkResponseDeserializer extends StdDeserializer<Payload> {
         super(vc);
     }
 
+    /**
+     * A deserializer for the NetworkResponse.
+     * @param jsonParser the parser for json.
+     * @param deserializationContext the context for a deserializer.
+     * @return Payload that was created.
+     * @throws IOException if there aren't any deserializers.
+     */
     @Override
     public Payload deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);

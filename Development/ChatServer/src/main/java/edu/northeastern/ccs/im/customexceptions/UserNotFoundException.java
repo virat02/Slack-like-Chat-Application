@@ -7,7 +7,7 @@ public class UserNotFoundException extends Exception {
 
     /**
      * Constructor for UserNotFoundException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public UserNotFoundException(String message)
     {
