@@ -92,7 +92,7 @@ public abstract class AbstractTerminalWindow implements TerminalWindow {
         }
         else if (input.equals("??")) {
           try {
-            String url = "https://github.ccs.neu.edu/cs5500/team-108-SP19";
+            String url = "https://files.slack.com/files-pri/TF01D2C0P-FHGHA82JF/download/help_document.pdf";
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
           }
           catch (java.io.IOException e) {
