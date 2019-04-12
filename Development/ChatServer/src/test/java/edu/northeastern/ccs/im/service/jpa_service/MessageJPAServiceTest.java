@@ -308,36 +308,4 @@ public class MessageJPAServiceTest {
         assertEquals(messages, messageJPAService.getAllMessages("123"));
     }
 
-//    @Test
-//    public void testGetMessageAfterTimeStamp() {
-//        Date date = new Date();
-//        date.setTime(4323456);
-//        List<Message> messages = new ArrayList<>();
-//        messages.add(m1);
-//        messages.add(m2);
-//        TypedQuery typedQuery = mock(TypedQuery.class);
-//        CriteriaBuilder cb = mock(CriteriaBuilder.class);
-//        CriteriaQuery criteriaQuery = mock(CriteriaQuery.class);
-//        Root root = mock(Root.class);
-//        Predicate predicate = mock(Predicate.class);
-//        javax.persistence.criteria.Path path = mock(Path.class);
-//        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-//        when(entityManagerUtil.getEntityManager()).thenReturn(entityManager);
-//        when(entityManager.getTransaction()).thenReturn(entityTransaction);
-//        when(entityManager.getCriteriaBuilder()).thenReturn(cb);
-//        when(cb.createQuery(any())).thenReturn(criteriaQuery);
-//        when(criteriaQuery.from(UserChatRoomLogOffEvent.class)).thenReturn(root);
-//        when(root.get(anyString())).thenReturn(path);
-//        when(cb.equal(any(), any())).thenReturn(predicate);
-//        when(cb.greaterThanOrEqualTo(path, date)).thenReturn(predicate);
-//        when(cb.and(any(), any())).thenReturn(predicate);
-//        when(criteriaQuery.where(predicate)).thenReturn(criteriaQuery);
-//        when(entityManager.createQuery(criteriaQuery)).thenReturn(typedQuery);
-//        when(typedQuery.getSingleResult()).thenThrow(NoResultException.class);
-//        messageJPAService.setEntityManagerUtil(entityManagerUtil);
-//        assertEquals(messages, messageJPAService.getMessagesAfterThisTimestamp(date,123));
-//
-//    }
-
 }
