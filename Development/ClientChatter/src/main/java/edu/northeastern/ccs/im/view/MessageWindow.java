@@ -74,6 +74,7 @@ public class MessageWindow extends AbstractTerminalWindow implements MessageList
             printMessageInConsole("Invalid message index");
           }
         } else if ((input.equals("exit")) || (input.equals("/.."))) {
+          logOffUserFromGroup();
           goBack();
           return;
         } else {
