@@ -12,18 +12,23 @@ public class AllJPAService {
     //The entityManagerUtil for this class.
     private EntityManagerUtil entityManagerUtil;
 
-
+    /**
+     * Constructor for AllJPAService
+     */
     private AllJPAService(){
         this.entityManagerUtil = new EntityManagerUtil();
     }
 
+    /**
+     * @return Singleton instance for all jpa service
+     */
     public static AllJPAService getInstance(){
         return jpaServiceInstance;
     }
 
     /**
      * Set the entityManagerUtil
-     * @param entityManagerUtil
+     * @param entityManagerUtil for this class
      */
     public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
         this.entityManagerUtil = entityManagerUtil;
@@ -31,8 +36,8 @@ public class AllJPAService {
 
     /**
      * Generic method to persist the given object in the DB
-     * @param obj
-     * @return
+     * @param obj Object entity
+     * @return True if successful creation of object by JPA else false
      */
     public boolean createEntity(Object obj) {
 
@@ -51,8 +56,8 @@ public class AllJPAService {
 
     /**
      * Generic method to delete an object from DB
-     * @param obj
-     * @return
+     * @param obj The object entity to be deleted
+     * @return True iff successful deletion by JPA else false
      */
     public boolean deleteEntity(Object obj) {
 
@@ -77,8 +82,8 @@ public class AllJPAService {
     /**
      * Generic method to get a particular entity from the DB
      * @param object String to identify which entity we need to get
-     * @param id
-     * @return
+     * @param id The integer value id
+     * @return a particular entity from the DB
      */
     public Object getEntity(String object, int id) {
         StringBuilder queryString = new StringBuilder("SELECT o FROM ");
