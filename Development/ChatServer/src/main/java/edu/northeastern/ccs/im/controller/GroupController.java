@@ -7,9 +7,7 @@ import edu.northeastern.ccs.im.communication.PayloadImpl;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.GroupService;
-import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
-import org.eclipse.persistence.internal.oxm.schema.model.All;
 
 public class GroupController implements IController<Group>{
 

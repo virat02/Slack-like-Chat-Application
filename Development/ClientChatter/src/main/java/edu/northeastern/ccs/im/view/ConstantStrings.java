@@ -18,7 +18,9 @@ public class ConstantStrings {
     public static final String NETWORK_ERROR = "Network Error";
 
     //App Launch Strings
-    public static final String INITIAL_LAUNCH = "1 - Login\n2 - Sign Up\n* - QUIT";
+    public static final String INITIAL_LAUNCH = "1 - Login\n2 - Sign Up\n* - QUIT\n? - Help\n?? -" +
+            " Download the help document";
+
 
     //Login View Strings
     public static final String EMAIL_ADDRESS_STRING = "Enter Email Address: ";
