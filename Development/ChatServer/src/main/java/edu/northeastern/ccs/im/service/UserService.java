@@ -8,10 +8,7 @@ import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 import edu.northeastern.ccs.im.user_group.User;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -95,36 +92,25 @@ public final class UserService implements IService {
 
     /**
      * Returns true iff username is valid
-     * @param usernameCheck Username hashmap
+     * @param usernameCheck Username map
      * @param user User object
      * @return
      * @throws UsernameInvalidException
      */
-    public boolean isValidUsername(HashMap<String, Boolean> usernameCheck, User user) throws UsernameInvalidException {
-        if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
-                user.getUsername().length() < 4) {
-            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
-                    "one lowercase letter and one number.");
-        }
-
-        return true;
+    public boolean isValidUsername(Map<String, Boolean> usernameCheck, User user) {
+        return (!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
+                user.getUsername().length() < 4);
     }
 
     /**
-     * Returns true iff password is valid
-     * @param passwordCheck Password hashmap
+     * @param passwordCheck Password map
      * @param user user object
-     * @return
+     * @return Returns true iff password is valid
      * @throws PasswordInvalidException
      */
-    public boolean isValidPassword(HashMap<String, Boolean> passwordCheck, User user) throws PasswordInvalidException {
-        if(user.getPassword().length() < 4 || user.getPassword().length() > 20
-                || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num")) {
-            throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
-                    "one lowercase letter and one number.");
-        }
-
-        return true;
+    public boolean isValidPassword(Map<String, Boolean> passwordCheck, User user) {
+        return (user.getPassword().length() < 4 || user.getPassword().length() > 20
+                || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num"));
     }
 
     /**
@@ -135,6 +121,15 @@ public final class UserService implements IService {
             throws UsernameInvalidException, PasswordInvalidException {
         HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
         HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+        if(!isValidUsername(usernameCheck, user)) {
+            throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
+                    "one lowercase letter and one number.");
+        }
+        if(!isValidPassword(passwordCheck, user)) {
+            throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
+                    "one lowercase letter and one number.");
+        }
+        
         if(isValidUsername(usernameCheck, user) && isValidPassword(passwordCheck, user)){
             return jpaService.createEntity(user);
         }
