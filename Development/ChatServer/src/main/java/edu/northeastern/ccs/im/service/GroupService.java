@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class GroupService implements IService {
 
     private static final Logger LOGGER = Logger.getLogger(GroupService.class.getName());
+    private static final String GROUP = "Group";
 
     private GroupJPAService groupJPA;
     private UserJPAService userJPA;
@@ -188,7 +189,7 @@ public class GroupService implements IService {
         else {
             groupJPA.updateGroup(group);
         }
-        return (Group) jpaService.getEntity("Group", group.getId());
+        return (Group) jpaService.getEntity(GROUP, group.getId());
     }
 
     /**
@@ -242,7 +243,7 @@ public class GroupService implements IService {
             User retrievedUser = (User) jpaService.getEntity("User", userOfGroup.get(0).getId());
             retrievedGroup.addUser(retrievedUser);
             groupJPA.updateGroup(retrievedGroup);
-            return (Group) jpaService.getEntity("Group", retrievedGroup.getId());
+            return (Group) jpaService.getEntity(GROUP, retrievedGroup.getId());
         }
         catch (NoResultException e) {
             throw new UserNotFoundException("Could not find the user :"+userOfGroup.get(0).getId());
@@ -261,7 +262,7 @@ public class GroupService implements IService {
             throws GroupNotFoundException, UserNotFoundException{
         Group retrievedGroup = searchUsingCode(groupCode);
         groupJPA.removeUserFromGroup(retrievedGroup, username);
-        return (Group) jpaService.getEntity("Group" , retrievedGroup.getId());
+        return (Group) jpaService.getEntity(GROUP , retrievedGroup.getId());
     }
 
 }

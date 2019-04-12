@@ -21,7 +21,6 @@ public class GroupJPAService{
 	private static final String ERROR_MESSAGE = "Can't find Group for ID: ";
 	private UserJPAService userJPA = UserJPAService.getInstance();
 	private static final GroupJPAService groupJpaServiceInstance = new GroupJPAService();
-	private EntityManager entityManager;
 	private EntityManagerUtil entityManagerUtil;
 
 	/**
@@ -139,7 +138,7 @@ public class GroupJPAService{
 
 		if (group == null) {
 			LOGGER.info("Could not update group since group not found");
-			throw new GroupNotFoundException("Can't find Group for ID: " + currentGroup.getId());
+			throw new GroupNotFoundException("Can't find "+"Group for ID: " + currentGroup.getId());
 		}
 
 		group.setGroups(currentGroup.getGroups());
