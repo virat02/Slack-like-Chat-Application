@@ -120,6 +120,9 @@ public class MessageJPAService {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Message> criteriaQuery = criteriaBuilder.createQuery(Message.class);
         Root<Message> root = criteriaQuery.from(Message.class);
+        System.out.println(criteriaBuilder.greaterThanOrEqualTo(root.get("timestamp"), loggedOut));
+        System.out.println(criteriaBuilder.equal(root.get("receiver").get("id"), groupId));
+
         Predicate predicate = criteriaBuilder.and(criteriaBuilder.equal(root.get("receiver").get("id"), groupId),
                 criteriaBuilder.greaterThanOrEqualTo(root.get("timestamp"), loggedOut));
         criteriaQuery.where(predicate);
@@ -132,7 +135,6 @@ public class MessageJPAService {
 
     /**
      * Gets all the messages given a group unique key.
-     *
      * @param groupUniqueKey the group id for which the messages must be fetched
      * @return list of messages that are fetched
      * @throws GroupNotFoundException thrown when the given group does not exist

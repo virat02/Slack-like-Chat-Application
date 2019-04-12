@@ -3,6 +3,7 @@ package edu.northeastern.ccs.im.service;
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
 import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.MessageJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -58,8 +59,24 @@ public class MessageService implements IService{
      * @param userService
      * @param groupService
      */
-    public void setJPAServices(UserService userService, GroupService groupService) {
+    public void setServices(UserService userService, GroupService groupService) {
         this.userService = userService;
+        this.groupService = groupService;
+    }
+
+    /**
+     * Sets the User JPA Service
+     * @param userJPAService for this class
+     */
+    public void setUserJPAService(UserJPAService userJPAService) {
+        this.userJPAService = userJPAService;
+    }
+
+    /**
+     * Sets the GroupService for this class.
+     * @param groupService for this class
+     */
+    public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
     }
 
