@@ -1,10 +1,13 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.ProfileJPAService;
 import edu.northeastern.ccs.im.user_group.Profile;
 
+import javax.persistence.NoResultException;
 import java.net.URL;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -12,10 +15,17 @@ import java.util.regex.Pattern;
  */
 public class ProfileService {
 
-    private ProfileJPAService profileJPAService;
+    private static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
 
+    private ProfileJPAService profileJPAService;
+    private AllJPAService jpaService;
+
+    /**
+     * Constructor for ProfileService
+     */
     public ProfileService(){
         profileJPAService = new ProfileJPAService();
+        jpaService = new AllJPAService();
     }
 
     /**
@@ -29,7 +39,19 @@ public class ProfileService {
         else {
             this.profileJPAService = profileJPAService;
         }
-        this.profileJPAService.setEntityManager(null);
+    }
+
+    /**
+     * Set a profile JPA Service
+     * @param jpaService
+     */
+    public void setAllJPAService(AllJPAService jpaService) {
+        if(jpaService == null) {
+            this.jpaService = new AllJPAService();
+        }
+        else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
@@ -37,25 +59,27 @@ public class ProfileService {
      * @param emailId
      */
     public boolean isValidEmail(String emailId){
+
+        if (emailId == null)
+            return false;
+
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +
                 "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
                 "A-Z]{2,7}$";
 
         Pattern pat = Pattern.compile(emailRegex);
-        if (emailId == null)
-            return false;
+
         return pat.matcher(emailId).matches();
     }
 
     /**
-     * Returns true iff Email id already is in use by some other user
+     * Returns true iff an email id is already in use by some other user in the DB
      * @param emailId
      * @return
      */
-    public boolean isEmailAlreadyInUse(String emailId) {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.checkIfEmailExists(emailId);
+    public boolean isEmailAlreadyInUse(String emailId){
+        return profileJPAService.ifEmailExists(emailId);
     }
 
     /**
@@ -80,8 +104,8 @@ public class ProfileService {
     /**
      * Creates a profile if the respective inputs are valid
      */
-    public Profile createProfile(Profile pf)
-            throws ProfileNotPersistedException, InvalidEmailException, InvalidImageURLException {
+    public boolean createProfile(Profile pf)
+            throws InvalidEmailException, InvalidImageURLException {
 
         //Check for validity of email and Image URL
         if(!isValidEmail(pf.getEmail()) || !isValidImageURL(pf.getImageUrl())){
@@ -100,8 +124,15 @@ public class ProfileService {
             throw new InvalidEmailException("The Email id is already in use");
         }
 
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.createProfile(pf);
+        try {
+            return jpaService.createEntity(pf);
+        }
+        catch (Exception e) {
+            LOGGER.info("Could not persist profile with profile id: "+pf.getId());
+            LOGGER.info(e.getMessage());
+            return false;
+        }
+
     }
 
     /**
@@ -110,23 +141,26 @@ public class ProfileService {
      * @return
      */
     public Profile get(int id) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.getProfile(id);
+        try {
+            return (Profile) jpaService.getEntity("Profile", id);
+        }
+        catch (NoResultException e) {
+            LOGGER.info("Could not find profile for profile id: "+id);
+            throw new ProfileNotFoundException("Could not find profile for profile id: "+id);
+        }
     }
 
     /**
      * Updates an existing profile if the respective inputs are valid
      */
     public Boolean updateProfile(Profile pf) throws ProfileNotFoundException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.updateProfile(pf);
+        return profileJPAService.updateProfile(get(pf.getId()));
     }
 
     /**
      * Deletes a profile
      */
-    public Boolean deleteProfile(Profile pf) throws ProfileNotDeletedException {
-        profileJPAService.setEntityManager(null);
-        return profileJPAService.deleteProfile(pf);
+    public Boolean deleteProfile(Profile pf) throws ProfileNotFoundException {
+        return jpaService.deleteEntity(get(pf.getId()));
     }
 }

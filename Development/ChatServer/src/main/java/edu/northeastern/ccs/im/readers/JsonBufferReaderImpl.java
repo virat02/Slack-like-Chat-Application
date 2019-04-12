@@ -95,7 +95,7 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
         Charset charset = Charset.forName(CHARSET_NAME);
         CharsetDecoder decoder = charset.newDecoder();
         // Convert the buffer to a format that we can actually use.
-        CharBuffer charBuffer = null;
+        CharBuffer charBuffer;
         try {
             charBuffer = decoder.decode(byteBuffer);
         } catch (CharacterCodingException e) {
@@ -103,6 +103,6 @@ public class JsonBufferReaderImpl implements JsonBufferReader {
             ChatLogger.info("Returning empty Buffer!!!!");
             return ByteBuffer.wrap(new byte[]{});
         }
-        return charset.encode(charBuffer);
+        return charset.encode(charBuffer.toString().trim());
     }
 }
