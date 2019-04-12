@@ -24,8 +24,7 @@ public class ProfileJPAService {
     }
 
     /**
-     * Singleton for Profile JPA service
-     * @return
+     * @return Singleton for Profile JPA service
      */
     public static ProfileJPAService getInstance(){
         return profileJpaServiceInstance;
@@ -33,7 +32,7 @@ public class ProfileJPAService {
 
     /**
      * Set the entityManagerUtil
-     * @param entityManagerUtil
+     * @param entityManagerUtil EntityManagerUtil of this class
      */
     public void setEntityManagerUtil(EntityManagerUtil entityManagerUtil) {
         this.entityManagerUtil = entityManagerUtil;
@@ -41,7 +40,7 @@ public class ProfileJPAService {
 
     /**
      * Updates a profile in the database
-     * @param p
+     * @param p Indicates a profile
      */
     public boolean updateProfile(Profile p) throws ProfileNotFoundException {
 
@@ -73,9 +72,8 @@ public class ProfileJPAService {
     }
 
     /**
-     * Returns true iff the email id already exists in the db
-     * @param email
-     * @return
+     * @param email Indicates the email id of the user
+     * @return Returns true iff the email id already exists in the db
      */
     public boolean ifEmailExists(String email) {
         try {
