@@ -48,6 +48,11 @@ public class ViewInvitationsWindow extends AbstractTerminalWindow {
         }
     }
 
+    @Override
+    protected String helpCommand() {
+        return "View the invitations received for the group you have created";
+    }
+
     private void handleInvitation(String invitationId, String status) {
         Status inviteStatus = Status.NOUPDATE;
         if (status.equals("A")) {

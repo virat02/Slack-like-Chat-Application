@@ -12,6 +12,7 @@ import edu.northeastern.ccs.im.user_group.User;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
 
 import javax.persistence.NoResultException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -112,7 +113,7 @@ public class MessageService implements IService{
         message.setMessage(messageBody);
         message.setSender(user);
         message.setReceiver(group);
-
+        message.setTimestamp(new Date());
         return createMessage(message);
 
     }

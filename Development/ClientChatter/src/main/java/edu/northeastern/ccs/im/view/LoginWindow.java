@@ -67,6 +67,11 @@ public class LoginWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Enter the login details to enter into the app";
+  }
+
   private int loginUser() {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
