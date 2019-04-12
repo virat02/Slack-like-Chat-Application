@@ -92,6 +92,10 @@ public class NetworkConnection implements Iterable<Message> {
         }
     }
 
+    /**
+     * Sets the selector for this class.
+     * @param selector the selector being set.
+     */
     public void setSelector(Selector selector) {
         this.selector = selector;
     }
@@ -122,6 +126,10 @@ public class NetworkConnection implements Iterable<Message> {
         }
     }
 
+    /**
+     * The iterator for this class.
+     * @return An Iterator for this class.
+     */
     @Override
     public Iterator<Message> iterator() {
         return new MessageIterator();
@@ -142,6 +150,10 @@ public class NetworkConnection implements Iterable<Message> {
             // nothing to do here
         }
 
+        /**
+         * Checks if the Message gas next.
+         * @return boolean value if there is a next.
+         */
         @Override
         public boolean hasNext() {
             boolean result = false;
@@ -181,6 +193,10 @@ public class NetworkConnection implements Iterable<Message> {
             return result;
         }
 
+        /**
+         * Goes to the next message.
+         * @return the next Message.
+         */
         @Override
         public Message next() {
             if (messages.isEmpty()) {

@@ -233,6 +233,11 @@ public class Message {
         return result;
     }
 
+    /**
+     * Overrides the equals method for the message to check if messages are equal.
+     * @param obj the object we are comparing this message to,
+     * @return a boolean value if a message is equal to another message.
+     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Message))
@@ -245,6 +250,10 @@ public class Message {
                 && compareObj.msgText.equals(this.msgText);
     }
 
+    /**
+     * The hashcode version of the Message.
+     * @return int value, hashcode of the message.
+     */
     @Override
     public int hashCode() {
         return toString().hashCode();

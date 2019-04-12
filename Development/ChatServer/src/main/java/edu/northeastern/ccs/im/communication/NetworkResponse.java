@@ -41,10 +41,17 @@ public interface NetworkResponse {
  */
 class NetworkResponseDeserializer extends StdDeserializer<Payload> {
 
+    /**
+     * Default private constructor used by Jackson.
+     */
     public NetworkResponseDeserializer() {
         this(null);
     }
 
+    /**
+     * Network Response Deserializer constructor for this class takes in a class to deserialize.
+     * @param vc the class being deserialized.
+     */
     public NetworkResponseDeserializer(Class<?> vc) {
         super(vc);
     }
