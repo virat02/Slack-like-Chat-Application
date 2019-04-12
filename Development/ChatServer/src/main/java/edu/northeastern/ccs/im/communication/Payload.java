@@ -30,13 +30,28 @@ public interface Payload {
  */
 class JSONDeserializer extends StdDeserializer<Payload> {
 
+    /**
+     * Creates a JSONDeserializer
+     */
     public JSONDeserializer()   {
         this(null);
     }
+
+    /**
+     * Creates a JSONDeserializer
+     * @param vc the class being passed to parser into a JSON.
+     */
     public JSONDeserializer(Class<?> vc) {
         super(vc);
     }
 
+    /**
+     * Deserializer for the Payload.
+     * @param jsonParser parser for the json.
+     * @param deserializationContext the context of the deserializer.
+     * @return Payload that has been created.
+     * @throws IOException if there are deserializers set to null..
+     */
     @Override
     public Payload deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
