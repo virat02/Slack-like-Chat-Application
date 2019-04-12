@@ -2,10 +2,7 @@ package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.ChatLogger;
 import edu.northeastern.ccs.im.customexceptions.*;
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.Status;
-import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.UserChatRoomLogOffEvent;
@@ -26,6 +23,7 @@ public final class UserService implements IService {
     private static final UserService userServiceinstance = new UserService();
 
     private UserJPAService userJPAService;
+    private AllJPAService jpaService;
     private InviteJPAService inviteJPAService;
     private GroupJPAService groupJPAService;
 
@@ -36,6 +34,7 @@ public final class UserService implements IService {
         userJPAService = UserJPAService.getInstance();
         inviteJPAService = InviteJPAService.getInstance();
         groupJPAService = GroupJPAService.getInstance();
+        jpaService = AllJPAService.getInstance();
     }
 
     public static UserService getInstance(){
@@ -53,6 +52,19 @@ public final class UserService implements IService {
             this.userJPAService = userJPAService;
         }
         this.userJPAService.setEntityManager(null);
+    }
+
+    /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param jpaService for this class.
+     */
+    public void setAllService(AllJPAService jpaService) {
+        if (jpaService == null) {
+            this.jpaService = AllJPAService.getInstance();
+        } else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
@@ -85,7 +97,8 @@ public final class UserService implements IService {
      * Add user will add a user to the database.
      * @param user being added to the database.* @return the user which was added to the database.
      */
-    public User addUser(User user) throws UsernameInvalidException, PasswordInvalidException, UserNotPersistedException, UserNotFoundException {
+    public boolean addUser(User user)
+            throws UsernameInvalidException, PasswordInvalidException {
         HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
         if(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
                 user.getUsername().length() < 4) {
@@ -98,12 +111,9 @@ public final class UserService implements IService {
             throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        userJPAService.setEntityManager(null);
-        int id = userJPAService.createUser(user);
-        if(id == 0) {
-            return null;
-        }
-        return userJPAService.getUser(id);
+
+        return jpaService.createEntity(user);
+
     }
 
     /**
@@ -111,7 +121,6 @@ public final class UserService implements IService {
      * @param username the name of the user being searched
      * @return the users with the name searched for*/
     public User search(String username) throws UserNotFoundException {
-        userJPAService.setEntityManager(null);
         return userJPAService.search(username);
     }
 
@@ -148,7 +157,6 @@ public final class UserService implements IService {
         User fetchedCurrentUser = search(currentUser.getUsername());
         if(fetchedCurrentUser != null && u != null){
             fetchedCurrentUser.addFollowing(u);
-            userJPAService.setEntityManager(null);
             userJPAService.updateUser(fetchedCurrentUser);
             return fetchedCurrentUser;
         }
@@ -168,7 +176,6 @@ public final class UserService implements IService {
         User fetchedCurrentUser = search(currentUser.getUsername());
         if(fetchedCurrentUser != null && u != null){
             fetchedCurrentUser.removeFollowing(u);
-            userJPAService.setEntityManager(null);
             userJPAService.updateUser(fetchedCurrentUser);
             return fetchedCurrentUser;
         }
@@ -188,7 +195,6 @@ public final class UserService implements IService {
         User u = search(username);
 
         if(u != null) {
-            userJPAService.setEntityManager(null);
             return userJPAService.getFollowers(u);
         }
         else {
@@ -204,7 +210,6 @@ public final class UserService implements IService {
     public List<User> getFollowees(String username) throws UserNotFoundException, ListOfUsersNotFound {
         User u = search(username);
         if(u != null) {
-            userJPAService.setEntityManager(null);
             return userJPAService.getFollowees(u);
         }
         else{
@@ -218,10 +223,8 @@ public final class UserService implements IService {
      * @return the updated user.
      */
     public User update(User user) throws UserNotFoundException {
-        userJPAService.setEntityManager(null);
         userJPAService.updateUser(user);
-        userJPAService.setEntityManager(null);
-        return userJPAService.getUser(user.getId());
+        return (User) jpaService.getEntity("User", user.getId());
     }
 
     /**
@@ -229,9 +232,15 @@ public final class UserService implements IService {
      * @param user being deleted from the database.
      * @return the user which was deleted from the database.
      */
-    public User delete(User user) throws UserNotFoundException {
-        userJPAService.deleteUser(user);
-        return userJPAService.getUser(user.getId());
+    public boolean delete(User user) throws UserNotFoundException {
+        User currentUser = userJPAService.search(user.getUsername());
+        try {
+            return jpaService.deleteEntity(currentUser);
+        }
+        catch (Exception e) {
+            LOGGER.info(e.getMessage());
+            return false;
+        }
     }
 
     /**

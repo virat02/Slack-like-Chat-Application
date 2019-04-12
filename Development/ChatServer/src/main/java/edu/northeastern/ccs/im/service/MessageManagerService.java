@@ -1,7 +1,6 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 
@@ -20,12 +19,6 @@ public class MessageManagerService {
     private static MessageManagerService instance = null;
 
     private GroupService groupService = GroupService.getInstance();
-
-    private UserService userService = UserService.getInstance();
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
@@ -54,14 +47,12 @@ public class MessageManagerService {
      * @throws GroupNotFoundException If the group doesn't exist in the system
      * @throws UserNotFoundException If the user doesn't exist in the system
      * @throws UserNotPresentInTheGroup If the user is not a participant of the system
-     * @throws GroupNotPersistedException If group cannot be created( for private groups)
      *
      */
     public BroadCastService getService(String groupUniqueKey, String username, Boolean flag)
-            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotPersistedException {
+            throws GroupNotFoundException, UserNotFoundException, UserNotPresentInTheGroup {
         //Check if the group with the given unique identifier exists
         groupService.createIfNotPresent(groupUniqueKey, username, flag);
-//        userService.userGroupEvent(username, groupUniqueKey);
         if (!hmap.containsKey(groupUniqueKey))
             hmap.put(groupUniqueKey, new MessageBroadCastService(groupUniqueKey));
         return hmap.get(groupUniqueKey);

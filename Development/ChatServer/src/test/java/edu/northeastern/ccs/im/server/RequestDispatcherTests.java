@@ -6,7 +6,6 @@ import edu.northeastern.ccs.im.controller.GroupController;
 import edu.northeastern.ccs.im.controller.ProfileController;
 import edu.northeastern.ccs.im.controller.UserController;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.customexceptions.UserNotPresentInTheGroup;
 import edu.northeastern.ccs.im.service.BroadCastService;
@@ -46,14 +45,11 @@ public class RequestDispatcherTests {
      * @throws JsonProcessingException    the json processing exception
      * @throws IllegalAccessException     the illegal access exception
      * @throws UserNotFoundException      the user not found exception
-     * @throws GroupNotPersistedException the group not persisted exception
      * @throws UserNotPresentInTheGroup   the user not present in the group
      * @throws GroupNotFoundException     the group not found exception
      */
     @Before
-    public void setup() throws JsonProcessingException, IllegalAccessException,
-            UserNotFoundException,
-            GroupNotPersistedException,
+    public void setup() throws UserNotFoundException,
             UserNotPresentInTheGroup,
             GroupNotFoundException {
         broadCastService = mock(MessageBroadCastService.class);
@@ -237,13 +233,12 @@ public class RequestDispatcherTests {
      *
      * @throws IOException                the io exception
      * @throws UserNotFoundException      the user not found exception
-     * @throws GroupNotPersistedException the group not persisted exception
      * @throws UserNotPresentInTheGroup   the user not present in the group
      * @throws GroupNotFoundException     the group not found exception
      */
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotFoundExceptionCheckNetworkResponse()
-            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+            throws IOException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotFoundException {
         final String userNotFound = "{\"message\" : \"The user doesn't exist in the system.\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
         requestDispatcher.setMessageManagerService(messageManagerService);
@@ -259,13 +254,12 @@ public class RequestDispatcherTests {
      *
      * @throws IOException                the io exception
      * @throws UserNotFoundException      the user not found exception
-     * @throws GroupNotPersistedException the group not persisted exception
      * @throws UserNotPresentInTheGroup   the user not present in the group
      * @throws GroupNotFoundException     the group not found exception
      */
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToUserNotPresentInTheGroupExceptionCheckNetworkResponse()
-            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+            throws IOException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotFoundException {
         final String userNotPresentInGroup = "{\"message\" : \"You are not a participant of the " +
                 "group\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");
@@ -282,13 +276,12 @@ public class RequestDispatcherTests {
      *
      * @throws IOException                the io exception
      * @throws UserNotFoundException      the user not found exception
-     * @throws GroupNotPersistedException the group not persisted exception
      * @throws UserNotPresentInTheGroup   the user not present in the group
      * @throws GroupNotFoundException     the group not found exception
      */
     @Test
     public void whenHandleNetworkRequestIfJoinGroupIsUnSuccessfulDueToGroupNotFoundExceptionCheckNetworkResponse()
-            throws IOException, UserNotFoundException, GroupNotPersistedException, UserNotPresentInTheGroup, GroupNotFoundException {
+            throws IOException, UserNotFoundException, UserNotPresentInTheGroup, GroupNotFoundException {
         final String groupNotFound = "{\"message\" : \"The group doesn't exist. Please create a " +
                 "group\"}";
         when(payload.jsonString()).thenReturn("{\"groupCode\": \"group1\", \"userName\": \"sibendu\", \"isPrivate\" : \"true\"}");

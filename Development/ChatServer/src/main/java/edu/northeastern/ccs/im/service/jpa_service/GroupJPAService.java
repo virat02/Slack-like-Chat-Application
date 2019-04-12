@@ -6,12 +6,9 @@ import java.util.logging.Logger;
 import javax.persistence.*;
 
 import edu.northeastern.ccs.im.ChatLogger;
-import edu.northeastern.ccs.im.customexceptions.GroupNotDeletedException;
 import edu.northeastern.ccs.im.customexceptions.GroupNotFoundException;
-import edu.northeastern.ccs.im.customexceptions.GroupNotPersistedException;
 import edu.northeastern.ccs.im.customexceptions.UserNotFoundException;
 import edu.northeastern.ccs.im.service.EntityManagerUtil;
-import edu.northeastern.ccs.im.service.GroupService;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.User;
 
@@ -85,47 +82,6 @@ public class GroupJPAService{
 	private void endTransaction(EntityManager entityManager) {
 		entityManager.getTransaction().commit();
 		entityManager.close();
-	}
-
-    /**
-     * Creates a group and persists in database
-     * @param group
-     * @return id of the newly added group
-     */
-	public int createGroup(Group group) throws GroupNotPersistedException {
-		try {
-			EntityManager entityManager = entityManagerUtil.getEntityManager();
-			beginTransaction(entityManager);
-			entityManager.persist(group);
-			entityManager.flush();
-			endTransaction(entityManager);
-			LOGGER.info("Successfully created a group with group unique key: "+group.getGroupCode());
-			return group.getId();
-		}
-		catch (Exception e) {
-			LOGGER.info("Could not create the group!");
-			throw new GroupNotPersistedException("Could not create the group");
-		}
-
-	}
-
-    /**
-     * getGroup returns the group from the database fetched using id
-     * @param id
-     * @return a group
-     */
-	public Group getGroup(int id) throws GroupNotFoundException {
-		try {
-			EntityManager entityManager = entityManagerUtil.getEntityManager();
-			beginTransaction(entityManager);
-			Group fetchedGroup = entityManager.find(Group.class, id);
-			endTransaction(entityManager);
-			return fetchedGroup;
-		}
-		catch (Exception e) {
-			LOGGER.info("Could not find a Group with group id: "+id);
-			throw new GroupNotFoundException("Could not find a Group with group id: "+id);
-		}
 	}
 
     /**
@@ -255,26 +211,6 @@ public class GroupJPAService{
 			LOGGER.info("Can't find Group with code: " + groupCode);
 			throw new GroupNotFoundException("Can't find Group with code: " + groupCode);
 		}
-	}
-
-    /**
-     * deletes a group from database based on the id of the group
-     * @param currentGroup
-     */
-	public void deleteGroup(Group currentGroup) throws GroupNotDeletedException {
-		try {
-			EntityManager entityManager = entityManagerUtil.getEntityManager();
-			beginTransaction(entityManager);
-			Group group = entityManager.find(Group.class, currentGroup.getId());
-			group.setIsDeleted(true);
-			LOGGER.info("Deleted group with group unique key: "+currentGroup.getGroupCode());
-			endTransaction(entityManager);
-		}
-		catch(Exception e) {
-			LOGGER.info("Can't delete Group with code: " + currentGroup.getGroupCode());
-			throw new GroupNotDeletedException("Could not delete group with code: "+currentGroup.getGroupCode());
-		}
-
 	}
 
     /**

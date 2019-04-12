@@ -28,6 +28,7 @@ public final class UserController implements IController<User> {
             "at least one number, one uppercase letter and one lowercase letter\"}";
     private static final String CANNOT_UNFOLLOW_JSON = "{\"message\" : \"Cannot unfollow a user you do not follow!\"}";
     private static final String EXIT_CHAT_ROOM_SUCCESSFUL = "{\"message\" : \"Successfully exited the chatroom\"}";
+    private static final String USER_NOT_DELETED_JSON = "{\"message\" : \"Sorry, could not delete the user!\"}";
 
     private UserService userService;
 
@@ -63,14 +64,14 @@ public final class UserController implements IController<User> {
      */
     public NetworkResponse addEntity(User user) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.addUser(user))));
-        } catch (UserNotPersistedException e) {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_PERSISTED_JSON));
-        } catch(UserNotFoundException e){
-            return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
-                    new PayloadImpl(USER_NOT_FOUND_JSON));
+            if(userService.addUser(user)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(user)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(USER_NOT_PERSISTED_JSON));
+            }
         } catch(UsernameInvalidException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
                     new PayloadImpl(USERNAME_INCORRECT));
@@ -103,8 +104,14 @@ public final class UserController implements IController<User> {
      */
     public NetworkResponse deleteEntity(User user) {
         try {
-            return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
-                    new PayloadImpl(CommunicationUtils.toJson(userService.delete(user))));
+            if(userService.delete(user)){
+                return new NetworkResponseImpl(NetworkResponse.STATUS.SUCCESSFUL,
+                        new PayloadImpl(CommunicationUtils.toJson(user)));
+            }
+            else{
+                return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,
+                        new PayloadImpl(USER_NOT_DELETED_JSON));
+            }
         }
         catch(UserNotFoundException e){
             return new NetworkResponseImpl(NetworkResponse.STATUS.FAILED,

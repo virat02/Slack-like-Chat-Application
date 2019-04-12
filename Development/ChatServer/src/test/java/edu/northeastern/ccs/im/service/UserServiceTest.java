@@ -2,23 +2,21 @@ package edu.northeastern.ccs.im.service;
 
 
 import edu.northeastern.ccs.im.customexceptions.*;
-import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.InviteJPAService;
-import edu.northeastern.ccs.im.service.jpa_service.Status;
-import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
+import edu.northeastern.ccs.im.service.jpa_service.*;
 import edu.northeastern.ccs.im.user_group.Group;
 import edu.northeastern.ccs.im.user_group.Invite;
 import edu.northeastern.ccs.im.user_group.User;
+import org.eclipse.persistence.internal.oxm.schema.model.All;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -30,6 +28,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
 
     private UserJPAService userJPAService;
+
+    @Mock
+    private AllJPAService jpaService;
     private User userOne;
     private User userTwo;
     private UserService userService;
@@ -58,6 +59,8 @@ public class UserServiceTest {
 
         inviteJPAService = mock(InviteJPAService.class);
         groupJPAService = mock(GroupJPAService.class);
+        jpaService = mock(AllJPAService.class);
+
         invite = new Invite();
         invite.setSender(userOne);
         invite.setReceiver(userTwo);
@@ -70,38 +73,29 @@ public class UserServiceTest {
 
     /**
      * A test to ensure create entity works properly.
-     * @throws UserNotPersistedException if the user wasn't persisted in the DB.
      * @throws UserNotFoundException if the user wasn't found in the DB.
      * @throws UsernameInvalidException if the username is invalid.
      * @throws PasswordInvalidException if the password is invalid.
      */
     @Test
-    public void testCreateEntity() throws UserNotPersistedException, UserNotFoundException, UsernameInvalidException, PasswordInvalidException {
-        when(userJPAService.createUser(any())).thenReturn(1);
-        when(userJPAService.getUser(anyInt())).thenReturn(userOne);
-        userService.setJPAService(userJPAService);
-        User newUser = userService.addUser(userOne);
-
-        assert newUser != null;
-        assertEquals(userOne,newUser);
-        verify(userJPAService).createUser(any());
+    public void testCreateEntity() throws UsernameInvalidException, PasswordInvalidException {
+        when(jpaService.createEntity(any())).thenReturn(true);
+        when(jpaService.getEntity(anyString(), anyInt())).thenReturn(userOne);
+        userService.setAllService(jpaService);
+        assertTrue(userService.addUser(userOne));
     }
 
     /**
      * A test to ensure create entity doesn't work when the int returns 0.
-     * @throws UserNotPersistedException if the user wasn't persisted in the DB.
      * @throws UserNotFoundException if the user wasn't found in the DB.
      * @throws UsernameInvalidException if the username is invalid.
      * @throws PasswordInvalidException if the password is invalid.
      */
     @Test
-    public void testFailToCreateEntity() throws UserNotPersistedException, UserNotFoundException, UsernameInvalidException, PasswordInvalidException {
-        when(userJPAService.createUser(any())).thenReturn(0);
-        userService.setJPAService(userJPAService);
-        User newUser = userService.addUser(userOne);
-
-        assertNull(newUser);
-        verify(userJPAService).createUser(any());
+    public void testFailToCreateEntity() throws UsernameInvalidException, PasswordInvalidException {
+        when(jpaService.createEntity(any())).thenReturn(false);
+        userService.setAllService(jpaService);
+        assertFalse(userService.addUser(userOne));
     }
 
     /**
@@ -134,10 +128,9 @@ public class UserServiceTest {
      */
     @Test
     public void testUpdateUser() throws UserNotFoundException {
-        when(userJPAService.getUser(anyInt())).thenReturn(userOne);
-        userService.setJPAService(userJPAService);
+        when(jpaService.getEntity(anyString(), anyInt())).thenReturn(userOne);
+        userService.setAllService(jpaService);
         User newUser = userService.update(userOne);
-        verify(userJPAService).getUser(anyInt());
         assertEquals(userOne, newUser);
 
     }
@@ -148,11 +141,12 @@ public class UserServiceTest {
      */
     @Test
     public void testDeleteUser() throws UserNotFoundException {
-        when(userJPAService.getUser(anyInt())).thenReturn(userOne);
+
+        userService.setAllService(jpaService);
         userService.setJPAService(userJPAService);
-        User newUser = userService.delete(userOne);
-        assertEquals(userOne, newUser);
-        verify(userJPAService).getUser(anyInt());
+        when(userJPAService.search(anyString())).thenReturn(userOne);
+        when(jpaService.deleteEntity(any())).thenReturn(true);
+        assertTrue(userService.delete(userOne));
     }
 
     /**
@@ -255,7 +249,8 @@ public class UserServiceTest {
      * @throws UnfollowNotFollowingUserException if the unfollow method fails.
      */
     @Test (expected = IllegalArgumentException.class)
-    public void testUnfollowFail() throws UserNotFoundException,UnfollowNotFollowingUserException {
+    public void testUnfollowFail()
+            throws UserNotFoundException,UnfollowNotFollowingUserException {
         String username = "username";
         when(userJPAService.search(anyString())).thenReturn(null);
         userService.setJPAService(userJPAService);
@@ -270,7 +265,9 @@ public class UserServiceTest {
      * @throws InviteNotFoundException when an invite is not found.
      */
     @Test
-    public void testSendInvite() throws UserNotFoundException, InviteNotAddedException, GroupNotFoundException, InviteNotFoundException {
+    public void testSendInvite()
+            throws UserNotFoundException, InviteNotAddedException,
+            GroupNotFoundException, InviteNotFoundException {
         when(userJPAService.search(anyString())).thenReturn(userOne);
         when(inviteJPAService.createInvite(any())).thenReturn(123);
         when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
@@ -311,8 +308,8 @@ public class UserServiceTest {
      * @throws InviteNotFoundException when an invite isn't found in the DB
      */
     @Test
-    public void testSearchInviteByGroupCode() throws UserNotFoundException, GroupNotFoundException,
-            InviteNotFoundException {
+    public void testSearchInviteByGroupCode()
+            throws UserNotFoundException, GroupNotFoundException, InviteNotFoundException {
         when(userJPAService.search(anyString())).thenReturn(userOne);
         when(inviteJPAService.searchInviteByGroupCode(anyString(), any())).thenReturn(new ArrayList<>());
         userService.setInviteJPAService(inviteJPAService);
@@ -324,12 +321,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a username without an uppercase letter.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = UsernameInvalidException.class)
-    public void testUsernameNoUpper() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testUsernameNoUpper()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "user1";
         String password = "Password1";
         User user = new User();
@@ -342,12 +338,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a username that is too small.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = UsernameInvalidException.class)
-    public void testUsernameTooSmall() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testUsernameTooSmall()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "Ra2";
         String password = "Password1";
         User user = new User();
@@ -360,12 +355,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a username without an lowercase letter.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = UsernameInvalidException.class)
-    public void testUsernameNoLower() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testUsernameNoLower()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "USER1";
         String password = "Password1";
         User user = new User();
@@ -378,12 +372,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a username without a number.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = UsernameInvalidException.class)
-    public void testUsernameNoNumber() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException{
+    public void testUsernameNoNumber()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "Userone";
         String password = "Password1";
         User user = new User();
@@ -396,12 +389,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a password that is too small.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testPasswordTooSmall() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testPasswordTooSmall()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "User1";
         String password = "Pa1";
         User user = new User();
@@ -414,12 +406,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a password without an uppercase letter.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testPasswordNoUpper() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testPasswordNoUpper()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "User1";
         String password = "password1";
         User user = new User();
@@ -432,12 +423,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a password without an lowercase letter.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testPasswordNoLower() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testPasswordNoLower()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "User1";
         String password = "PASSWORD1";
         User user = new User();
@@ -450,12 +440,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a password without a number.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testPasswordNoNumber() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testPasswordNoNumber()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "User1";
         String password = "Password";
         User user = new User();
@@ -468,12 +457,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a password that is too long.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testPasswordTooLong() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testPasswordTooLong()
+            throws UsernameInvalidException, PasswordInvalidException {
         String username = "User1";
         String password = "ThisPasswordIsTooLong11243";
         User user = new User();
@@ -486,12 +474,11 @@ public class UserServiceTest {
      * Tests to ensure we can't have a username that is too long.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = UsernameInvalidException.class)
-    public void testUsernameIsTooLong() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException {
+    public void testUsernameIsTooLong()
+            throws UsernameInvalidException, PasswordInvalidException{
         String username = "ThisUsernameIsDefinitelyTooLong1123";
         String password = "Password1";
         User user = new User();
@@ -504,12 +491,10 @@ public class UserServiceTest {
      * Tests to ensure the password abc1 is valid.
      * @throws UsernameInvalidException username doesn't contain a lowercase letter.
      * @throws PasswordInvalidException password is too small.
-     * @throws UserNotPersistedException user is not persisted.
      * @throws UserNotFoundException user is not found in the DB.
      */
     @Test (expected = PasswordInvalidException.class)
-    public void testABC1Fail() throws UsernameInvalidException, PasswordInvalidException,
-            UserNotPersistedException, UserNotFoundException{
+    public void testABC1Fail() throws UsernameInvalidException, PasswordInvalidException {
         String username = "Jalannin1";
         String password = "abc1";
         User user = new User();
@@ -538,7 +523,8 @@ public class UserServiceTest {
      * @throws GroupNotFoundException when a group is not found in the DB.
      */
     @Test (expected = UnsupportedOperationException.class)
-    public void testUserGroupEventUserNotFound() throws UserNotFoundException, GroupNotFoundException {
+    public void testUserGroupEventUserNotFound()
+            throws UserNotFoundException, GroupNotFoundException {
         when(userJPAService.search(anyString())).thenThrow(UserNotFoundException.class);
         when(groupJPAService.searchUsingCode(anyString())).thenReturn(groupOne);
         userService.setGroupJPAService(groupJPAService);
@@ -552,7 +538,8 @@ public class UserServiceTest {
      * @throws GroupNotFoundException when a group is not found in the DB.
      */
     @Test (expected = UnsupportedOperationException.class)
-    public void testUserGroupEventGroupNotFound() throws UserNotFoundException, GroupNotFoundException {
+    public void testUserGroupEventGroupNotFound()
+            throws UserNotFoundException, GroupNotFoundException {
         when(userJPAService.search(anyString())).thenReturn(userTwo);
         when(groupJPAService.searchUsingCode(anyString())).thenThrow(GroupNotFoundException.class);
         userService.setGroupJPAService(groupJPAService);
