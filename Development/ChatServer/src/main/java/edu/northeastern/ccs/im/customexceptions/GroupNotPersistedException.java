@@ -7,7 +7,7 @@ public class GroupNotPersistedException extends Exception {
 
     /**
      * Constructor for GroupNotPersistedException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public GroupNotPersistedException(String message)
     {

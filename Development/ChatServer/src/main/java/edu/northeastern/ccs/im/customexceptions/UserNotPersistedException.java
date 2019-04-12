@@ -7,7 +7,7 @@ public class UserNotPersistedException extends Exception {
 
     /**
      * Constructor for UserNotPersistedException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public UserNotPersistedException(String message)
     {

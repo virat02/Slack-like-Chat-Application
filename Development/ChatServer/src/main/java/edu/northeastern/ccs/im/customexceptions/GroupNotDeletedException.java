@@ -7,7 +7,7 @@ public class GroupNotDeletedException extends Exception {
 
     /**
      * Contructor for GroupNotDeletedException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public GroupNotDeletedException(String message)
     {

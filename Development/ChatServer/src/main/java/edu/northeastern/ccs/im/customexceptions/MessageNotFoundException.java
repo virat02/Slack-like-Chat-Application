@@ -7,7 +7,7 @@ public class MessageNotFoundException extends Exception {
 
     /**
      * Constructor for MessageNotFoundException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public MessageNotFoundException(String message)
     {

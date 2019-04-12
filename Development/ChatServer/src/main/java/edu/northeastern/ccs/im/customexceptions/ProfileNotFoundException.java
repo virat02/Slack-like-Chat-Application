@@ -7,7 +7,7 @@ public class ProfileNotFoundException extends Exception {
 
     /**
      * Constructor for ProfileNotFoundException
-     * @param message
+     * @param message the message attached to the exception.
      */
     public ProfileNotFoundException(String message)
     {
