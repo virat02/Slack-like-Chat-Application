@@ -1,6 +1,7 @@
 package edu.northeastern.ccs.im.service;
 
 import edu.northeastern.ccs.im.customexceptions.*;
+import edu.northeastern.ccs.im.service.jpa_service.AllJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.GroupJPAService;
 import edu.northeastern.ccs.im.service.jpa_service.UserJPAService;
 import edu.northeastern.ccs.im.user_group.Group;
@@ -19,6 +20,7 @@ public class GroupService implements IService {
 
     private GroupJPAService groupJPA = new GroupJPAService();
     private UserJPAService userJPA = new UserJPAService();
+    private AllJPAService jpaService = new AllJPAService();
 
     /**
      * Constructor for this class.
@@ -40,6 +42,19 @@ public class GroupService implements IService {
             this.userJPA = userJPA;
         }
         this.userJPA.setEntityManager(null);
+    }
+
+    /**
+     * A method to set the user JPA Service for this class, makes the class more testable.
+     *
+     * @param jpaService for this class.
+     */
+    public void setAllService(AllJPAService jpaService) {
+        if (jpaService == null) {
+            this.jpaService = new AllJPAService();
+        } else {
+            this.jpaService = jpaService;
+        }
     }
 
     /**
@@ -85,7 +100,7 @@ public class GroupService implements IService {
      *                                    being initiated.
      */
     private boolean createPrivateGroupIfNotPresent(String groupUniqueKey, String username)
-            throws GroupNotPersistedException, UserNotFoundException {
+            throws UserNotFoundException {
 
         try {
             searchUsingCode(groupUniqueKey);
@@ -112,14 +127,13 @@ public class GroupService implements IService {
 
         Group group = new Group();
         group.setGroupCode(groupUniqueKey);
+
         //Make both users : "username" and "userToSearch" the moderator of this group
         group.addModerator(u1);
         group.addModerator(u2);
-        groupJPA.setEntityManager(null);
-        //Update the database
-        groupJPA.createGroup(group);
 
-        return true;
+        //Update the DB
+        return jpaService.createEntity(group);
     }
 
     /**

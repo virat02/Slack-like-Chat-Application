@@ -1,12 +1,12 @@
 package edu.northeastern.ccs.im.customexceptions;
 
 /**
- * Exception thrown when JPA is unable to persist a Group
+ * Exception thrown when a Group is not persisted By JPA
  */
 public class GroupNotPersistedException extends Exception {
 
     /**
-     * Contructor for GroupNotPersistedException
+     * Constructor for GroupNotPersistedException
      * @param message
      */
     public GroupNotPersistedException(String message)
