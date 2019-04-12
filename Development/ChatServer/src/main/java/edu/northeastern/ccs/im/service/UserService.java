@@ -91,25 +91,24 @@ public final class UserService implements IService {
     }
 
     /**
-     * Returns true iff username is valid
-     * @param usernameCheck Username map
      * @param user User object
-     * @return
+     * @return Returns true iff username is valid
      * @throws UsernameInvalidException
      */
-    public boolean isValidUsername(Map<String, Boolean> usernameCheck, User user) {
-        return (!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
+    public boolean isValidUsername(User user) {
+        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
+        return !(!usernameCheck.get("low") || !usernameCheck.get("cap") || !usernameCheck.get("num") || user.getUsername().length() > 20 ||
                 user.getUsername().length() < 4);
     }
 
     /**
-     * @param passwordCheck Password map
      * @param user user object
      * @return Returns true iff password is valid
      * @throws PasswordInvalidException
      */
-    public boolean isValidPassword(Map<String, Boolean> passwordCheck, User user) {
-        return (user.getPassword().length() < 4 || user.getPassword().length() > 20
+    public boolean isValidPassword(User user) {
+        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
+        return !(user.getPassword().length() < 4 || user.getPassword().length() > 20
                 || !passwordCheck.get("low") || !passwordCheck.get("cap") || !passwordCheck.get("num"));
     }
 
@@ -119,22 +118,16 @@ public final class UserService implements IService {
      */
     public boolean addUser(User user)
             throws UsernameInvalidException, PasswordInvalidException {
-        HashMap<String, Boolean> usernameCheck = checkString(user.getUsername());
-        HashMap<String, Boolean> passwordCheck = checkString(user.getPassword());
-        if(!isValidUsername(usernameCheck, user)) {
+        if(!isValidUsername(user)) {
             throw new UsernameInvalidException("Username must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        if(!isValidPassword(passwordCheck, user)) {
+        if(!isValidPassword(user)) {
             throw new PasswordInvalidException("Password must be between 4-20 letters long, and contain one capital letter, " +
                     "one lowercase letter and one number.");
         }
-        
-        if(isValidUsername(usernameCheck, user) && isValidPassword(passwordCheck, user)){
-            return jpaService.createEntity(user);
-        }
 
-        return false;
+        return jpaService.createEntity(user);
     }
 
     /**
