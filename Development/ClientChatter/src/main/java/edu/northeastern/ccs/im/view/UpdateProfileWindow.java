@@ -112,6 +112,11 @@ public class UpdateProfileWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Update your user details";
+  }
+
   private boolean updateUserProfile(String userEmailAddress, String imageUrl) {
     try {
       NetworkResponse networkResponse;

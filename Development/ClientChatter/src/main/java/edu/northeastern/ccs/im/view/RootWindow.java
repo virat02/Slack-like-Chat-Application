@@ -44,4 +44,9 @@ class RootWindow extends AbstractTerminalWindow {
       invalidInputPassed();
     }
   }
+
+  @Override
+  protected String helpCommand() {
+    return "Create your account, login and start chatting";
+  }
 }

@@ -50,6 +50,11 @@ public class ForgotPasswordWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Unable to login. You can retrieve your password and start using the app";
+  }
+
   private boolean initiateRecovery(String recoveryAddress) {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()

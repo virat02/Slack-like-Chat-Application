@@ -53,4 +53,9 @@ public class MessageGroupSelectorWindow extends AbstractTerminalWindow {
       invalidInputPassed();
     }
   }
+
+  @Override
+  protected String helpCommand() {
+    return "Select which the user name or the group name where you want to start chatting";
+  }
 }

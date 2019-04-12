@@ -48,6 +48,11 @@ public class CreateGroupWindow extends AbstractTerminalWindow {
     }
   }
 
+  @Override
+  protected String helpCommand() {
+    return "Create groups and add users to your group";
+  }
+
   private boolean createGroup(String groupName,String groupCode) {
     try {
       NetworkResponse networkResponse = sendNetworkConnection(new NetworkRequestFactory()
