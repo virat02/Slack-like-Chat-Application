@@ -33,8 +33,7 @@ public class GroupJPAService{
 	}
 
 	/**
-	 * Singleton instance for group jpa service
-	 * @return
+	 * @return Singleton instance for group jpa service
 	 */
 	public static GroupJPAService getInstance(){
 		return groupJpaServiceInstance;
@@ -63,7 +62,7 @@ public class GroupJPAService{
 
 	/**
 	 * Set the userJPAService
-	 * @param userJPA
+	 * @param userJPA for this class
 	 */
 	public void setUserJPAService(UserJPAService userJPA) {
 		this.userJPA = userJPA;
@@ -86,7 +85,7 @@ public class GroupJPAService{
 
     /**
      * updateGroup updates a given group with the changed attribute values
-     * @param currentGroup
+     * @param currentGroup Indicates the current group
      */
 	public Boolean updateGroup(Group currentGroup) throws GroupNotFoundException{
 		EntityManager entityManager = entityManagerUtil.getEntityManager();
@@ -124,8 +123,8 @@ public class GroupJPAService{
     /**
      * addUserToGroup adds a user to the group and persists
      * their relationship in the join table
-     * @param id
-     * @param user
+     * @param id Indicates the Group id
+     * @param user Indicates the user
      */
 	public void addUserToGroup(int id, User user) throws GroupNotFoundException{
 		EntityManager entityManager = entityManagerUtil.getEntityManager();
@@ -172,7 +171,7 @@ public class GroupJPAService{
 
     /**
      * searchUsingName method returns the list of groups with a given name
-     * @param groupName
+     * @param groupName Indicates the name of the group
      * @return a list of groups
      */
 	public List<Group> searchUsingName(String groupName) throws GroupNotFoundException {
@@ -215,8 +214,8 @@ public class GroupJPAService{
 
     /**
      * removeUserFromGroup removes the relationship between group and user in the join table
-     * @param currentGroup
-     * @param username
+     * @param currentGroup The current group
+     * @param username The username of the user
      * @return 1 for success , 0 for failure
      */
 	public int removeUserFromGroup(Group currentGroup, String username) throws UserNotFoundException{
