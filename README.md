@@ -1,13 +1,12 @@
 # team-108-SP19
-team repo for team-108-SP19 (jalannin, sangeethac, virat02, tarun2912, sibendudey)
-
-Welcome to the team repository for Managing Software Development Team 108
+Welcome to the team repository for Managing Software Development Team 108.
+This repository contains code for the prattle server application. 
 
 Team members:
-Jerry Lanning
-Sangeetha Chandrashekar
-Sibendu Dey
-Tarun Kumar Attayampatty Sekar
+Jerry Lanning,
+Sangeetha Chandrashekar,
+Sibendu Dey,
+Tarun Kumar Attayampatty Sekar,
 Virat Goradia
 
 System Demo video:
