@@ -1,6 +1,6 @@
 # team-108-SP19
 Welcome to the team repository for Managing Software Development Team 108.
-This repository contains code for the prattle server application. 
+This repository contains code for the prattle server application.
 
 Team members:
 Jerry Lanning,
